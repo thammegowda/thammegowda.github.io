@@ -121,7 +121,7 @@ A large scale web crawler on Apache Spark, with Apache Solr backend for crawler 
 
 [autoextractor]
 === Auto Extractor
-HTML web page clustering tool based on stucture and style similarity.
+HTML web page clustering tool based on DOM structure and CSS style similarity.
 
 - Code: https://github.com/USCDataScience/autoextractor
 - Docs: https://github.com/USCDataScience/autoextractor/wiki
@@ -130,7 +130,7 @@ HTML web page clustering tool based on stucture and style similarity.
 [supervsing-ui]
 === Supervising UI
 
-A simple web UI for labelling images.
+A simple web UI for labelling images to be used for image recognition.
 
 - Code: https://github.com/USCDataScience/supervising-ui
 
