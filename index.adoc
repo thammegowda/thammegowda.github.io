@@ -157,10 +157,10 @@ A simple web UI for labelling images.
 * Email: work: `tg (at) isi.edu` and personal: `tgowdan (at) gmail.com`
 * Micro-blog: Twitter: https://twitter.com/thammegowda[@thammegowda] => Active and preferred
 * Code: Github: https://github.com/thammegowda/[@thammegowda]
+* Books : https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads]
 * Question-Answers: https://stackoverflow.com/users/1506477/[Stackoverflow] | https://www.quora.com/profile/Thamme-Gowda[Quora]
 ** Blog: https://thammegowda.wordpress.com/[thammegowda.wordpress.com] <= Warning: deeply philosophical
 ** Photos: Instagram: https://www.instagram.com/thammegowda/[@thammegowda] | https://www.instagram.com/mycamsaw/[@mycamsaw] <= Warning: personal
-
 
 
 ---
