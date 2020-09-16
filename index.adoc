@@ -7,48 +7,75 @@
 //:toc: left
 //injects google analytics to <head>
 :docinfo2:
+:icons: font
 :description: Thamme Gowda's home page at USC ISI
 :keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
 
-About Me:
-
 image:imgs/tg-202005.jpg[TG, 160, 160, float="left"]
-My name is Thamme Gowda. I am often known by shorthand name 'TG'.
+My name is Thamme Gowda. I am often known by my shorthand name 'TG'.
 I am working as a research programmer in the USC ISI Natural Language Processing Group
 while pursuing a Ph.D. in computer science at USC Viterbi School of Engineering.
-My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May].
+My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
 
 My current research is focused on neural machine translation (NMT),
 and broadly natural language processing (NLP) technologies.
 
+*Online Presence:* +
+icon:briefcase[2x] tg@isi.edu
+icon:twitter[2x]https://twitter.com/thammegowda[@thammegowda^]
+icon:github[2x] https://github.com/thammegowda[@thammegowda^] +
+icon:linkedin[2x] https://www.linkedin.com/in/thammegowda[in/thammegowda^]
+icon:instagram[2x] https://www.instagram.com/thammegowda/[@thammegowda^] https://www.instagram.com/mycamsaw[@mycamsaw^] +
+icon:quora[2x] https://www.quora.com/profile/Thamme-Gowda[Thamme-Gowda^]
+icon:wordpress[2x] https://thammegowda.wordpress.com/[thammegowda.wordpress.com^] +
+icon:book[2x] https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads^]
+//icon:user[2x] tgowdan@gmail.com
+//icon:music[2x] https://open.spotify.com/user/227xz6nuc47aikqc26nxw6n2a[Spotify^]
+
+
+[quote, "'self' reflection on my progress; 2020"]
+____
+While coding an artificial soul for machines +
+He wins his gifts, defeats his curses +
+And, discovers his own soul that thinks and feels!
+____
+
+
 == Education
 
-* https://www.usc.edu/[University of Southern California] |  https://viterbischool.usc.edu/[Viterbi School of Engineering] | Los Angeles, CA, USA
+* https://www.usc.edu/[University of Southern California^] |  https://viterbischool.usc.edu/[Viterbi School of Engineering^] | Los Angeles, CA, USA
 ** 2018/08 -- InProgress | Doctor of Philosophy in Computer Science
 ** 2015/08 -- 2017/05 | Master of Science in Computer Science
 
-* https://vtu.ac.in/[Visvesvaraya Technological University] | http://www.sjcit.ac.in/[SJC Institute of Technology] | Chikkaballapur, KA, India
+* https://vtu.ac.in/[Visvesvaraya Technological University^] | http://www.sjcit.ac.in/[SJC Institute of Technology^] | Chikkaballapur, KA, India
 * 2008/08 -- 2012/05 | Bachelor of Engineering in Computer Science and Engineering
 
 
 == Professional Career
 
-*  https://isi.edu/[USC Information Sciences Institute] | Marina del Rey, CA, USA
+*  https://isi.edu/[USC Information Sciences Institute^] | Marina del Rey, CA, USA
 ** 2018/04 --  Present | Research Programmer II
 ** 2017/06 -- 2018/03 | Research Programmer
+** Mentors: https://www.isi.edu/~jonmay/[Dr. Jonathan May^]
 
-*  https://www.jpl.nasa.gov[NASA Jet Propulsion Laboratory] | Pasadena, CA, USA
+
+*  https://www.jpl.nasa.gov[NASA Jet Propulsion Laboratory^] | Pasadena, CA, USA
 ** 2016/06 -- 2017/05 | Data Scientist (intern)
+** Mentors: https://scienceandtechnology.jpl.nasa.gov/dr-chris-mattmann[Dr. Chris Mattmann^],  https://www.linkedin.com/in/paulramirez/[Paul Ramirez], https://www.wkiri.com/[Dr. Kiri Wagstaff]
 
-* https://irds.usc.edu[USC Data Science Group] | Los Angeles, CA, USA
+
+* https://irds.usc.edu[USC Information Retrieval and Data Science Group^] | Los Angeles, CA, USA
 **  2015/12 -- 2016/05 | Research Assistant
+**  Mentors: http://irds.usc.edu/faculty/mattmann/[Dr. Chris Mattmann^]
 
-* https://datoin.com[Datoin] | Bengaluru, KA, India
+* https://datoin.com[Datoin^] | Bengaluru, KA, India
 ** 2014/01 -- * | Technical Co-Founder
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
 
-* https://www.linkedin.com/company/simplyphi-software-solutions-pvt-ltd[SimplyPhi Software Solutions] | Bengaluru, KA, India
+* https://www.linkedin.com/company/simplyphi-software-solutions-pvt-ltd[SimplyPhi Software Solutions^] | Bengaluru, KA, India
 ** 2014/01 -- 2015/07  | Senior Software Engineer
 ** 2012/06 -- 2014/01 | Software Engineer
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
 
 == Publications
 
@@ -62,11 +89,15 @@ My research career is just warming up. A few publications I have so far are cura
 == Software Engineering
 
 Solving problems using math and computers is my favourite job to do.
-I hope someday my work will make the world a better place directly or indirectly.
-Here is a list of projects to which I have written code.
+I hope my work help make this world a better place!
+I emphasize on good software engineering practices, and open sourcing of software with permissible license.
+In the beginning (2012-2015) I wrote a lot of code in Java/Groovy/Scala, but recent years (2015-Now), Python has become my go to choice, and I  have released a bunch of tools to https://pypi.org/user/Thamme.Gowda/[PyPi^].
+I also participate in https://stackoverflow.com/users/1506477/thamme-gowda[StackOverflow QA threads^].
+
+Here are some selected projects:
 
 [rtg]
-=== `rtg`: Reader Translator Generator
+=== RTG: Reader Translator Generator
 Neural Machine Translation Toolkit.
 
 - Code: https://github.com/isi-nlp/rtg-xt
@@ -74,21 +105,21 @@ Neural Machine Translation Toolkit.
 - Installer: https://pypi.org/project/rtg/
 
 [mtdata]
-=== `mtdata`: Machine Translation Data
+=== MTData: Machine Translation Data
 A tool that locates, downloads, and prepares parallel data for machine translation from many data sources.
 
 - Code : https://github.com/thammegowda/mtdata
 - Installer+Docs: https://pypi.org/project/mtdata/
 
 [nlcodec]
-=== `nlcodec`: Natural Language CoDec
+=== NLCodec: Natural Language CoDec
 A library to do coding-decoding such as Word, Character, and Byte-Pair-Encoding of natural language text.
 
 - Code: https://github.com/isi-nlp/nlcodec/
 - Installer+Docs: https://pypi.org/project/nlcodec/
 
 [awkg]
-=== `awkg`: Python `awk`
+=== awkg: Python `awk`
 `awk` like line-processing tool with python as scripting language.
 
 - Code: https://github.com/thammegowda/awkg
@@ -96,23 +127,23 @@ A library to do coding-decoding such as Word, Character, and Byte-Pair-Encoding 
 
 
 [virtchar]
-=== `virtchar`: Virtual Characters
+=== VirtChar: Virtual Characters
 
 Dialog systems that imitate characters from the popular TV show named F.R.I.E.N.D.S.
 
 - Code: https://github.com/thammegowda/virtchar
 - Dataset: https://github.com/thammegowda/dialog-data
-- https://drive.google.com/file/d/1wfC3xS6MvT2_rvUoJG1DWfyOT2s9Ww_U/view?usp=sharing[Report] and https://drive.google.com/file/d/1C5Vkb0VTj0WZDDWEemDJKJSaVNdMD7TT/view?usp=sharing[Presentation]
+- https://drive.google.com/file/d/1wfC3xS6MvT2_rvUoJG1DWfyOT2s9Ww_U/view?usp=sharing[Report^] and https://drive.google.com/file/d/1C5Vkb0VTj0WZDDWEemDJKJSaVNdMD7TT/view?usp=sharing[Presentation^]
 
 [junkdetect]
-=== `junkdetect`: Junk Detector
+=== JunkDetect: Junk Detector
 A tool to detect junk or not-junk text with support for 100 languages.
 
 - Code: https://github.com/thammegowda/junkdetect
 - Installer+Docs: https://pypi.org/project/junkdetect/
 
 [sparkler]
-=== `sparkler`: Spark Crawler
+=== Sparkler: Spark Crawler
 A large scale web crawler on Apache Spark, with Apache Solr backend for crawler database.
 
 - Code: https://github.com/uscdatascience/sparkler
@@ -125,7 +156,7 @@ HTML web page clustering tool based on DOM structure and CSS style similarity.
 
 - Code: https://github.com/USCDataScience/autoextractor
 - Docs: https://github.com/USCDataScience/autoextractor/wiki
-- Paper:  https://ieeexplore.ieee.org/abstract/document/7785739
+- Paper: https://ieeexplore.ieee.org/abstract/document/7785739
 
 [supervsing-ui]
 === Supervising UI
@@ -153,15 +184,5 @@ A simple web UI for labelling images to be used for image recognition.
 - Unsupervised NMT Summary: https://thammegowda.github.io/summary/nmt/03-unsup/01-unsupervised-nmt.html
 - Quantum Optimization Programming using D-WAVE 2X:  https://isi.edu/~tg/non-pubs/intro-quantum-optimization.pdf
 
-== Online Presence
-* Email: work: `tg (at) isi.edu` and personal: `tgowdan (at) gmail.com`
-* Micro-blog: Twitter: https://twitter.com/thammegowda[@thammegowda] => Active and preferred
-* Code: Github: https://github.com/thammegowda/[@thammegowda]
-* Books : https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads]
-* Question-Answers: https://stackoverflow.com/users/1506477/[Stackoverflow] | https://www.quora.com/profile/Thamme-Gowda[Quora]
-** Blog: https://thammegowda.wordpress.com/[thammegowda.wordpress.com] <= Warning: deeply philosophical
-** Photos: Instagram: https://www.instagram.com/thammegowda/[@thammegowda] | https://www.instagram.com/mycamsaw/[@mycamsaw] <= Warning: personal
-
-
 ---
-[small]#This page is generated using AsciiDoc; Get this page in link:index.adoc[AsciiDoc] or link:index.pdf[PDF] format#
+[small]#This page is generated using AsciiDoc; Get this page in link:index.adoc[AsciiDoc^] format#
