@@ -4,41 +4,53 @@
 :lang: en
 :toclevels: 3
 :data-uri:
-//:toc: left
+:toc: left
 //injects google analytics to <head>
 :docinfo2:
 :icons: font
 :description: Thamme Gowda's home page at USC ISI
 :keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
 
+== About me
 image:imgs/tg-202005.jpg[TG, 160, 160, float="left"]
 My name is Thamme Gowda. I am often known by my shorthand name 'TG'.
 I am working as a research programmer in the USC ISI Natural Language Processing Group
 while pursuing a Ph.D. in computer science at USC Viterbi School of Engineering.
 My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
 
+
 My current research is focused on neural machine translation (NMT),
-and broadly natural language processing (NLP) technologies.
+and broadly natural language processing (NLP) technologies. More concretely,
 
-*Online Presence:* +
-icon:briefcase[2x] tg@isi.edu
-icon:twitter[2x]https://twitter.com/thammegowda[@thammegowda^]
-icon:github[2x] https://github.com/thammegowda[@thammegowda^] +
-icon:linkedin[2x] https://www.linkedin.com/in/thammegowda[in/thammegowda^]
-icon:instagram[2x] https://www.instagram.com/thammegowda/[@thammegowda^] https://www.instagram.com/mycamsaw[@mycamsaw^] +
-icon:quora[2x] https://www.quora.com/profile/Thamme-Gowda[Thamme-Gowda^]
-icon:wordpress[2x] https://thammegowda.wordpress.com/[thammegowda.wordpress.com^] +
-icon:book[2x] https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads^]
-//icon:user[2x] tgowdan@gmail.com
-//icon:music[2x] https://open.spotify.com/user/227xz6nuc47aikqc26nxw6n2a[Spotify^]
+* Machine learning with focus on NLP applications
+* Natural language understanding and generation e.g. machine translation
+* Dealing with the curses of natural imbalances
+** e.g. consequences of Zipfian distribution on machine learning models and evaluations
 
+My research summarized in more abstract way: study of function approximators for temporal sequences, their weaknesses, and solutions to their weaknesses.
 
-[quote, "'self' reflection on my progress; 2020"]
+Or, with a touch of poetry and spirituality:
+[quote, "'self' reflection on my research; 2020"]
 ____
 While coding an artificial soul for machines +
 He wins his gifts, defeats his curses +
 And, discovers his own soul that thinks and feels!
 ____
+
+
+== Online Presence
+icon:briefcase[2x] tg@isi.edu
+icon:twitter[2x]https://twitter.com/thammegowda[@thammegowda^]
+icon:github[2x] https://github.com/thammegowda[@thammegowda^]
+icon:linkedin[2x] https://www.linkedin.com/in/thammegowda[in/thammegowda^]
+icon:instagram[2x] https://www.instagram.com/thammegowda/[@thammegowda^] icon:camera[2x] https://www.instagram.com/mycamsaw[@mycamsaw^]
+icon:quora[2x] https://www.quora.com/profile/Thamme-Gowda[Thamme-Gowda^]
+icon:wordpress[2x] https://thammegowda.wordpress.com/[thammegowda.wordpress.com^]
+icon:book[2x] https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads^]
+//icon:user[2x] tgowdan@gmail.com
+//icon:music[2x] https://open.spotify.com/user/227xz6nuc47aikqc26nxw6n2a[Spotify^]
+
+
 
 
 == Education
