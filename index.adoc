@@ -4,7 +4,7 @@
 :lang: en
 :toclevels: 3
 :data-uri:
-:toc: left
+//:toc: left
 //injects google analytics to <head>
 :docinfo2:
 :icons: font
@@ -37,7 +37,6 @@ He wins his gifts, defeats his curses +
 And, discovers his own soul that thinks and feels!
 ____
 
-
 == Online Presence
 icon:briefcase[2x] tg@isi.edu
 icon:twitter[2x]https://twitter.com/thammegowda[@thammegowda^]
@@ -49,8 +48,6 @@ icon:wordpress[2x] https://thammegowda.wordpress.com/[thammegowda.wordpress.com^
 icon:book[2x] https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads^]
 //icon:user[2x] tgowdan@gmail.com
 //icon:music[2x] https://open.spotify.com/user/227xz6nuc47aikqc26nxw6n2a[Spotify^]
-
-
 
 
 == Education
@@ -160,7 +157,7 @@ A large scale web crawler on Apache Spark, with Apache Solr backend for crawler 
 
 - Code: https://github.com/uscdatascience/sparkler
 - Docs: https://github.com/USCDataScience/sparkler/wiki/sparkler-0.1
-
+- Presentations/Demo: https://www.youtube.com/watch?v=1fTomN1UMWI[at Spark Summit 2017]; https://www.youtube.com/watch?v=Ib8OwmoRj-Q[Create a plugin for Sparkler]
 
 [autoextractor]
 === Auto Extractor
@@ -189,10 +186,10 @@ A simple web UI for labelling images to be used for image recognition.
 - Keyboard layout map of OSX for Kannada (my native language): https://github.com/thammegowda/kannada-osx-keylayout
 
 == Tutorials / Guides
+- Getting Stated with PyTorch: Video: https://www.youtube.com/watch?v=8u4QqvtbAIw and https://github.com/thammegowda/202010-pytorch/blob/main/pytorch-ISI-20201021.ipynb[Slides+Notebook]
 - Python Best Practices: PDF: https://isi.edu/~tg/notes/Python-Best-Practices-TG-2019.pdf
  **  https://docs.google.com/presentation/d/1qRq6VJH4FsOHQa9y4VunDLH14Z20cAQ3uCftTxlnIX0/edit[Google Slides]
 - Slurm 101: https://thammegowda.github.io/slurm101/
-- [line-through]#Machine Learning 101 (WIP): https://github.com/thammegowda/ML101#
 - Unsupervised NMT Summary: https://thammegowda.github.io/summary/nmt/03-unsup/01-unsupervised-nmt.html
 - Quantum Optimization Programming using D-WAVE 2X:  https://isi.edu/~tg/non-pubs/intro-quantum-optimization.pdf
 
