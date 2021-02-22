@@ -1,0 +1,6 @@
+output/
+bulrush-xt/
+pelican-plugins/
+pelican-themes
+pelican-bibtex
+/pelican-plugins/pelican-bibtex/
