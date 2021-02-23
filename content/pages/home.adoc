@@ -27,7 +27,7 @@
 </style>
 ++++
 // == About me
-+++<img src="/images/tg-202005.jpg" width="160" height="160" align="right" />+++
++++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
 My name is Thamme Gowda. I am often known by my shorthand name 'TG'.
 I am working as a research programmer in the USC ISI Natural Language Processing Group
 while pursuing a Ph.D. in computer science at USC Viterbi School of Engineering.

@@ -1,4 +1,4 @@
-= TG's Software Engineering
+= Software
 //:doctype: article
 :encoding: utf-8
 //:lang: en
@@ -11,8 +11,6 @@
 :date: 2020-09-19 10:20
 :description: Thamme Gowda's Software Engineering
 :keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
-:url:
-:save_as: softwares.html
 :template: page
 
 
