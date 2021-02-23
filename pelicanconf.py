@@ -3,8 +3,8 @@
 
 AUTHOR = 'Thamme Gowda'
 SITENAME = "Thamme Gowda"
-#SITEURL = 'https://isi.edu/~tg'
-SITEURL = ''
+SITEURL = 'https://isi.edu/~tg'
+#SITEURL = '/'
 
 PATH = 'content'
 THEME_TEMPLATES_OVERRIDES = ['templates/']  # overridden and new templates goes here
