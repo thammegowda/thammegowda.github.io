@@ -1,0 +1,9 @@
+
+== Setup
+
+    pip install bulrush
+    pip install pelican-webassets   # required for bulrush
+
+    cd pelican-plugins && git clone git@github.com:vene/pelican-bibtex.git
+    pip install pybtex              # required for pelican-bibtex
+

@@ -1,0 +1,197 @@
+= Thamme Gowda
+:doctype: article
+:encoding: utf-8
+:lang: en
+:toclevels: 3
+:data-uri:
+//:toc: left
+//injects google analytics to <head>
+:docinfo2:
+:icons: font
+:description: Thamme Gowda's home page at USC ISI
+:keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
+
+== About me
+image:imgs/tg-202005.jpg[TG, 160, 160, float="left"]
+My name is Thamme Gowda. I am often known by my shorthand name 'TG'.
+I am working as a research programmer in the USC ISI Natural Language Processing Group
+while pursuing a Ph.D. in computer science at USC Viterbi School of Engineering.
+My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
+
+
+My current research is focused on neural machine translation (NMT),
+and broadly natural language processing (NLP) technologies. More concretely,
+
+* Machine learning with focus on NLP applications
+* Natural language understanding and generation e.g. machine translation
+* Dealing with the curses of natural imbalances
+** e.g. consequences of Zipfian distribution on machine learning models and evaluations
+
+My research summarized in more abstract way: study of function approximators for temporal sequences, their weaknesses, and solutions to their weaknesses.
+
+Or, with a touch of poetry and spirituality:
+[quote, "'self' reflection on my research; 2020"]
+____
+While coding an artificial soul for machines +
+He wins his gifts, defeats his curses +
+And, discovers his own soul that thinks and feels!
+____
+
+== Online Presence
+icon:briefcase[2x] tg@isi.edu
+icon:twitter[2x]https://twitter.com/thammegowda[@thammegowda^]
+icon:github[2x] https://github.com/thammegowda[@thammegowda^]
+icon:linkedin[2x] https://www.linkedin.com/in/thammegowda[in/thammegowda^]
+icon:instagram[2x] https://www.instagram.com/thammegowda/[@thammegowda^] icon:camera[2x] https://www.instagram.com/mycamsaw[@mycamsaw^]
+icon:quora[2x] https://www.quora.com/profile/Thamme-Gowda[Thamme-Gowda^]
+icon:wordpress[2x] https://thammegowda.wordpress.com/[thammegowda.wordpress.com^]
+icon:book[2x] https://www.goodreads.com/user/show/31845074-thamme-gowda[GoodReads^]
+//icon:user[2x] tgowdan@gmail.com
+//icon:music[2x] https://open.spotify.com/user/227xz6nuc47aikqc26nxw6n2a[Spotify^]
+
+
+== Education
+
+* https://www.usc.edu/[University of Southern California^] |  https://viterbischool.usc.edu/[Viterbi School of Engineering^] | Los Angeles, CA, USA
+** 2018/08 -- InProgress | Doctor of Philosophy in Computer Science
+** 2015/08 -- 2017/05 | Master of Science in Computer Science
+
+* https://vtu.ac.in/[Visvesvaraya Technological University^] | http://www.sjcit.ac.in/[SJC Institute of Technology^] | Chikkaballapur, KA, India
+* 2008/08 -- 2012/05 | Bachelor of Engineering in Computer Science and Engineering
+
+
+== Professional Career
+
+*  https://isi.edu/[USC Information Sciences Institute^] | Marina del Rey, CA, USA
+** 2018/04 --  Present | Research Programmer II
+** 2017/06 -- 2018/03 | Research Programmer
+** Mentors: https://www.isi.edu/~jonmay/[Dr. Jonathan May^]
+
+
+*  https://www.jpl.nasa.gov[NASA Jet Propulsion Laboratory^] | Pasadena, CA, USA
+** 2016/06 -- 2017/05 | Data Scientist (intern)
+** Mentors: https://scienceandtechnology.jpl.nasa.gov/dr-chris-mattmann[Dr. Chris Mattmann^],  https://www.linkedin.com/in/paulramirez/[Paul Ramirez], https://www.wkiri.com/[Dr. Kiri Wagstaff]
+
+
+* https://irds.usc.edu[USC Information Retrieval and Data Science Group^] | Los Angeles, CA, USA
+**  2015/12 -- 2016/05 | Research Assistant
+**  Mentors: http://irds.usc.edu/faculty/mattmann/[Dr. Chris Mattmann^]
+
+* https://datoin.com[Datoin^] | Bengaluru, KA, India
+** 2014/01 -- * | Technical Co-Founder
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
+
+* https://www.linkedin.com/company/simplyphi-software-solutions-pvt-ltd[SimplyPhi Software Solutions^] | Bengaluru, KA, India
+** 2014/01 -- 2015/07  | Senior Software Engineer
+** 2012/06 -- 2014/01 | Software Engineer
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
+
+== Publications
+
+My research career is just warming up. A few publications I have so far are curated by these services along with BibTeX and PDFs links:
+
+- Google Scholar: https://scholar.google.com/citations?user=7Ed3-tMAAAAJ
+- DBLP: https://dblp.uni-trier.de/pers/hd/g/Gowda:Thamme
+- Semantic Scholar: https://www.semanticscholar.org/author/Thamme-Gowda/145845766
+
+
+== Software Engineering
+
+Solving problems using math and computers is my favourite job to do.
+I hope my work help make this world a better place!
+I emphasize on good software engineering practices, and open sourcing of software with permissible license.
+In the beginning (2012-2015) I wrote a lot of code in Java/Groovy/Scala, but recent years (2015-Now), Python has become my go to choice, and I  have released a bunch of tools to https://pypi.org/user/Thamme.Gowda/[PyPi^].
+I also participate in https://stackoverflow.com/users/1506477/thamme-gowda[StackOverflow QA threads^].
+
+Here are some selected projects:
+
+[rtg]
+=== RTG: Reader Translator Generator
+Neural Machine Translation Toolkit.
+
+- Code: https://github.com/isi-nlp/rtg-xt
+- Docs: https://isi-nlp.github.io/rtg/
+- Installer: https://pypi.org/project/rtg/
+
+[mtdata]
+=== MTData: Machine Translation Data
+A tool that locates, downloads, and prepares parallel data for machine translation from many data sources.
+
+- Code : https://github.com/thammegowda/mtdata
+- Installer+Docs: https://pypi.org/project/mtdata/
+
+[nlcodec]
+=== NLCodec: Natural Language CoDec
+A library to do coding-decoding such as Word, Character, and Byte-Pair-Encoding of natural language text.
+
+- Code: https://github.com/isi-nlp/nlcodec/
+- Installer+Docs: https://pypi.org/project/nlcodec/
+
+[awkg]
+=== awkg: Python `awk`
+`awk` like line-processing tool with python as scripting language.
+
+- Code: https://github.com/thammegowda/awkg
+- Installer+Docs: https://pypi.org/project/awkg/
+
+
+[virtchar]
+=== VirtChar: Virtual Characters
+
+Dialog systems that imitate characters from the popular TV show named F.R.I.E.N.D.S.
+
+- Code: https://github.com/thammegowda/virtchar
+- Dataset: https://github.com/thammegowda/dialog-data
+- https://drive.google.com/file/d/1wfC3xS6MvT2_rvUoJG1DWfyOT2s9Ww_U/view?usp=sharing[Report^] and https://drive.google.com/file/d/1C5Vkb0VTj0WZDDWEemDJKJSaVNdMD7TT/view?usp=sharing[Presentation^]
+
+[junkdetect]
+=== JunkDetect: Junk Detector
+A tool to detect junk or not-junk text with support for 100 languages.
+
+- Code: https://github.com/thammegowda/junkdetect
+- Installer+Docs: https://pypi.org/project/junkdetect/
+
+[sparkler]
+=== Sparkler: Spark Crawler
+A large scale web crawler on Apache Spark, with Apache Solr backend for crawler database.
+
+- Code: https://github.com/uscdatascience/sparkler
+- Docs: https://github.com/USCDataScience/sparkler/wiki/sparkler-0.1
+- Presentations/Demo: https://www.youtube.com/watch?v=1fTomN1UMWI[at Spark Summit 2017]; https://www.youtube.com/watch?v=Ib8OwmoRj-Q[Create a plugin for Sparkler]
+
+[autoextractor]
+=== Auto Extractor
+HTML web page clustering tool based on DOM structure and CSS style similarity.
+
+- Code: https://github.com/USCDataScience/autoextractor
+- Docs: https://github.com/USCDataScience/autoextractor/wiki
+- Paper: https://ieeexplore.ieee.org/abstract/document/7785739
+
+[supervsing-ui]
+=== Supervising UI
+
+A simple web UI for labelling images to be used for image recognition.
+
+- Code: https://github.com/USCDataScience/supervising-ui
+
+[more-code]
+=== More Tools
+- CoreNLP + Apache Tika : https://github.com/thammegowda/tika-ner-corenlp
+** Contributed to Apache Tika: https://cwiki.apache.org/confluence/display/TIKA/TikaAndNER
+- Keras models deployment on JVM using Deeplearning4J : https://github.com/USCDataScience/dl4j-kerasimport-examples
+** Contributed to the Apache Tika: https://github.com/apache/tika/pull/125
+- Tensorflow model deployment on JVM sing GRPC: https://github.com/thammegowda/tensorflow-grpc-java
+- Image Recognition at large scale using Apache Spark: https://github.com/thammegowda/tika-dl4j-spark-imgrec
+- Document Similarity using Apache Spark and Solr: https://github.com/thammegowda/solr-similarity
+- Keyboard layout map of OSX for Kannada (my native language): https://github.com/thammegowda/kannada-osx-keylayout
+
+== Tutorials / Guides
+- Getting Stated with PyTorch: Video: https://www.youtube.com/watch?v=8u4QqvtbAIw and https://github.com/thammegowda/202010-pytorch/blob/main/pytorch-ISI-20201021.ipynb[Slides+Notebook]
+- Python Best Practices: PDF: https://isi.edu/~tg/notes/Python-Best-Practices-TG-2019.pdf
+ **  https://docs.google.com/presentation/d/1qRq6VJH4FsOHQa9y4VunDLH14Z20cAQ3uCftTxlnIX0/edit[Google Slides]
+- Slurm 101: https://thammegowda.github.io/slurm101/
+- Unsupervised NMT Summary: https://thammegowda.github.io/summary/nmt/03-unsup/01-unsupervised-nmt.html
+- Quantum Optimization Programming using D-WAVE 2X:  https://isi.edu/~tg/non-pubs/intro-quantum-optimization.pdf
+
+---
+[small]#This page is generated using AsciiDoc; Get this page in link:index.adoc[AsciiDoc^] format#

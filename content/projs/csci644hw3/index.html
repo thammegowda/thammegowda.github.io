@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>USC CSCI 644 Fall 2018 HW 3 by Thamme Gowda -- A Navigation Bot</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <style type="text/css">
+    .fixed-bottom-left {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      z-index: 100
+    }
+
+    .overlay {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.65);
+      z-index: 2;
+      cursor: pointer;
+      font-size: 48px;
+      text-align: center;
+      color: white;
+      padding-top: 15%;
+    }
+
+    .chat {
+      padding: 10px;
+      margin: 10px;
+      font-size: 18px;
+    }
+
+    .bot {
+      background-color: #D3D3D3;
+      color: black;
+      text-align: left;
+    }
+
+    .user {
+      background-color: #007AFF;
+      color: white;
+      text-align: right;
+    }
+  </style>
+  <script type="text/javascript">
+    function upgrade() {
+      start_button.style.visibility = 'hidden';
+      alert("A new version of Chrome is needed for speech features. This was tested on Chorme version 69.0.3497.100 ");
+    }
+    if (!('webkitSpeechRecognition' in window)) {
+      upgrade();
+    }
+
+    function showInfo(s) {
+      if (s) {
+        for (var child = info.firstChild; child; child = child.nextSibling) {
+          if (child.style) {
+            child.style.display = child.id == s ? 'inline' : 'none';
+          }
+        }
+        info.style.visibility = 'visible';
+      } else {
+        info.style.visibility = 'hidden';
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container" style="margin-bottom:64px;">
+    <h1>Navigator</h1> </br>
+    <div class="row container">
+      <p>Make sure to turn up your volume to hear the conversation. You can also use your keyboard to type the text</p>
+      <div id="info" style="padding:20px">
+        <p class="alert alert-primary" id="info_start">
+          Click on the microphone icon in the bottom left and begin speaking.
+
+        </p>
+        <p class="alert alert-success" id="info_speak_now" style="display:none">
+          Speak now.
+        </p>
+        <p class="alert alert-danger" id="info_no_speech" style="display:none">
+          No speech was detected. You may need to adjust your <a href=
+          "//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">microphone
+          settings</a>.
+        </p>
+        <p class="alert alert-danger" id="info_no_microphone" style="display:none">
+          No microphone was found. Ensure that a microphone is installed and that
+          <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
+          microphone settings</a> are configured correctly.
+        </p>
+        <p class="alert alert-warning" id="info_allow" style="display:none">
+          Click the "Allow" button above to enable your microphone.
+        </p>
+        <p class="alert alert-danger" id="info_denied" style="display:none">
+          Permission to use microphone was denied.
+        </p>
+        <p class="alert alert-danger" id="info_blocked" style="display:none">
+          Permission to use microphone is blocked. To change, go to
+          chrome://settings/contentExceptions#media-stream
+        </p>
+        <p class="alert alert-info" id="info_upgrade" style="display:none">
+          Web Speech API is not supported by this browser. Upgrade to <a href=
+          "//www.google.com/chrome">Chrome</a> version 25 or later.
+        </p>
+      </div>
+    </div>
+
+    <div class="row container-fluid" style="margin-left:10px; margin-right:10px;">
+      <div class="col-lg-6" style="border-right:solid 1px; overflow-y: scroll">
+        <h2> Dialog Interface</h2>
+	<div><p>Tested on Google Chrome web-browser</p></div>
+        <div id="display">
+          <!--This div emulates screen ouput-->
+        </div>
+      </div>
+      <div class="col">
+        <h2> Web Form Interface </h1>
+          <span class="text-muted">You dont want to use this. The goal is to replace this interface with dialog interface</span>
+          <form id="mapform" action="https://www.google.com/maps/dir/" method="GET"
+            message="Hello, I am here to help you find directions. I need to ask you a couple of questions.">
+          <input type="hidden" name="api" value="1"/>
+
+          <div class="form-group">
+            <label for="origin">What is your Source address ?</label>
+            <input type="text" class="form-control" id="origin" name="origin"  placeholder="Source address" required>
+          </div>
+
+          <div class="form-group">
+            <label for="destination">What is your Destination Address?</label>
+            <input type="text" class="form-control" id="destination" name="destination" placeholder="Destination Address" required>
+          </div>
+
+          <div class="form-group">
+            <label for="waypoints">Would you like to add a way point?</label>
+            <input type="text" class="form-control" id="waypoints" name="waypoints" placeholder="Way point">
+          </div>
+
+          <div class="form-group">
+            <label for="travelmode">How do you like to travel?</label>
+            <select class="form-control" id="travelmode" name="travelmode">
+              <option value="driving"/>Driving</option>
+              <option value="walking"/>Walking</option>
+              <option value="bicycling"/>Bicycling</option>
+              <option value="transit"/>Transit</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Get Directions</button>
+      </form>
+    </div>
+  </div>
+</div class="container"> <!-- class="container" -->
+  <div class="row col-lg-12 fixed-bottom-left">
+    <div id="div_start" class="col-lg-1">
+      <button id="start_button" onclick="asr.toggleState(event)">
+        <img style="height:42px" alt="Start" id="start_img" src="//www.google.com/intl/en/chrome/assets/common/images/content/mic.gif">
+      </button>
+    </div>
+
+    <!--This input emulates keyboard input-->
+    <div class="col-lg-10">
+      <span class="text-muted" ></span>
+      <input id="keyboard" class="display-4 form-control" type="text" placeholder="Type here..." style="height:100%">
+    </div>
+
+    <div class="align-middle overlay" id="interim_span">Interim Speech Output</div>
+  </div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.1/annyang.min.js"></script>
+    <script src="https://unpkg.com/compromise@latest/builds/compromise.min.js"></script>
+    <script>
+
+        /*** ***/
+        function displayMessage(msg, type){
+          let msgEl = $('<div/>', {
+            class: type + ' chat',
+            text: msg
+          });
+          msgEl.appendTo($('#display'));
+          //scroll
+          $([document.documentElement, document.body]).animate({scrollTop: msgEl.offset().top}, 1000);
+          //$('#display').scrollTo(msgEl);
+        }
+
+        function speakMessage(text, callback=null){
+          // US english female voice
+          let synth = window.speechSynthesis
+          var msg = new SpeechSynthesisUtterance();
+          msg.voice = synth.getVoices().find(function(el){return el.name == 'Fiona'});
+          msg.text = text;
+          msg.voiceURI = 'native';
+          msg.volume = 1; // 0 to 1
+          msg.rate = 1; // 0.1 to 10
+          msg.pitch = 1; //0 to 2
+          msg.lang = 'en-US';
+
+          window.utterances = window.utterances || [];
+          // pause ASR when speaking
+          if (asr.recognizing) {
+            // a bug: on end is not gauranteed to be called, maybe due to garbage collector
+            // https://stackoverflow.com/a/35935851/1506477
+            utterances.push(msg)
+            asr.mute()
+            msg.onend = function(e) {
+              utterances.shift();
+              if (utterances.length == 0) {
+                // unmute ; done speaking
+                asr.unmute()
+              }
+              if (callback) {
+                callback();
+              }
+            };
+          } else if (callback) {
+            // just the call back
+            utterances.push(msg)
+            msg.onend = function(e) {
+              utterances.shift();
+              callback();
+            }
+          }
+          synth.speak(msg);
+        }
+
+        function machineToUser({text, callback=null, type='bot'}){
+          // if display needed
+          displayMessage(text, type=type);
+          //if speech needed
+          speakMessage(text, callback);
+        }
+
+        function userToMachine(text, source){
+          verb = source == 'typed' ? 'typed' : 'said';
+          relayMsg = 'You ' + verb + ' : ' + text
+          machineToUser({text:relayMsg, type:source + " user"})
+          dm.onUserResponse(text)
+        }
+
+        /*** Register Keyboard for typed input***/
+        $('#keyboard').keypress(function (event) {
+           if (event.which != 13) {return;} // the enter key code
+           text = event.target.value.trim()
+           if (!text){return;} // empty string
+           event.target.value = ""  // erase the input from buffer
+           userToMachine(text, source='typed')
+        });
+
+        /*** Dialog manager *****/
+        class DialogMan {
+          constructor(form) {
+            this.form = form;
+            this.inputs = $(form).find(':input').filter(
+              (idx, el) => ! new Set(['hidden', 'submit']).has(el.type.toLowerCase()));
+            this.inputsFilled = new Array(this.inputs.length).fill(false);
+            this.questions = []
+            for (var i=0; i < this.inputs.length; i++){
+              let name = this.inputs[i].name;
+              let label = $(this.form).find('label[for=' + name + ']')[0];
+              this.questions.push(label.innerText);
+            }
+            this.submitBtn = $(form).find(':submit')[0];
+            // greeting message to user
+            machineToUser({text:form.getAttribute('message'), type:"bot"});
+            this.lastIdx = null;
+            this.lastResponse = null;
+            this.pending = []  // pending user confirmation
+          }
+
+          isSelectBox(){
+            return this.lastIdx != null && this.inputs[this.lastIdx].tagName.toLowerCase() == 'select';
+          }
+          getSelectOptions(){
+            return  $(this.inputs[this.lastIdx]).find('OPTION').map((i,el) => el.text).get();
+          }
+
+          getSelectBoxMapping(){
+            return new Map($(this.inputs[this.lastIdx]).find('OPTION')
+            .map((i,el) => [[el.text, el.value]]).get())
+          }
+
+          isOptionalSlot(){
+            return this.lastIdx != null && !this.inputs[this.lastIdx].required;
+          }
+
+          run() {
+            // find the next empty item
+            for (var i = 0; i < this.inputs.length; i++) {
+              if (!this.inputsFilled[i]) { // if this is not yet filled
+                this.lastIdx = i;
+                console.log('Next question: ' + this.questions[i]);
+                machineToUser({text: this.questions[i], type: "bot question"});
+                if (this.isSelectBox()) {
+                  let help = "Your options are : " + this.getSelectOptions().join(", ")
+                  machineToUser({text: help, type: "bot"})
+                }
+                return; // exit loop -- one question at a time
+              }
+            }
+            // if all questions/slots are filled --> trigger click
+            console.log("All questions are answered")
+            asr.mute();
+            machineToUser({text: "Thanks. I got all the info. Showing directions now.",
+                          callback: function(){ dm.submitBtn.click() }
+                        });
+          }
+
+          isEasterEgg(msg) {
+            return msg.toLowerCase().includes('fight on');
+          }
+
+          onEasterEgg(msg) {
+            if (msg.toLowerCase().includes('fight on')){
+              machineToUser({text: "Fight on for ol’ SC! I also pulled the fight on song for you!"});
+              // more fun! lets add a song to make this easter egg more interesting
+              $('<iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/23439684&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>').appendTo('#display')
+            } else {
+              throw 'Dont know how to handle ' + msg ;
+            }
+          }
+
+          validateResponse(msg) {
+
+            let msgLc = msg.toLowerCase();
+            if (this.isSelectBox()) {
+              // then message must match the options
+              let mappings = this.getSelectBoxMapping()
+              for (const entry of mappings.entries()) {
+                if (msgLc.includes(entry[0].toLowerCase())){
+                  return [true, entry[1], null]
+                }
+              }
+              // no option matched
+              let help = "Sorry! I could not understand " + msg
+              + ". Your options are: " + this.getSelectOptions().join(", ")
+              return [false, msg, help];
+            }
+
+            // optional input
+            if (this.isOptionalSlot()){
+              let words = new Set(msgLc.split(" "));
+              if (words.has("no") || words.has("nope") || words.has("nah")) {
+                machineToUser({text: "Got it. Skipping it."})
+                this.inputsFilled[this.lastIdx] = true
+                dm.run() // ask next question
+                return [false, msg, null]
+              } else if (words.has("yes") || words.has("yeah") || words.has("yep")){
+                return [false, msg, "Okay, What do you like to add ?"]
+              }
+            }
+            return [true, msg, null]
+          }
+
+          onUserResponse(msg){
+            if (this.isEasterEgg(msg)) {
+              this.onEasterEgg(msg)
+            } else {
+              let [statusOK, msg2, hintMsg] = this.validateResponse(msg);
+              msg = msg2;
+              if (hintMsg) { machineToUser({text: hintMsg }); }
+              if (!statusOK) { return;} // dont advance
+              // TODO: validation
+              console.assert(this.lastIdx != null, 'The last question is null');
+              this.inputs[this.lastIdx].value = msg;
+              this.inputsFilled[this.lastIdx] = true;
+            }
+            this.run();
+          }
+        }
+
+        /*** Speech recognition */
+        class ChromeASR extends webkitSpeechRecognition {
+          constructor(micImg){
+            super();
+            this.micImg = micImg;
+            this.continuous = true;
+            this.interimResults = true; // could be true as well
+            this.recognizing = false;
+            this.lang = 'EN-US';
+            console.log("Chrome ASR Created")
+          }
+
+          toggleState(event) {
+            // button is toggle start->stop stop->start
+            if (this.recognizing) {
+              this.mute();
+            } else {
+              this.unmute();
+              showInfo('info_allow');
+              this.start_timestamp = event.timeStamp;
+            }
+          }
+
+          mute(){
+            if (!this.recognizing){
+              console.log("Already muted..")
+              return;
+            }
+            console.log("Stopping the ASR")
+            this.stop();
+            return;
+          }
+
+          unmute(){
+            if (this.recognizing) {
+              console.log("Already listenining..")
+              return
+            }
+            console.log("Starting the ASR")
+            this.start();
+            // start with 'allow permission stage'
+            this.micImg.src = '//www.google.com/intl/en/chrome/assets/common/images/content/mic-slash.gif';
+          }
+        }
+
+        asr = new ChromeASR(document.getElementById('start_img'));
+        asr.onstart = function() {
+          asr.recognizing = true;
+          showInfo('info_speak_now');
+          asr.micImg.src = '//www.google.com/intl/en/chrome/assets/common/images/content/mic-animate.gif';
+        };
+
+        asr.onresult = function(event) {
+          var final_transcript = '';
+          var interim_transcript = '';
+          if (typeof(event.results) == 'undefined') {
+            this.onend = null;
+            this.stop();
+            upgrade();
+            return;
+          }
+          for (var i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              final_transcript += event.results[i][0].transcript;
+            } else {
+              interim_transcript += event.results[i][0].transcript;
+            }
+          }
+          let interim = document.getElementById('interim_span')
+          interim.innerHTML = interim_transcript;
+          interim.style.display = interim_transcript ? 'block' : 'none';
+          if (final_transcript && !interim_transcript) {
+            // final --> take action
+            console.log('Final:' + final_transcript)
+            userToMachine(final_transcript, 'asr')
+          }
+        }
+
+        asr.onend = () => {
+          console.log("Recognition Ended");
+          asr.recognizing = false;
+          asr.micImg.src = "//www.google.com/intl/en/chrome/assets/common/images/content/mic.gif"
+        }
+
+        asr.onerror = function(event){
+          asr.micImg.src = '//www.google.com/intl//en/chrome/assets/common/images/content/mic.gif';
+          console.log('Error:' + event.error)
+          if (event.error == 'no-speech') {
+            showInfo('info_no_speech');
+          } else if (event.error == 'audio-capture') {
+            showInfo('info_no_microphone');
+          }
+          if (event.error == 'not-allowed') {
+            console.log(event.error)
+            if (event.timeStamp - asr.start_timestamp < 100) {
+              showInfo('info_blocked');
+            } else {
+              showInfo('info_denied');
+            }
+          }
+        }
+
+        //Initialize the dialog manager
+        dm = new DialogMan($('#mapform')[0])
+        // run the dialog manager
+        dm.run()
+
+    </script>
+
+    <!-- Google Analytics-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109985365-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-109985365-1');
+    </script>
+
+  </body>
+  </html>
