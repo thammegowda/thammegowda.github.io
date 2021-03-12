@@ -77,18 +77,10 @@
 <div class="ulist">
 <ul>
 <li>
-<p>While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy.</p>
+<p>While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy. Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results. These models, however, require potentially expensive re-training for new domains and languages. Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases.</p>
 </li>
 <li>
-<p>Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results.
-These models, however, require potentially expensive re-training for new domains and languages.
-Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases.</p>
-</li>
-<li>
-<p>We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that MacroF1 is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance.</p>
-</li>
-<li>
-<p>Further, we show that MacroF1 can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.</p>
+<p>We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that MacroF1 is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. Further, we show that MacroF1 can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.</p>
 </li>
 </ul>
 </div>
@@ -131,10 +123,10 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p><a href="2020-optimal-vocab-nmt.adoc">In the previous work</a>, we framed NMT as a multi-class classifier. In this work we evaluate MT (or NLG in general) as if it is a multi-class classifier.</p>
+<p><a href="https://isi.edu/~tg/posts/2020/11/2020-optimal-vocab-nmt/">In the previous work</a>, we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier.</p>
 </li>
 <li>
-<p>The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. There are two common ways to computer averages, namely: Micro- and Macro- average. In many benchmark tasks used by academia, classes are often balanced. On balanced test sets, micro and macro are essentially equivalent. However, if the test set classes are imbalanced, micro and macro averages make a huge difference depending on the degree of imbalance.</p>
+<p>The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.</p>
 </li>
 <li>
 <p>In NLP/linguistic terms, micro average assigns equal weight to each token (or instance), whereas macro-average assigns equal weight to each type (or class).</p>
@@ -148,16 +140,16 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="content">
 <img src="https://isi.edu/~tg/images/brown-corpus-zipf.png" alt="brown corpus zipf">
 </div>
-<div class="title">Figure 1. Type frequencies as seen on Brown Coprus.</div>
+<div class="title">Figure 1. Type frequencies as seen on Brown Coprus show an exteme imbalance. A few types dominate the corpus where as a vast number of types are infrequent</div>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Do we really need one more MT evaluation metric? What is so wrong with the current metrics that needs to be addressed?</p>
+<p>Do we really need one more MT evaluation metric? What is wrong with the current metrics that needs to be addressed?</p>
 <div class="ulist">
 <ul>
 <li>
-<p>BLEU, ChrF, and such model-free metrics that are in use today are micro-averaged metrics&#8201;&#8212;&#8201;they treat each token equally. As a result, they provide higher rewards for learning stopword types like <em>if</em>, <em>and</em>, and <em>but</em>, and significantly less reward for learning to generate content words like <em>xylophone</em>, <em>peripatetic</em>, and <em>defenestrate</em>. In other words, any minor improvements we do to our models in properly translating content words better than baseline models when measured in terms micro-averaged metrics, we see that the delta is so tiny, we tend to believe that the improvement are not significant, and we risk in discarding good ideas because the micro-averaged metrics made us believe that the improvement is not significant.</p>
+<p>BLEU[1], ChrF[2], and such model-free metrics that are in use today are micro-averaged metrics&#8201;&#8212;&#8201;they treat each token equally. As a result, they provide higher rewards for learning stopword types like <em>if</em>, <em>and</em>, and <em>but</em>, and significantly less reward for learning to generate content words like <em>xylophone</em>, <em>peripatetic</em>, and <em>defenestrate</em>. In other words, any minor improvements we do to our models in properly translating content words better than baseline models when measured in terms micro-averaged metrics, we see that the delta is so tiny, we tend to believe that the improvement are not significant, and we risk in discarding good ideas because the micro-averaged metrics made us believe that the improvement is not significant.</p>
 </li>
 </ul>
 </div>
@@ -182,7 +174,7 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p>In the recent years, a lot of model-based evaluation metrics have been proposed. But these high performance models are opaque, expensive, and biased in several undesirable ways. For example, we looked into BLEURT, one of the best model-based metrics at the time of writing, and sure enough it showed preferences on certain names in an undesirable ways. In addition, the scores are not really interpretable in any reliable and known way.</p>
+<p>In the recent years, a lot of model-based evaluation metrics have been proposed. But these high performance models are opaque, expensive, and biased in several undesirable ways. For example, we looked into BLEURT[3], one of the best model-based metrics at the time of writing, and sure enough it showed preferences on certain names in an undesirable ways. In addition, the scores are not really interpretable in any reliable and known way.</p>
 </li>
 </ul>
 </div>
@@ -259,7 +251,7 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p>On <strong>WebNLG dataset</strong> which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.</p>
+<p>On <strong>WebNLG dataset</strong>[4] which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.</p>
 </li>
 </ul>
 </div>
@@ -275,7 +267,7 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p><strong>WMT Metrics</strong>  datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the past years. The latest models produce fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.</p>
+<p><strong>WMT Metrics</strong>[5]  datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the past years. The latest models produce fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.</p>
 </li>
 </ul>
 </div>
@@ -288,7 +280,7 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p>We also tested MT metrics on <strong>downstream task of cross-lingual information retrieval (CLIR)</strong>. We used CLSSTS 2020 datasets for Lithuanian-English, Pashto-English, and Bulgarian-English. This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.</p>
+<p>We also tested MT metrics on <strong>downstream task of cross-lingual information retrieval (CLIR)</strong>. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English. This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.</p>
 </li>
 </ul>
 </div>
@@ -301,12 +293,31 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="ulist">
 <ul>
 <li>
-<p>Next, we put MacroF1 analyse differences between unsupervised (UNMT) and supervised NMT (SNMT. In the recent years, UNMT has really progressed much. On many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. We know BLEU is micro-average and could be misleading especially when all systems are fluent. So we took a bunch of UNMT and SNMT models that score comparable BLEU scores and looked at their MacroF1 scores, and found that even though UNMT models get a comparable BLEU scores they are really lagging behind SNMT by huge margin in terms of MacroF1. Furthermore, MacroF1 score can be broken down into individual type F1 scores and look at how the performance varies across all the types in vocabulary. Our analysis revealed that UNMT models are relatively better (i.e. better F1 score) than SNMT for translating high frequency types which results in fluent types, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT.</p>
+<p>Next, we put MacroF1 analyse differences between unsupervised (UNMT) and supervised NMT (SNMT. In the recent years, UNMT has really progressed much. On many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. We know BLEU is micro-average and could be misleading especially when all systems are fluent. So we took a bunch of UNMT and SNMT models that score comparable BLEU scores and looked at their MacroF1 scores, and found that even though UNMT models get a comparable BLEU scores they are really lagging behind SNMT by huge margin in terms of MacroF1.<br></p>
 </li>
 </ul>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="https://isi.edu/~tg/images/2021-macroavg-snmt-unmt-diff.png" alt="2021 macroavg snmt unmt diff">
+</div>
+<div class="title">Figure 7. Even though SNMT and UNMT achieve comparable BLEU scores, they differ significantly in terms of MacroF1.</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Furthermore, MacroF1 score can be broken down into individual type F1 scores and look at how the performance varies across all the types in vocabulary. Our analysis revealed that UNMT models are relatively better (i.e. better F1 score) than SNMT for translating high frequency types which results in fluent types, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT.<br></p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="https://isi.edu/~tg/images/2021-macroavg-snmt-unmt-enfr.png" alt="2021 macroavg snmt unmt enfr">
+</div>
+<div class="title">Figure 8. SNMT vs UNMT MacroF1 on the most frequent 500 types on EN-FR test set. UNMT outperforms SNMT on frequent types, howver, SNMT is generally better than UNMT on rare types. This trend is similar on the other languages we tested: FR-EN, EN-DE, DE-EN, EN-RO, and RO-EN.</div>
+</div>
 <div class="paragraph">
-<p>Refer to our paper for more and detailed information. Send any questions to <code>tg(at)isi.edu</code>.</p>
+<p>To learn more about this work, please refer to our paper. Send any questions to <code>tg(at)isi.edu</code>.</p>
 </div>
 </div>
 </div>
@@ -339,6 +350,33 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="sectionbody">
 <div class="paragraph">
 <p>Thanks to Shantanu Agarwal, Joel Barry, and Scott Miller for their help with CLSSTS CLIR experiments, and Daniel Cohen for the valuable discussions on IR evaluation metrics.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references">References</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. 2002. Bleu: a Method for Automatic Evaluation of Machine Translation. In Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics. AssociationforComputationalLinguistics,Philadelphia,Pennsylvania,USA,311–318. <a href="https://doi.org/10.3115/1073083.1073135" class="bare">https://doi.org/10.3115/1073083.1073135</a></p>
+</li>
+<li>
+<p>Maja Popović. 2015. ChrF: Character n-gram F-score for automatic MT evaluation. In Proceedings of the Tenth Workshop on Statistical Machine Translation. Association for Computational Linguistics, Lisbon, Portugal, 392–395. <a href="https://doi.org/10.18653/v1/W15-3049" class="bare">https://doi.org/10.18653/v1/W15-3049</a></p>
+</li>
+<li>
+<p>Thibault Sellam, Dipanjan Das, and Ankur Parikh. 2020. BLEURT: Learning Robust Metrics for Text Generation. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics. Association for Computational Linguistics,Online,7881–7892. <a href="https://www.aclweb.org/anthology/2020.acl-main.704" class="bare">https://www.aclweb.org/anthology/2020.acl-main.704</a> <a href="https://github.com/google-research/bleurt" class="bare">https://github.com/google-research/bleurt</a></p>
+</li>
+<li>
+<p>Claire Gardent, Anastasia Shimorina, Shashi Narayan, and Laura Perez-Beltrachini. 2017. Creating Training Corpora for NLG Micro-Planners. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume1:LongPapers).AssociationforComputationalLinguistics,179–188. <a href="https://doi.org/10.18653/v1/P17-1017" class="bare">https://doi.org/10.18653/v1/P17-1017</a> <a href="https://gitlab.com/webnlg/webnlg-human-evaluation" class="bare">https://gitlab.com/webnlg/webnlg-human-evaluation</a></p>
+</li>
+<li>
+<p>Qingsong Ma, Johnny Wei, Ondřej Bojar, and Yvette Graham. 2019. Results of the WMT19 Metrics Shared Task: Segment-Level and Strong MT Systems Pose Big Challenges. In Proceedings of the Fourth Conference on Machine Translation (Volume 2: Shared Task Papers, Day 1). Association for Computational Linguistics, Florence, Italy, 62–90. <a href="http://www.aclweb.org/anthology/W19-5302" class="bare">http://www.aclweb.org/anthology/W19-5302</a>  <a href="http://www.statmt.org/wmt19/metrics-task.html" class="bare">http://www.statmt.org/wmt19/metrics-task.html</a></p>
+</li>
+<li>
+<p>Ilya Zavorin, Aric Bills, Cassian Corey, Michelle Morrison, Audrey Tong, and Richard Tong. 2020. Corpora for Cross- Language Information Retrieval in Six Less-Resourced Languages. In Proceedings of the workshop on Cross-Language Search and Summarization of Text and Speech (CLSSTS2020). European Language Resources Association, Marseille, France, 7–13. <a href="https://www.aclweb.org/anthology/2020.clssts-1.2" class="bare">https://www.aclweb.org/anthology/2020.clssts-1.2</a> <a href="http://users.umiacs.umd.edu/~oard/clssts/" class="bare">http://users.umiacs.umd.edu/~oard/clssts/</a></p>
+</li>
+</ol>
 </div>
 </div>
 </div>
