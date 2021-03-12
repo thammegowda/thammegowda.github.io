@@ -73,24 +73,26 @@ image::{static}/images/brown-corpus-infocontent.png[title="Rare types contain mo
  ** On *WebNLG dataset*[4] which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.
 
 image::{static}/images/2021-macroavg-webnlg.png[title="On WebNLG dataset, MacroF1 is found to be a poor indicator of Fluency and Grammar, but a strong indicator of Semantics."]
- ** *WMT Metrics*[5]  datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the past years. The latest models produce fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.
+
+ ** *WMT Metrics*[5]  datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the recent years. The latest models can produce very fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.
 
 image::{static}/images/2021-macroavg-WMT-metrics.png[title="On WMT Metrics task, MacroF1 wins in the recent year."]
 
- ** We also tested MT metrics on *downstream task of cross-lingual information retrieval (CLIR)*. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English. This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.
+ ** We also tested MT metrics on *downstream task of cross-lingual information retrieval (CLIR)*. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English and mesaured the IR performance using mean average precision (mAP). This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.
 
 image::{static}/images/2021-macroavg-CLIR.png[title="On a CLSSTS 2020 CLIR task, MacroF1 showed strongest correlations with IR task performance across three languages."]
 
-** Next, we put MacroF1 analyse differences between unsupervised (UNMT) and supervised NMT (SNMT. In the recent years, UNMT has really progressed much. On many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. We know BLEU is micro-average and could be misleading especially when all systems are fluent. So we took a bunch of UNMT and SNMT models that score comparable BLEU scores and looked at their MacroF1 scores, and found that even though UNMT models get a comparable BLEU scores they are really lagging behind SNMT by huge margin in terms of MacroF1. +
+  ** Next, we used MacroF1 to analyse the differences between unsupervised (UNMT) and supervised NMT (SNMT). In the recent years, UNMT has shown very promising results. In many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. So we took a bunch of UNMT and SNMT models that have comparable BLEU scores and looked at their MacroF1 scores. Even though UNMT models have a comparable BLEU scores they are lagging behind SNMT by considerable margin in terms of MacroF1. +
 
 image::{static}/images/2021-macroavg-snmt-unmt-diff.png[title="Even though SNMT and UNMT achieve comparable BLEU scores, they differ significantly in terms of MacroF1."]
 
-** Furthermore, MacroF1 score can be broken down into individual type F1 scores and look at how the performance varies across all the types in vocabulary. Our analysis revealed that UNMT models are relatively better (i.e. better F1 score) than SNMT for translating high frequency types which results in fluent types, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT. +
+  ** Furthermore, MacroF1 score can be broken down into individual type/class F1 scores. We looked at how the performance varies across all the types in vocabulary. On high frequency types, UNMT models are relatively better (i.e. better F1 score) than SNMT, which results in fluent outputs, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT. +
 
 image::{static}/images/2021-macroavg-snmt-unmt-enfr.png[title="SNMT vs UNMT MacroF1 on the most frequent 500 types on EN-FR test set. UNMT outperforms SNMT on frequent types, howver, SNMT is generally better than UNMT on rare types. This trend is similar on the other languages we tested: FR-EN, EN-DE, DE-EN, EN-RO, and RO-EN."]
 
 
-To learn more about this work, please refer to our paper. Send any questions to `tg(at)isi.edu`.
+
+__To learn more about this work, please refer to our paper. Send any questions to `tg(at)isi.edu`.__
 
 
 ==  Citation
