@@ -10,18 +10,15 @@
 :icons: font
 :lang: en
 :summary: Macro-Average: Rare Types Are Important Too
-:description: While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy. \
-Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results. \
-These models, however, require potentially expensive re-training for new domains and languages. \
-Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases. \
-We explore the simple type-based classifier metric, \maf1, and study its applicability to MT evaluation. \
+:description: We explore the simple type-based classifier metric, \maf1, and study its applicability to MT evaluation. \
 We find that MacroF1 is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. \
 Further, we show that MacroF1 can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.
 
 == Abstract
 
-* While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy. Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results. These models, however, require potentially expensive re-training for new domains and languages. Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases.
-* We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that $$MacroF1$$ is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. Further, we show that $$MacroF1$$ can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.
+While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy. Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results. These models, however, require potentially expensive re-training for new domains and languages. Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases.
+
+We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that $$MacroF1$$ is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. Further, we show that $$MacroF1$$ can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.
 
 == Links
 
@@ -35,22 +32,20 @@ Further, we show that MacroF1 can be used to effectively compare supervised and 
    Usage of MicroF1: `cat hypothesis.detok.txt | sacrebleu -m microf <reference>` +
 
 == Summary
-* link:{filename}2020-optimal-vocab-nmt.adoc[In the previous work], we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier.
-* The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.
-* In NLP/linguistic terms, micro average assigns equal weight to each token (or instance), whereas macro-average assigns equal weight to each type (or class).
-* Since the types in natural language datasets resemble Zipfian distribution, an extremely imbalanced distribution, reporting micro-averaged performance would be misleading, especially because minority classes (i.e rare types) are equally or more important than majority classes (aka stop words).
+link:{filename}2020-optimal-vocab-nmt.adoc[In the previous work], we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier. The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.
+
+In NLP/linguistic terms, micro average assigns equal weight to each token (or instance), whereas macro-average assigns equal weight to each type (or class). Since the types in natural language datasets resemble Zipfian distribution, an extremely imbalanced distribution, reporting micro-averaged performance would be misleading, especially because minority classes (i.e rare types) are equally or more important than majority classes (aka stop words).
 
 image::{static}/images/brown-corpus-zipf.png[title="Type frequencies as seen on Brown Coprus show an exteme imbalance. A few types dominate the corpus where as a vast number of types are infrequent"]
 
-* Do we really need one more MT evaluation metric? What is wrong with the current metrics that needs to be addressed?
-  ** BLEU[1], ChrF[2], and such model-free metrics that are in use today are micro-averaged metrics -- they treat each token equally. As a result, they provide higher rewards for learning stopword types like __if__, __and__, and __but__, and significantly less reward for learning to generate content words like _xylophone_, _peripatetic_, and _defenestrate_. In other words, any minor improvements we do to our models in properly translating content words better than baseline models when measured in terms micro-averaged metrics, we see that the delta is so tiny, we tend to believe that the improvement are not significant, and we risk in discarding good ideas because the micro-averaged metrics made us believe that the improvement is not significant.
+_Do we really need one more MT evaluation metric? What is wrong with the current metrics that needs to be addressed?_ BLEU[1], ChrF[2], and such model-free metrics that are in use today are micro-averaged metrics -- they treat each token equally. As a result, they provide higher rewards for learning stopword types like __if__, __and__, and __but__, and significantly less reward for learning to generate content words like _xylophone_, _peripatetic_, and _defenestrate_. In other words, when we measure using micro-averaged metrics the improvements in translating content words better than baselines, we see the delta compared to baseline is so tiny; we tend to believe that the improvements are not significant. And we risk in discarding good ideas because the micro-averaged metrics marginalize rare types.
 
 image::{static}/images/2021-macroavg-vs-others.png[title="The ‘the’ type appears 3019 times in DE-EN NewsTest19 test corpus, and zero-recall of ‘the’ results in a losses up to 18.83% BLEU, 9.38% ChrF1, 6.45% MicroF1, and 0.03% MacroF1."]
 But in reality, these low frequency content types carry a lot of information (isnt it why they called content words?). Information theory also agrees with this statement
 
 image::{static}/images/brown-corpus-infocontent.png[title="Rare types contain more information content than frequent types."]
 
-  ** In the recent years, a lot of model-based evaluation metrics have been proposed. But these high performance models are opaque, expensive, and biased in several undesirable ways. For example, we looked into BLEURT[3], one of the best model-based metrics at the time of writing, and sure enough it showed preferences on certain names in an undesirable ways. In addition, the scores are not really interpretable in any reliable and known way.
+On the other hand, a lot of model-based evaluation metrics have been proposed lately. These high performance models are opaque, expensive, and biased in several undesirable ways. For example, we looked into BLEURT[3], one of the best model-based metrics at the time of writing, and it showed preferences on certain names in an undesirable ways. In addition, the scores are not really interpretable.
 
 [cols="2,1,12", frame="none", grid="none", title="Scores are from BLEURT base model, and demonstrate the undesirable biases of model-based metrics. Model-free metrics such as BLEU and MacroF1 would consider each hypothesis as equally wrong."]
 |===
@@ -69,27 +64,27 @@ image::{static}/images/brown-corpus-infocontent.png[title="Rare types contain mo
 | | Canada  | -0.31
 |===
 
-* Will a simple metric like MacroF1 be competitive for MT evaluation? We have been very skeptical too. So we've tested it thoroughly on several tasks, which are as follows:
- ** On *WebNLG dataset*[4] which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.
+*Will a simple metric like MacroF1 be competitive for MT evaluation?* We have been very skeptical too. So we've tested it thoroughly on several tasks, which are as follows:
+
+On *WebNLG dataset*[4] which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.
 
 image::{static}/images/2021-macroavg-webnlg.png[title="On WebNLG dataset, MacroF1 is found to be a poor indicator of Fluency and Grammar, but a strong indicator of Semantics."]
 
- ** *WMT Metrics*[5]  datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the recent years. The latest models can produce very fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.
+*WMT Metrics*[5] datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the recent years. The latest models can produce very fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.
 
 image::{static}/images/2021-macroavg-WMT-metrics.png[title="On WMT Metrics task, MacroF1 wins in the recent year."]
 
- ** We also tested MT metrics on *downstream task of cross-lingual information retrieval (CLIR)*. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English and mesaured the IR performance using mean average precision (mAP). This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.
+We also tested MT metrics on *downstream task of cross-lingual information retrieval (CLIR)*. This task focused more adequacy and less on fluency. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English and mesaured the IR performance using mean average precision (mAP). This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.
 
 image::{static}/images/2021-macroavg-CLIR.png[title="On a CLSSTS 2020 CLIR task, MacroF1 showed strongest correlations with IR task performance across three languages."]
 
-  ** Next, we used MacroF1 to analyse the differences between unsupervised (UNMT) and supervised NMT (SNMT). In the recent years, UNMT has shown very promising results. In many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. So we took a bunch of UNMT and SNMT models that have comparable BLEU scores and looked at their MacroF1 scores. Even though UNMT models have a comparable BLEU scores they are lagging behind SNMT by considerable margin in terms of MacroF1. +
+Next, we used MacroF1 to analyse the differences between unsupervised (UNMT) and supervised NMT (SNMT). In the recent years, UNMT has shown very promising results. In many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. So we took a bunch of UNMT and SNMT models that have comparable BLEU scores and looked at their MacroF1 scores. Even though UNMT models have a comparable BLEU scores they are lagging behind SNMT by considerable margin in terms of MacroF1.
 
 image::{static}/images/2021-macroavg-snmt-unmt-diff.png[title="Even though SNMT and UNMT achieve comparable BLEU scores, they differ significantly in terms of MacroF1."]
 
-  ** Furthermore, MacroF1 score can be broken down into individual type/class F1 scores. We looked at how the performance varies across all the types in vocabulary. On high frequency types, UNMT models are relatively better (i.e. better F1 score) than SNMT, which results in fluent outputs, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT. +
+As an added bonus, MacroF1 score can be broken down into individual type/class F1 scores. We looked at how the performance varies across all the types in vocabulary. On high frequency types, UNMT models are relatively better (i.e. better F1 score) than SNMT, which results in fluent outputs, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT.
 
 image::{static}/images/2021-macroavg-snmt-unmt-enfr.png[title="SNMT vs UNMT MacroF1 on the most frequent 500 types on EN-FR test set. UNMT outperforms SNMT on frequent types, howver, SNMT is generally better than UNMT on rare types. This trend is similar on the other languages we tested: FR-EN, EN-DE, DE-EN, EN-RO, and RO-EN."]
-
 
 
 __To learn more about this work, please refer to our paper. Send any questions to `tg(at)isi.edu`.__
@@ -107,12 +102,10 @@ __To learn more about this work, please refer to our paper. Send any questions t
     Lignose, Constantine and
     May, Jonathan ",
     booktitle = "",
-    month = June,
+    month = jun,
     year = "2021",
     address = "Online",
-
 }
-
 ----
 
 == Acknowledgements
