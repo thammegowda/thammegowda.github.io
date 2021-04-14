@@ -23,13 +23,18 @@ We explore the simple type-based classifier metric, MacroF1, and study its appli
 == Links
 
 * DOI (To Appear at NAACL 2021)
-* PDF (To Appear at NAACL 2021)
+* Paper: https://arxiv.org/abs/2104.05700  https://arxiv.org/pdf/2104.05700.pdf[icon:download[2x,role=red]^]
 * Code
    ** Analysis: https://github.com/thammegowda/007-mt-eval-macro
-   ** MacroF1 code is in a separate repo: https://github.com/isi-nlp/sacrebleu +
-   (a pull request will be sent to the original sacrebleu repo.) +
-   Usage of MacroF1: `cat hypothesis.detok.txt | sacrebleu -m macrof <reference>` +
-   Usage of MicroF1: `cat hypothesis.detok.txt | sacrebleu -m microf <reference>` +
+   ** MacroF1 code is in a fork of sacrebleu https://github.com/isi-nlp/sacrebleu +
+   ** https://github.com/mjpost/sacrebleu/pull/153[Pull request is submitted to sacrebleu] +
+   Usage of MacroF1 and MicroF1: +
++
+[source,bash]
+----
+sacrebleu $REF.txt -m macrof < $HYP.detok
+sacrebleu $REF.txt -m microf < $HYP.detok
+----
 
 == Summary
 link:{filename}2020-optimal-vocab-nmt.adoc[In the previous work], we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier. The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.
@@ -91,21 +96,34 @@ __To learn more about this work, please refer to our paper. Send any questions t
 
 
 ==  Citation
-(To Appear at NAACL-HLT 2021)
+
 
 [bibtex]
 ----
+% Arxiv preprint
+@misc{gowda2021macroaverage,
+      title={Macro-Average: Rare Types Are Important Too},
+      author={Thamme Gowda and Weiqiu You and Constantine Lignos and Jonathan May},
+      year={2021},
+      eprint={2104.05700},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+% To Appear at NAACL-HLT 2021:
 @inproceedings{gowda-etal-2021-macro-average,
     title = "Macro-Average: Rare Types Are Important Too",
     author = "Gowda, Thamme and
     You, Weiqiu and
     Lignose, Constantine and
     May, Jonathan ",
-    booktitle = "",
+    booktitle = "The Association for Computational Linguistics: NAACL-HLT 2021",
+    publisher = "Association for Computational Linguistics",
     month = jun,
     year = "2021",
     address = "Online",
 }
+
 ----
 
 == Acknowledgements

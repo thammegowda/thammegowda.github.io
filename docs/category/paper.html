@@ -91,7 +91,7 @@
 <p>DOI (To Appear at NAACL 2021)</p>
 </li>
 <li>
-<p>PDF (To Appear at NAACL 2021)</p>
+<p>Paper: <a href="https://arxiv.org/abs/2104.05700" class="bare">https://arxiv.org/abs/2104.05700</a>  <a href="https://arxiv.org/pdf/2104.05700.pdf" target="_blank" rel="noopener"><span class="icon red"><i class="fa fa-download fa-2x"></i></span></a></p>
 </li>
 <li>
 <p>Code</p>
@@ -101,10 +101,17 @@
 <p>Analysis: <a href="https://github.com/thammegowda/007-mt-eval-macro" class="bare">https://github.com/thammegowda/007-mt-eval-macro</a></p>
 </li>
 <li>
-<p>MacroF1 code is in a separate repo: <a href="https://github.com/isi-nlp/sacrebleu" class="bare">https://github.com/isi-nlp/sacrebleu</a><br>
-(a pull request will be sent to the original sacrebleu repo.)<br>
-Usage of MacroF1: <code>cat hypothesis.detok.txt | sacrebleu -m macrof &lt;reference&gt;</code><br>
-Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;reference&gt;</code><br></p>
+<p>MacroF1 code is in a fork of sacrebleu <a href="https://github.com/isi-nlp/sacrebleu" class="bare">https://github.com/isi-nlp/sacrebleu</a><br></p>
+</li>
+<li>
+<p><a href="https://github.com/mjpost/sacrebleu/pull/153">Pull request is submitted to sacrebleu</a><br>
+Usage of MacroF1 and MicroF1:<br></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sacrebleu $REF.txt -m macrof &lt; $HYP.detok
+sacrebleu $REF.txt -m microf &lt; $HYP.detok</code></pre>
+</div>
+</div>
 </li>
 </ul>
 </div>
@@ -271,18 +278,27 @@ Usage of MicroF1: <code>cat hypothesis.detok.txt | sacrebleu -m microf &lt;refer
 <div class="sect1">
 <h2 id="_citation">Citation</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>(To Appear at NAACL-HLT 2021)</p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre>@inproceedings{gowda-etal-2021-macro-average,
+<pre>% Arxiv preprint
+@misc{gowda2021macroaverage,
+      title={Macro-Average: Rare Types Are Important Too},
+      author={Thamme Gowda and Weiqiu You and Constantine Lignos and Jonathan May},
+      year={2021},
+      eprint={2104.05700},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+% To Appear at NAACL-HLT 2021:
+@inproceedings{gowda-etal-2021-macro-average,
     title = "Macro-Average: Rare Types Are Important Too",
     author = "Gowda, Thamme and
     You, Weiqiu and
     Lignose, Constantine and
     May, Jonathan ",
-    booktitle = "",
+    booktitle = "The Association for Computational Linguistics: NAACL-HLT 2021",
+    publisher = "Association for Computational Linguistics",
     month = jun,
     year = "2021",
     address = "Online",
