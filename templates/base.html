@@ -61,14 +61,12 @@
 
 <div class="container">
   <div class="section columns">
-    <article>
-      <div class="column is-three-quarters-desktop is-two-thirds-tablet">
+    <article class="column is-four-fifths-desktop is-three-quarter-tablet has-text-justified">
         {% block content %}
         {% endblock %}
-      </div>
     </article>
 
-    <div class="column is-one-quarter-desktop is-one-third-tablet is-hidden-print">
+    <div class="column is-one-fifth-desktop is-one-quarter-tablet is-hidden-print">
       <aside class="menu">
         {% if MAILCHIMP %}
           {%  include 'mailchimp.html' %}
@@ -93,7 +91,7 @@
             {% for name, link in LINKS %}
               <li><a href="{{ link }}" target="_blank">
                 <span class="icon is-small"><i class="fa fa-globe fa-fw"></i></span>
-                <span class="link-text">{{ name }}</span>
+                <span class="link-text is-size-7">{{ name }}</span>
               </a></li>
             {% endfor %}
           </ul>
@@ -110,12 +108,12 @@
   </div>
 </div>
 
-<footer class="footer">
+<footer class="footer" style="padding: 1rem 1rem 1rem;">
   <div class="container has-text-centered">
     {% if SITESUBTITLE %} <p class="subtitle">{{ SITESUBTITLE }}</p>{% endif %}
     <!--<div class="credits">-->
-      <span><a href="https://github.com/textbook/bulrush">Bulrush</a> theme for
-        <a href="https://blog.getpelican.com/">Pelican</a>. Made with <a href="https://bulma.io">Bulma</a></span>
+      <span class="is-size-7">©2021 Thamme Gowda. This site is made with <a href="https://blog.getpelican.com/">Pelican</a>
+        / <a href="https://github.com/textbook/bulrush">Bulrush </a> / <a href="https://bulma.io">Bulma</a>.</span>
     <!--</div>-->
   </div>
   <!--{% include 'github.html' %}-->

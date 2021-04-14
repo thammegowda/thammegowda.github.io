@@ -24,40 +24,28 @@
 .section {
  padding: 0;
 }
+
 </style>
 ++++
 // == About me
 +++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
-My name is Thamme Gowda. I am often known by my shorthand name 'TG'.
-I am working as a research programmer in the USC ISI Natural Language Processing Group
-while pursuing a Ph.D. in computer science at USC Viterbi School of Engineering.
-My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
+My name is https://isi.edu/~tg/[Thamme Gowda], aka 'TG'.
+I am pursuing a Ph.D. in computer science at USC Viterbi School of Engineering. My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
 
-My current research is focused on neural machine translation (NMT),
-and broadly natural language processing (NLP) technologies. More concretely,
+My current research interests:
 
-* Machine learning with focus on NLP applications
 * Natural language understanding and generation e.g. machine translation
+* Machine learning with a focus on NLP applications.
 * Dealing with the curses of natural imbalances
-** e.g. consequences of Zipfian distribution on machine learning models and evaluations
+** e.g. consequences of Zipfian distribution on machine learning models and their evaluations.
 
-// Summary of in more abstract way: study of function approximators for temporal sequences, their weaknesses, and solutions to their weaknesses.
+[#news]
+==== News:
+* link:posts/2021/03/macroavg-rare-types-important/['Macro-Average: Rare Types Are Important Too'^] paper has been accepted by NAACL-HLT 2021.
+* link:http://rtg.isi.edu/many-eng[500 languages to English translation demo is now live^]
+* I passed Ph.D. Qualifier Exam!
 
-I came to grad school for learning artificial intelligence but ended up learning a bit about myself/consciousness instead:
-[quote, "'Self'-reflection; 2020"]
-____
-While coding an artificial soul for machines +
-He wins his gifts, defeats his curses +
-And, discovers his own soul that thinks and feels!
-____
-
-[quote, "The Great Sayings of the Upanishads; BCE"]
-____
-Consciousness is divine [Prajnanam Brahma] +
-This self/spirit/Atma is divine [Ayam Atma Brahma] +
-You're that [Tat Vam Asi] +
-I'm it [Aham Brahmasmi]
-____
+'''
 
 == Education
 
@@ -95,3 +83,23 @@ ____
 ** 2012/06 -- 2014/01 | Software Engineer
 ** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
 
+== More ?
+
+I speak Kannada, Telugu, and Hindi ( +English, of course!). I was raised by a family of farmers in a southern Indian village. So beside the "professional" experience that I have displayed in this site, I also have much more experience in agriculture that you will not hear: fruits, flowers, silkworms, dairy, sheep, poultry ...!
+
+I came to this grad school for learning artificial intelligence, but instead ended up learning a bit about myself/consciousness:
+
+[quote, "'Self'-reflection; 2020"]
+____
+While coding an artificial soul for machines +
+He wins his gifts, defeats his curses +
+And discovers his own soul that thinks and feels!
+____
+
+[quote, "The Great Sayings of the Upanishads; BCE"]
+____
+Consciousness is divine [Prajnanam Brahman] +
+This self/spirit/Atma is divine [Ayam Atma Brahman] +
+You're that [Tat Vam Asi] +
+I'm it [Aham Brahmasmi]
+____

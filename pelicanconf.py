@@ -45,22 +45,17 @@ MENUITEMS = (
 # Blogroll
 LINKS = (('USC', 'https://usc.edu/'),
          ('USC ISI', 'https://isi.edu/'),
-         ('USC Viterbi School', 'https://viterbischool.usc.edu/'),
+         ('USC Viterbi', 'https://viterbischool.usc.edu/'),
          ('USC CS Dept', 'https://cs.usc.edu/'),
-         ('USC ISI NLP Group', 'https://www.isi.edu/research_groups/nlg/home')
+         ('USC ISI-NLP', 'https://www.isi.edu/research_groups/nlg/home')
          )
-# LINKS = (('Pelican', 'https://getpelican.com/'),
-#         ('Python.org', 'https://www.python.org/'),
-#         ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
-#         ('You can modify those links in your config file', '#'),)
-
 # Social widget
 SOCIAL = (
     ('tg@isi.edu', 'mailto:'),
     ('Twitter', 'https://twitter.com/thammegowda'),
     ('Github', 'https://github.com/thammegowda'),
     ('LinkedIn', 'https://www.linkedin.com/in/thammegowda/'),
-    ('Stack Overflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
+    ('StackOverflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
     ('Quora', 'https://www.quora.com/profile/Thamme-Gowda'),
     ('Instagram', 'https://instagram.com/thammegowda/'),
     ('GoodReads', 'https://www.goodreads.com/user/show/31845074-thamme-gowda'),

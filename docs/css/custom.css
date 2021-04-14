@@ -991,11 +991,12 @@ table.tableblock.fit-content > caption.title {
   width: 0
 }
 
-.paragraph.lead > p, #preamble > .sectionbody > [class="paragraph"]:first-of-type p {
+/*.paragraph.lead > p, #preamble > .sectionbody > [class="paragraph"]:first-of-type p {
   font-size: 1.21875em;
   line-height: 1.6;
   color: rgba(0, 0, 0, .85)
 }
+*/
 
 table.tableblock #preamble > .sectionbody > [class="paragraph"]:first-of-type p {
   font-size: inherit
