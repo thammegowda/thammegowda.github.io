@@ -1,7 +1,7 @@
 = Many-to-English Machine Translation Tools, Data, and Pretrained Models
 :author: Thamme Gowda <tg@isi.edu>
 //; Jonathan May <jonmay@isi.edu>
-:date: 2021-05-05 10:20
+:date: 2021-04-25 10:20
 // :modified: 2020-12-04 18:40
 :tags: NMT
 :category: Paper
