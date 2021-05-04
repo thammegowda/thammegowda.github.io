@@ -1,0 +1,47 @@
+= Sequence Transduction: Generalization and Challenges
+:author: Thamme Gowda <tg@isi.edu>
+//; Jonathan May <jonmay@isi.edu>
+:date: 2021-05-04 10:20
+// :modified: 2020-12-04 18:40
+:tags: NMT
+:category: Note
+:template: article
+:slug: nmt-generalization-n-challenges
+:icons: font
+:lang: en
+:summary:
+:description: Sequence to sequence transduction is a general problem, for which many other problems are special cases. I also highlight some challenges of this general problem.
+
+//== Abstract
+
+// == Links
+
+//== Summary
+Sequence-to-sequence transduction, e.g. neural machine translation (NMT), is a general problem.
+This task involves transformation of a sequence of symbols to another sequence of symbols, where both input and output can have varying lengths.
+
+== Challenges
+* Sequential information: Order of input and output symbols are important.
+* Variable length sequences with long term dependencies: Sequences can be extremely long. Symbols may contains dependencies across the sequence. E.g. Consider the text in a book, and dependencies across chapters.
+* Unbounded vocabulary, e.g. Vocabulary in natural languages.
+* Imbalanced distribution: Some symbols may appear frequently while other may appear rarely. E.g. The distribution of types in natural languages.
+
+
+==  Generalization
+
+Machine learning can be viewed as approximation of a functions that map input to output.
+We can categorize the problems into following types based on how many vectors are in input and output domains.
+
+A. One -> One: Image classification
+B. Many -> One: Text classification, Video classification
+C. N -> N: Sequence tagging such as: POS tagging, named entity recognition
+D. One -> Many: Image Captioning
+E. Many -> Many: Machine translation, Text summarization, Video Captioning
+
+A, B, C, and D are special cases of E. this implies,
+
+1. Forward view: While setting up a curriculum for training/educating students, we shall follow the increasing order of problem complexity: A -> B -> C -> D  and at last E.
+2. Backward view: The skills acquired in solving E can be easily adapted to solve other problem types with slight modification, often constraining the number of vectors on either input, output, or both.
+
+
+// == Acknowledgements

@@ -3,7 +3,7 @@
 <head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width">
-  <title>Thamme Gowda - Archive</title>
+  <title>Thamme Gowda - Note</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Tangerine">-->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -50,25 +50,99 @@
 <div class="container">
   <div class="section columns">
     <article class="column is-four-fifths-desktop is-three-quarter-tablet has-text-justified">
-  <p class="subtitle">
-    <span class="icon is-small"><i class="fa fa-calendar"></i></span>
-    Archives for 2021
-  </p>
+      <aside id="featured" class="body">
+        <article>
+          <h1 class="title">
+            <a href="https://isi.edu/~tg/posts/2021/05/nmt-generalization-n-challenges/">Sequence Transduction: Generalization and Challenges</a>
+          </h1>
+<footer class="post-info">
+  <abbr class="published" title="2021-05-04T10:20:00-07:00">
+    Published <span class="is-info">04 May 2021</span>
+    in <a href="https://isi.edu/~tg/category/note.html">Note</a>
+  </abbr>
 
-  <div class="menu">
-      <p class="menu-label">04 May 2021</p>
-      <ul class="menu-list">
-        <li><a href="https://isi.edu/~tg/posts/2021/05/nmt-generalization-n-challenges/">Sequence Transduction: Generalization and Challenges</a></li>
-      </ul>
-      <p class="menu-label">25 April 2021</p>
-      <ul class="menu-list">
-        <li><a href="https://isi.edu/~tg/posts/2021/04/mtdata-nlcodec-rtg-many-english/">Many-to-English Machine Translation Tools, Data, and Pretrained Models</a></li>
-      </ul>
-      <p class="menu-label">11 March 2021</p>
-      <ul class="menu-list">
-        <li><a href="https://isi.edu/~tg/posts/2021/03/macroavg-rare-types-important/">Macro-Average: Rare Types Are Important Too</a></li>
-      </ul>
-  </div>
+    <p class="author">
+      <em>by           <a class="url fn" href="https://isi.edu/~tg/author/thamme-gowda.html">Thamme Gowda <tg@isi.edu></a>
+</em>
+      <span class="tag is-small is-rounded">
+        <a href="https://isi.edu/~tg/tag/nmt.html">NMT</a>
+      </span>
+    </p>
+  
+</footer>          <div class="section">
+              <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Sequence-to-sequence transduction, e.g. neural machine translation (NMT), is a general problem.
+This task involves transformation of a sequence of symbols to another sequence of symbols, where both input and output can have varying lengths.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_challenges">Challenges</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Sequential information: Order of input and output symbols are important.</p>
+</li>
+<li>
+<p>Variable length sequences with long term dependencies: Sequences can be extremely long. Symbols may contains dependencies across the sequence. E.g. Consider the text in a book, and dependencies across chapters.</p>
+</li>
+<li>
+<p>Unbounded vocabulary, e.g. Vocabulary in natural languages.</p>
+</li>
+<li>
+<p>Imbalanced distribution: Some symbols may appear frequently while other may appear rarely. E.g. The distribution of types in natural languages.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_generalization">Generalization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Machine learning can be viewed as approximation of a functions that map input to output.
+We can categorize the problems into following types based on how many vectors are in input and output domains.</p>
+</div>
+<div class="olist upperalpha">
+<ol class="upperalpha">
+<li>
+<p>One &#8594; One: Image classification</p>
+</li>
+<li>
+<p>Many &#8594; One: Text classification, Video classification</p>
+</li>
+<li>
+<p>N &#8594; N: Sequence tagging such as: POS tagging, named entity recognition</p>
+</li>
+<li>
+<p>One &#8594; Many: Image Captioning</p>
+</li>
+<li>
+<p>Many &#8594; Many: Machine translation, Text summarization, Video Captioning</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>A, B, C, and D are special cases of E. this implies,</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Forward view: While setting up a curriculum for training/educating students, we shall follow the increasing order of problem complexity: A &#8594; B &#8594; C &#8594; D  and at last E.</p>
+</li>
+<li>
+<p>Backward view: The skills acquired in solving E can be easily adapted to solve other problem types with slight modification, often constraining the number of vectors on either input, output, or both.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+          </div>
+        </article>
+      </aside>
     </article>
 
     <div class="column is-one-fifth-desktop is-one-quarter-tablet is-hidden-print">
