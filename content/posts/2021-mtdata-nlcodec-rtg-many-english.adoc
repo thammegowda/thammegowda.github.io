@@ -1,0 +1,163 @@
+= Many-to-English Machine Translation Tools, Data, and Pretrained Models
+:author: Thamme Gowda <tg@isi.edu>
+//; Jonathan May <jonmay@isi.edu>
+:date: 2021-05-05 10:20
+// :modified: 2020-12-04 18:40
+:tags: NMT
+:category: Paper
+:template: article
+:slug: mtdata-nlcodec-rtg-many-english
+:icons: font
+:lang: en
+:summary: Many-to-English Machine Translation Tools, Data, and Pretrained Models
+:description: We present useful tools for machine translation research: MTData, NLCodec, and RTG. We demonstrate their usefulness by creating a multilingual neural machine translation model capable of translating from 500 source languages to English. We make this multilingual model readily downloadable and usable as a service, or as a parent model for transfer-learning to even lower-resource languages.
+
+__Collaborators: Zhao Zhang, Chris A Mattmann, and Jonathan May__
+
+== Abstract
+
+We present useful tools for machine translation research: MTData, NLCodec, and RTG.
+We demonstrate their usefulness by creating a multilingual neural machine translation model capable of translating from 500 source languages to English.
+We make this multilingual model readily downloadable and usable as a service, or as a parent model for transfer-learning to even lower-resource languages.
+
+== Links
+
+// * DOI
+* Paper: https://arxiv.org/abs/2104.00290  https://arxiv.org/pdf/2104.00290[icon:download[2x,role=red]^]
+* [big red yellow-background]*Demo: link:http://rtg.isi.edu/many-eng/v1/[👉🏼Many-to-English translation👈🏼🔥^]*
+// * link:http://rtg.isi.edu/many-eng/models/[Download trained models^]
+
+video::NSY0-MvO1KE[youtube,640,400]
+
+
+== Summary
+
+We announce three tools for machine translation:
+
+MTData:: A tool to download machine translation datasets
+  https://github.com/thammegowda/mtdata/ +
+   `pip install mtdata`
+NLCodec:: https://isi-nlp.github.io/nlcodec/ +
+   `pip install nlcodec`
+RTG:: https://isi-nlp.github.io/rtg/ +
+    `pip install rtg`
+
+TIP: Scripts, tables, and charts: https://github.com/thammegowda/006-many-to-eng
+
+
+Using these tools we first, collected a massive dataset.
+
+Download Data::
+. From http://rtg.isi.edu/many-eng/data-v1.html.
+. Also available from OPUS https://opus.nlpl.eu/MT560.php
+
+
+And then we trained massively multilingual models for many-to-English translation.
+
+Download Models:: http://rtg.isi.edu/many-eng/models/
+
+TIP: Recommended: http://rtg.isi.edu/many-eng/models/rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz[rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz]
+
+We provide a docker image with pretrained model which can be readily usable as a translation service:
+[source, bash]
+----
+# pick the latest image from https://hub.docker.com/repository/docker/tgowda/rtg-model
+IMAGE=tgowda/rtg-model:500toEng-v1
+
+# To run without using GPU; requires about 5 to 6GB CPU RAM
+docker run --rm -i -p 6060:6060 $IMAGE
+
+# Recommended: use GPU (e.g. device=0)
+docker run --gpus '"device=0"' --rm -i -p 6060:6060 $IMAGE
+----
+
+
+If you prefer to not use docker, then
+
+**Step 1:** Setup a `conda` environment and install `rtg` library. +
+
+TIP: If `conda` is missing in your system, link:https://docs.conda.io/en/latest/miniconda.html[please install miniconda^] to get started.
+
+[source, bash]
+----
+conda create -n rtg python=3.7
+conda activate rtg
+pip install rtg==0.5.0  # install rtg and its dependencies
+conda install -c conda-forge uwsgi  # needed to deploy service
+----
+
+.Download a model and run
+
+[source, bash]
+----
+# Pick the latest version
+MODEL=rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz
+wget http://rtg.isi.edu/many-eng/models/$MODEL
+
+tar xvf $MODEL    # Extract and run
+uwsgi --http 127.0.0.1:6060 --module rtg.serve.app:app --pyargv "/path/to/extracted/dir"
+# Alternatively, without uWSGI (not recommended)
+# rtg-serve /path/to/extracted/dir
+# See "rtg-serve -h" to learn optional arguments for --pyargv "<here>" of uWSGI
+----
+
+.Interaction with REST API
+* Web Interface: a simple web interface is made at http://localhost:6060.
+* REST API is available at http://localhost:6060/translate. +
+An example interaction with REST API:
+[source, bash]
+----
+API=http://localhost:6060/translate
+curl $API --data "source=Comment allez-vous?" \
+   --data "source=Bonne journée"
+
+# API also accepts input as JSON data
+curl -X POST -H "Content-Type: application/json" $API\
+  --data '{"source":["Comment allez-vous?", "Bonne journée"]}'
+----
+NOTE: To learn more about RTG service and how to interact with it, go to link:https://isi-nlp.github.io/rtg/#_rtg_serve[RTG Docs^]
+
+.Decoding in Batch Mode
+[source, bash]
+----
+# `pip install rtg==0.5.0` should have already installed sacremoses-xt
+pip install sacremoses-xt==0.0.44
+sacremoses normalize -q -d -p -c tokenize -a -x -p :web: < input.src > input.src.tok
+
+CUDA_VISIBLE_DEVICES=0   # set GPU device ID
+rtg-decode /path/to/model-extract -if input.src.tok -of output.out
+
+# post process; drop <unk>s, detokenize
+cut -f1 output.out | sed 's/<unk>//g' | sacremoses detokenize > output.out.detok
+----
+
+.Parent-Child Transfer for Low Resource MT
+
+The pretrained model can be adopted to a specific dataset, using parent-child transfer setup.
+
+TIP: link:https://isi-nlp.github.io/rtg/#conf-parent-child[Refer to RTG documentation for parent-child transfer^]
+
+Learning rate of child model trainer is a crucial parameter: higher learning rate would destroy parent model's weights, and lower learning rate means less adaptation to child dataset.
+Hence, learning rate has to be just right; refer to `conf.yml` files in https://github.com/thammegowda/006-many-to-eng/tree/master/lowres-xfer
+
+
+==  Citation
+[bibtex]
+----
+% Arxiv preprint
+@misc{gowda2021manytoenglish,
+      title={Many-to-English Machine Translation Tools, Data, and Pretrained Models},
+      author={Thamme Gowda and Zhao Zhang and Chris A Mattmann and Jonathan May},
+      year={2021},
+      eprint={2104.00290},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+----
+
+== Acknowledgements
+
+Thanks to USC CARC, and TACC for providing computing resources.
+Thanks to Jörg Tiedemann for hosting the dataset at OPUS.
+
