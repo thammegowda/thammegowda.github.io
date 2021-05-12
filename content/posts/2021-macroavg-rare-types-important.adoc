@@ -2,7 +2,7 @@
 :author: Thamme Gowda <tg@isi.edu>
 //; Jonathan May <jonmay@isi.edu>
 :date: 2021-03-11 10:20
-// :modified: 2020-12-04 18:40
+:modified: 2021-05-11 18:40
 :tags: NMT
 :category: Paper
 :template: article
@@ -19,14 +19,14 @@ __Collaborators: Weiqiu You, Constantine Lignos, and Jonathan May__
 
 == Abstract
 
-While traditional corpus-level evaluation metrics for machine translation (MT) correlate well with fluency, they struggle to reflect adequacy. Model-based MT metrics trained on segment-level human judgments have emerged as an attractive replacement due to strong correlation results. These models, however, require potentially expensive re-training for new domains and languages. Furthermore, their decisions are inherently non-transparent and appear to reflect unwelcome biases.
-
 We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that $$MacroF1$$ is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. Further, we show that $$MacroF1$$ can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.
 
 == Links
 
 * DOI (To Appear at NAACL 2021)
 * Paper: https://arxiv.org/abs/2104.05700  https://arxiv.org/pdf/2104.05700.pdf[icon:download[2x,role=red]^]
+* link:https://github.com/thammegowda/007-mt-eval-macro/raw/master/submit/NAACL21-poster-MacroAverage.pdf[Poster^]
+* link:https://raw.githubusercontent.com/thammegowda/007-mt-eval-macro/master/submit/NAACL21-ppt-MacroAverage.pdf[Slides^]
 * Code
    ** Analysis: https://github.com/thammegowda/007-mt-eval-macro
    ** MacroF1 code is in a fork of sacrebleu https://github.com/isi-nlp/sacrebleu +
@@ -38,6 +38,9 @@ We explore the simple type-based classifier metric, MacroF1, and study its appli
 sacrebleu $REF.txt -m macrof < $HYP.detok
 sacrebleu $REF.txt -m microf < $HYP.detok
 ----
+* Video
+
+video::MNBixjCVrwc[youtube,640,480]
 
 == Summary
 link:{filename}2020-optimal-vocab-nmt.adoc[In the previous work], we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier. The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.
