@@ -13,4 +13,5 @@
 
 == Notes From Literature
 * link:{static}/files/Sceptical-Thinking-Carl-Sagan.pdf[Tools for Sceptical Thinking^] from the book __The Demon-Hunted World__ by *Carl Sagan*
+* link:{static}/files/PaleBlueDot-CarlSagan.pdf[Pale Blue Dot^] by *Carl Sagan*
 * link:{static}/files/Creative-Thinking-Claude-Shannon-1952.pdf[Creative Thinking^] by *Claude Shannon*, 1952

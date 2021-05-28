@@ -42,7 +42,7 @@ My current research interests:
 [#news]
 ==== News:
 * link:posts/2021/03/macroavg-rare-types-important/['Macro-Average: Rare Types Are Important Too'^] paper has been accepted by NAACL-HLT 2021.
-* link:http://rtg.isi.edu/many-eng[500 languages to English translation demo is now live^]
+* link:http://rtg.isi.edu/many-eng[500 languages to English translation demo is now live.^]  This work has been accepted by ACL 2021 Demo track.
 * I passed Ph.D. Qualifier Exam!
 
 '''

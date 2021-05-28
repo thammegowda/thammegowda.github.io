@@ -16,6 +16,10 @@ INDEX_SAVE_AS = 'posts/index.html'
 DEFAULT_LANG = 'en'
 LOCALE = 'en_US'
 
+# asciidoctor is ruby and well supported.. asciidoc is python and legacy
+ASCIIDOC_CMD = 'asciidoctor'
+ASCIIDOC_OPTIONS = []
+
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None
