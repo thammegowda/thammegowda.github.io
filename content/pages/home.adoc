@@ -30,7 +30,13 @@
 // == About me
 +++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
 My name is https://isi.edu/~tg/[Thamme Gowda], aka 'TG'.
-I am pursuing a Ph.D. in computer science at USC Viterbi School of Engineering. My graduate adviser is https://www.isi.edu/~jonmay/[Dr. Jonathan May^].
+I am pursuing a Ph.D. in computer science at USC Viterbi School of Engineering. My graduate adviser is https://www.isi.edu/~jonmay/[Prof. Jonathan May^].
+I am a research programmer (full-time) at USC ISI; I build and deliver state-of-the-art machine translation models.
+
+I am a current organizer of https://nlg.isi.edu/nl-seminar/[Natural Language Seminar] series at USC ISI, which is held weekly on Thursdays 11:00am - 12:00 noon.
+
+* To receive seminar announcements in your e-mailbox, please subscribe to https://mailman.isi.edu/mailman/listinfo/nlg-seminar[the mailing list^]. To see seminar details on your e-calendar, subscribe to link:webcal://p51-caldav.icloud.com/published/2/MTk1OTQwNzY0ODE5NTk0MMoybo1JVpi4UvUZB6Mmydt-xNID2W6VMD_up6-qvFewPSLr8y-XoQXFsniXd4r6k5qmJKWByn_vY7eTuwRcY_A[iCal feed^].
+* Speakers are often invited from other institutions (with travel and accommodation paid by ISI). If you are interested in visiting our research group, please get in touch [mailto: `tg@isi.edu` or message on https://twitter.com/thammegowda[Twitter]; (just say hi!).
 
 My current research interests:
 
@@ -39,11 +45,10 @@ My current research interests:
 * Dealing with the curses of natural imbalances
 ** e.g. consequences of Zipfian distribution on machine learning models and their evaluations.
 
+'''
 [#news]
 ==== News:
-* link:posts/2021/03/macroavg-rare-types-important/['Macro-Average: Rare Types Are Important Too'^] paper has been accepted by NAACL-HLT 2021.
-* link:http://rtg.isi.edu/many-eng[500 languages to English translation demo is now live.^]  This work has been accepted by ACL 2021 Demo track.
-* I passed Ph.D. Qualifier Exam!
+* Starting from Sept. 2021, I'll be organizing https://nlg.isi.edu/nl-seminar/[NL Seminar^]!
 
 '''
 
@@ -61,7 +66,7 @@ My current research interests:
 
 *  https://isi.edu/[USC Information Sciences Institute^] | Marina del Rey, CA, USA
 ** 2018/04 --  Present | Research Programmer II
-** 2017/06 -- 2018/03 | Research Programmer
+** 2017/07 -- 2018/03 | Research Programmer
 ** Mentors: https://www.isi.edu/~jonmay/[Dr. Jonathan May^]
 
 

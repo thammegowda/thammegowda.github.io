@@ -102,32 +102,24 @@ __To learn more about this work, please refer to our paper. Send any questions t
 
 
 ==  Citation
-
+https://aclanthology.org/2021.naacl-main.90/
 
 [bibtex]
 ----
-% Arxiv preprint
-@misc{gowda2021macroaverage,
-      title={Macro-Average: Rare Types Are Important Too},
-      author={Thamme Gowda and Weiqiu You and Constantine Lignos and Jonathan May},
-      year={2021},
-      eprint={2104.05700},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
-
-% To Appear at NAACL-HLT 2021:
-@inproceedings{gowda-etal-2021-macro-average,
+@inproceedings{gowda-etal-2021-macro,
     title = "Macro-Average: Rare Types Are Important Too",
-    author = "Gowda, Thamme and
-    You, Weiqiu and
-    Lignose, Constantine and
-    May, Jonathan ",
-    booktitle = "The Association for Computational Linguistics: NAACL-HLT 2021",
-    publisher = "Association for Computational Linguistics",
+    author = "Gowda, Thamme  and
+      You, Weiqiu  and
+      Lignos, Constantine  and
+      May, Jonathan",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
     month = jun,
     year = "2021",
     address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.naacl-main.90",
+    doi = "10.18653/v1/2021.naacl-main.90",
+    pages = "1138--1157",
 }
 
 ----
