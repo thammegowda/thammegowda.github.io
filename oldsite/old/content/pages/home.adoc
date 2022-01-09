@@ -1,0 +1,109 @@
+= Welcome
+//:doctype: article
+:encoding: utf-8
+//:lang: en
+//:toclevels: 3
+//:data-uri:
+//:toc: left
+//injects google analytics to <head>
+//:docinfo2:
+:icons: font
+:date: 2020-09-19 10:20
+:description: Thamme Gowda's home page at USC ISI
+:keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
+:url:
+:save_as: index.html
+:template: page
+
+//dont show title on the home page
+++++
+<style type="text/css">
+ .title {
+  display: none;
+ }
+.section {
+ padding: 0;
+}
+</style>
+++++
+// == About me
++++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
+My name is https://isi.edu/~tg/[Thamme Gowda], aka 'TG'.
+I am pursuing a Ph.D. in computer science at USC Viterbi School of Engineering. My graduate adviser is https://www.isi.edu/~jonmay/[Prof. Jonathan May^].
+I am a research programmer (full-time) at USC ISI; I build and deliver state-of-the-art machine translation models.
+
+I am a current organizer of https://nlg.isi.edu/nl-seminar/[Natural Language Seminar] series at USC ISI, which is held weekly on Thursdays 11:00am - 12:00 noon.
+
+* To receive seminar announcements in your e-mailbox, please subscribe to https://mailman.isi.edu/mailman/listinfo/nlg-seminar[the mailing list^]. To see seminar details on your e-calendar, subscribe to link:webcal://p51-caldav.icloud.com/published/2/MTk1OTQwNzY0ODE5NTk0MMoybo1JVpi4UvUZB6Mmydt-xNID2W6VMD_up6-qvFewPSLr8y-XoQXFsniXd4r6k5qmJKWByn_vY7eTuwRcY_A[iCal feed^].
+* Speakers are often invited from other institutions (with travel and accommodation paid by ISI). If you are interested in visiting our research group, please get in touch [mailto: `tg@isi.edu` or message on https://twitter.com/thammegowda[Twitter]; (just say hi!).
+
+My current research interests:
+
+* Natural language understanding and generation e.g. machine translation
+* Machine learning with a focus on NLP applications.
+* Dealing with the curses of natural imbalances
+** e.g. consequences of Zipfian distribution on machine learning models and their evaluations.
+
+'''
+[#news]
+==== News:
+* Starting from Sept. 2021, I'll be organizing https://nlg.isi.edu/nl-seminar/[NL Seminar^]!
+
+'''
+
+== Education
+
+* https://www.usc.edu/[University of Southern California^] |  https://viterbischool.usc.edu/[Viterbi School of Engineering^] | Los Angeles, CA, USA
+** 2018/08 -- InProgress | Doctor of Philosophy in Computer Science
+** 2015/08 -- 2017/05 | Master of Science in Computer Science
+
+* https://vtu.ac.in/[Visvesvaraya Technological University^] | http://www.sjcit.ac.in/[SJC Institute of Technology^] | Chikkaballapur, KA, India
+* 2008/08 -- 2012/05 | Bachelor of Engineering in Computer Science and Engineering
+
+
+== Professional Career
+
+*  https://isi.edu/[USC Information Sciences Institute^] | Marina del Rey, CA, USA
+** 2018/04 --  Present | Research Programmer II
+** 2017/07 -- 2018/03 | Research Programmer
+** Mentors: https://www.isi.edu/~jonmay/[Dr. Jonathan May^]
+
+
+*  https://www.jpl.nasa.gov[NASA Jet Propulsion Laboratory^] | Pasadena, CA, USA
+** 2016/06 -- 2017/05 | Data Scientist (intern)
+** Mentors: https://scienceandtechnology.jpl.nasa.gov/dr-chris-mattmann[Dr. Chris Mattmann^],  https://www.linkedin.com/in/paulramirez/[Paul Ramirez], https://www.wkiri.com/[Dr. Kiri Wagstaff]
+
+
+* https://irds.usc.edu[USC Information Retrieval and Data Science Group^] | Los Angeles, CA, USA
+**  2015/12 -- 2016/05 | Research Assistant
+**  Mentors: http://irds.usc.edu/faculty/mattmann/[Dr. Chris Mattmann^]
+
+* https://datoin.com[Datoin^] | Bengaluru, KA, India
+** 2014/01 -- * | Technical Co-Founder
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
+
+* https://www.linkedin.com/company/simplyphi-software-solutions-pvt-ltd[SimplyPhi Software Solutions^] | Bengaluru, KA, India
+** 2014/01 -- 2015/07  | Senior Software Engineer
+** 2012/06 -- 2014/01 | Software Engineer
+** Mentors: https://datoin.com/home/aboutus/#teamlink[Monis Khan, Umar Shah, Rakshith Begane^]
+
+== More ?
+
+I speak Kannada, Telugu, and Hindi ( +English, of course!). I was raised by a family of farmers in a southern Indian village. So beside the "professional" experience that I have displayed in this site, I also have much more experience in agriculture that you will not hear: vineyard, silkworms, dairy, sheep, poultry ...!
+
+I came to this grad school for learning artificial intelligence, but instead ended up learning a bit about myself/consciousness:
+
+[quote, "'Self'-reflection; 2020"]
+____
+While coding an artificial soul for machines +
+He wins his gifts, defeats his curses +
+And discovers his own soul that thinks and feels!
+____
+
+[quote, "The Great Sayings of the Upanishads; BCE"]
+____
+Consciousness is divine [Prajnanam Brahman] +
+This self/spirit/Atma is divine [Ayam Atma Brahman] +
+You're that [Tat Vam Asi] +
+I'm it [Aham Brahmasmi]
+____
