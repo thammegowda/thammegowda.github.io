@@ -2,8 +2,17 @@
     padding:10px;
 }
 
-.one{
+.degree{
     padding:10px;
+    text-align: center;
+}
+
+.job{
+    padding:10px;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 
