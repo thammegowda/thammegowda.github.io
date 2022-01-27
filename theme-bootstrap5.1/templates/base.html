@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block windowtitle %}{{ SITENAME }}{% endblock %}</title>
+    <meta name="description" content="">
+    <meta name="author" content="{{ AUTHOR }}">
+
+    <!-- Styles -->
+    <link href="{{ SITEURL }}/theme/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ SITEURL }}/theme/pygments.css" rel="stylesheet">
+    <link href="{{ SITEURL }}/theme/custom.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column h-100">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ SITEURL }}">{{ SITENAME }}</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% for title, link in MENUITEMS %}
+                    <li class="nav-item"><a class="nav-link" href="{{ link }}">{{ title }}</a></li>
+                {% endfor %}
+                {% if DISPLAY_PAGES_ON_MENU %}
+                    {% for page in pages %}
+                        <li class="nav-item"><a class="nav-link"
+                                                href="{{ SITEURL }}/{{ page.url }}">{{ page.title }}</a></li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <span class="navbar-text"></span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="content col-9">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="col-3">
+            <a class="twitter-timeline" data-width="480" data-height="1400" data-dnt="true" href="https://twitter.com/thammegowda?ref_src=twsrc%5Etfw">Tweets by thammegowda</a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+    </div>
+</div>
+
+  <footer class="footer d-flex flex-wrap py-3 my-4 border-top">
+  <div class="container-fluid justify-content-end">
+    <div class="row">
+        <ul class="nav col-8 justify-content-center">
+            {% for name, link in LINKS %}
+                <li class="nav-item"><a href="{{ link }}" class="nav-link px-2 text-muted">{{ name }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        <ul class="nav col-8">
+        {% for name, link in SOCIAL %}
+            <li class="nav-item"><a href="{{ link }}" class="nav-link px-2 text-muted">{{ name }}</a></li>
+        {% endfor %}
+        </ul>
+        <span class="col-4 text-muted pull-right">© 2022, Thamme Gowda</span>
+    </div>
+  </div>
+  </footer>
+</body>
+</html>

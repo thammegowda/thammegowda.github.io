@@ -4,7 +4,9 @@
 AUTHOR = 'Thamme Gowda'
 SITENAME = "Thamme Gowda"
 SITEURL = 'https://isi.edu/~tg'
-#SITEURL = '/~tg/'
+
+#SITEURL = "http://localhost:8000"
+#SITEURL = 'https://gowda.ai'
 
 PATH = 'content'
 THEME_TEMPLATES_OVERRIDES = ['templates/']  # overridden and new templates goes here
@@ -43,9 +45,12 @@ MENUITEMS = (
     ('Publications', f'{SITEURL}/publications.html'),
     ('Software', f'{SITEURL}/software'),
     ('Blog', f'{SITEURL}/posts'),
-    ('Home', f'{SITEURL}'),
 )
 
+#     ('Home', f'{SITEURL}'),
+
+LINKS = []
+"""
 # Blogroll
 LINKS = (('USC', 'https://usc.edu/'),
          ('USC ISI', 'https://isi.edu/'),
@@ -53,6 +58,8 @@ LINKS = (('USC', 'https://usc.edu/'),
          ('USC CS Dept', 'https://cs.usc.edu/'),
          ('USC ISI-NLP', 'https://www.isi.edu/research_groups/nlg/home')
          )
+"""
+
 # Social widget
 SOCIAL = (
     ('tg@isi.edu', 'mailto:'),
@@ -69,25 +76,20 @@ SOCIAL = (
 DEFAULT_PAGINATION = 15
 
 # Uncomment following line if you want document-relative URLs when developing
-RELATIVE_URLS = False
+#RELATIVE_URLS = False
+RELATIVE_URLS = True
 
 PLUGIN_PATHS = ['pelican-plugins']
 # PLUGINS = ['assets', 'sitemap', 'gravatar']
 PLUGINS = ['asciidoc_reader', 'assets', 'pelican.plugins.webassets', 'gravatar', 'pelican-bibtex']
 
-import bulrush
 
-THEME = bulrush.PATH
-
-JINJA_ENVIRONMENT = bulrush.ENVIRONMENT
-JINJA_FILTERS = bulrush.FILTERS
+THEME = "theme-bootstrap5.1"
 
 GOOGLE_ANALYTICS = 'UA-109985365-1'
 TWITTER_USERNAME = 'thammegowda'
 
-EXTRA_PATH_METADATA = {
-    'css/adocdefault.css': {'path': 'css/custom.css'},
-}
+
 
 # URLS
 ARTICLE_URL = 'posts/{date:%Y}/{date:%m}/{slug}/'

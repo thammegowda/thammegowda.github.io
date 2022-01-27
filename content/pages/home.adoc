@@ -18,7 +18,7 @@
 //dont show title on the home page
 ++++
 <style>
- .title {
+ .page-header {
   display: none;
  }
 .section {
@@ -30,30 +30,30 @@
 // == About me
 +++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
 My name is https://isi.edu/~tg/[Thamme Gowda], aka 'TG'.
-I am pursuing a Ph.D. in computer science at USC Viterbi School of Engineering. My graduate adviser is https://www.isi.edu/~jonmay/[Prof. Jonathan May^].
-I am a research programmer (full-time) at USC ISI; I build and deliver state-of-the-art machine translation models.
+I am doing a bunch of tasks now, maybe you want to know me as one of these:
 
-I am the current organizer of https://nlg.isi.edu/nl-seminar/[Natural Language Seminar^] series at USC ISI, which is held weekly on Thursdays 11:00am - 12:00 noon.
+* I am a Ph.D. candidate in Computer Science at USC Viterbi School of Engineering.
+My graduate adviser is https://www.isi.edu/~jonmay/[Prof. Jonathan May^].
+* I work as a research programmer at USC ISI. I build and deliver machine translation models (a few DARPA/IARPA projects).
+* I am the current organizer of https://nlg.isi.edu/nl-seminar/[Natural Language Seminar^] series at USC ISI.
 
-My current research interests:
+_Research interests:_ I am currently trying to finish up my dissertation focusing on rare phenomena learning in (neural) machine translation.
+Here is my _work-in-progress_ +++<a href="{static}/files/TG-CV.pdf" target="_blank">CV</a> <small>(I need to update this!)</small>+++
 
-* Natural language understanding and generation e.g. machine translation
-* Machine learning with a focus on NLP applications.
-* Dealing with the curses of natural imbalances
-** e.g. consequences of Zipfian distribution on machine learning models and their evaluations.
 
 '''
 [#news]
-==== News:
-* Starting from Sept. 2021, I'll be organizing https://nlg.isi.edu/nl-seminar/[NL Seminar^]!
-* Checkout my translator model demo: http://rtg.isi.edu/many-eng
+*_News:_*
 
+* [2022/01]: I have passed dissertation proposal +++<a href="{static}/files/2022-TG-diss-proposal.pdf" target="_blank">Get my slides</a>+++
+* [2021/09] : I'll be organizing https://nlg.isi.edu/nl-seminar/[NL Seminar^] this academic year!
 '''
 
 == Education
 
 * https://www.usc.edu/[University of Southern California^] |  https://viterbischool.usc.edu/[Viterbi School of Engineering^] | Los Angeles, CA, USA
-** 2018/08 -- InProgress | Doctor of Philosophy in Computer Science
+** 2018/08 -- InProgress | Doctor of Philosophy in Computer Science +
+ +++<a href="{static}/files/2022-TG-diss-proposal.pdf" target="_blank">Dissertation proposal slides.</a>+++
 ** 2015/08 -- 2017/05 | Master of Science in Computer Science
 
 * https://vtu.ac.in/[Visvesvaraya Technological University^] | http://www.sjcit.ac.in/[SJC Institute of Technology^] | Chikkaballapur, KA, India
@@ -65,7 +65,6 @@ My current research interests:
 * https://github.com/thammegowda/mtdata/[MTData^]: a tool that downloads machine translation corpus for hundreds of languages.
 * https://isi-nlp.github.io/rtg/[RTG^]: neural machine translation toolkit based on PyTorch.
 * https://github.com/USCDataScience/sparkler[Sparkler^]: A web crawler that runs on Apache Spark and stores data in Apache Solr.
-
 
 == Professional Career
 
@@ -95,9 +94,11 @@ My current research interests:
 
 == More ?
 
-I speak Kannada, Telugu, and Hindi ( +English, of course!). I was raised by a family of farmers in a southern Indian village. So beside the "professional" experience that I have displayed in this site, I also have much more experience in agriculture that you will not hear: vineyard, silkworms, dairy, sheep, poultry ...!
+I speak Kannada/ಕನ್ನಡ, Telugu/తెలుగు, and Hindi/हिन्दी ( +English, of course!).
+I was raised by a family of farmers in a southern Indian village.
+So, beside the "professional" experience that I have displayed here, I also have much more experience in agriculture that you will not hear: vineyard, silkworms, dairy, sheep, poultry ...!
 
-I came to this grad school for learning artificial intelligence, but instead ended up learning a bit about myself/consciousness:
+I came to this grad school for learning the artificial intelligence, but I also ended up learning a bit about myself/consciousness:
 
 [quote, "'Self'-reflection; 2020"]
 ____

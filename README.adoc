@@ -1,13 +1,33 @@
 
 == Setup
 
-    pip install bulrush
-    pip install pelican-webassets   # required for bulrush
+[source,bash]
+----
+# create an env if not exists
+conda create -n pelican python=3.9 pip
+conda activate pelican
 
-    cd pelican-plugins && git clone git@github.com:vene/pelican-bibtex.git
-    pip install pybtex              # required for pelican-bibtex
+# install python packages if not already
+pip install bulrush==0.5.0 pelican-webassets==2.0.0 pybtex==0.24.0
+
+# get pelican plugins and themes
+git clone --recursive https://github.com/getpelican/pelican-plugins
+git clone --recursive https://github.com/getpelican/pelican-themes
+git clone git@github.com:vene/pelican-bibtex.git pelican-plugins/pelican-bibtex
+
+
+
+# TODO: Install asciidoctor
+gem install asciidoctor
+
+----
 
 == Build
 
    make clean
    make html
+
+== Development
+
+  pelican -r -l content -o output
+  # r : reload ; l: listen on port (8000)
