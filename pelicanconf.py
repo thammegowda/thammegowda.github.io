@@ -3,10 +3,10 @@
 
 AUTHOR = 'Thamme Gowda'
 SITENAME = "Thamme Gowda"
-SITEURL = 'https://isi.edu/~tg'
+#SITEURL = 'https://isi.edu/~tg'
 
 #SITEURL = "http://localhost:8000"
-#SITEURL = 'https://gowda.ai'
+SITEURL = 'https://gowda.ai'
 
 PATH = 'content'
 THEME_TEMPLATES_OVERRIDES = ['templates/']  # overridden and new templates goes here
