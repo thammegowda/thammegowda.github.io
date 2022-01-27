@@ -57,7 +57,7 @@ Here is my _work-in-progress_ +++<a href="{static}/files/TG-CV.pdf" target="_bla
 ** 2015/08 -- 2017/05 | Master of Science in Computer Science
 
 * https://vtu.ac.in/[Visvesvaraya Technological University^] | http://www.sjcit.ac.in/[SJC Institute of Technology^] | Chikkaballapur, KA, India
-* 2008/08 -- 2012/05 | Bachelor of Engineering in Computer Science and Engineering
+** 2008/08 -- 2012/05 | Bachelor of Engineering in Computer Science and Engineering
 
 == Selected Projects
 
