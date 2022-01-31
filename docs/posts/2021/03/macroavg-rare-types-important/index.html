@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+
+    <meta name="description" content="">
+    <meta name="author" content="Thamme Gowda">
+    <!-- Styles -->
+    <!--
+    <link href="../../../../theme/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link href="../../../../theme/pygments.css" rel="stylesheet">
+    <link href="../../../../theme/custom.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column h-100">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="../../../..">Thamme Gowda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/notes">Notes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/publications.html">Publications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/software">Software</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/posts">Blog</a></li>
+            </ul>
+            <span class="navbar-text"></span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="content">
+	<div class='article'>
+		<div class="page-header"><h1>Macro-Average: Rare Types Are Important Too</h1></div>
+		<div class="well small"><!-- Permalink: <a class="more" href="../../../../posts/2021/03/macroavg-rare-types-important/">2021-03-11 10:20:00-08:00</a> -->
+by <a class="url fn" href="../../../../author/thamme-gowda.html">Thamme Gowda <tg@isi.edu> </a>
+ in <a href="../../../../category/paper.html">Paper</a>
+tags: <a href="../../../../tag/nmt.html">NMT</a> </div>
+		<div><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Collaborators: Weiqiu You, Constantine Lignos, and Jonathan May</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_abstract">Abstract</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We explore the simple type-based classifier metric, MacroF1, and study its applicability to MT evaluation. We find that MacroF1 is competitive on direct assessment, and outperforms others in indicating downstream cross-lingual information retrieval task performance. Further, we show that MacroF1 can be used to effectively compare supervised and unsupervised neural machine translation, and reveal significant qualitative differences in the methods' outputs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links">Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>DOI (To Appear at NAACL 2021)</p>
+</li>
+<li>
+<p>Paper: <a href="https://arxiv.org/abs/2104.05700" class="bare">https://arxiv.org/abs/2104.05700</a>  <a href="https://arxiv.org/pdf/2104.05700.pdf" target="_blank" rel="noopener"><span class="icon red"><i class="fa fa-download fa-2x"></i></span></a></p>
+</li>
+<li>
+<p><a href="https://github.com/thammegowda/007-mt-eval-macro/raw/master/submit/NAACL21-poster-MacroAverage.pdf" target="_blank" rel="noopener">Poster</a></p>
+</li>
+<li>
+<p><a href="https://raw.githubusercontent.com/thammegowda/007-mt-eval-macro/master/submit/NAACL21-ppt-MacroAverage.pdf" target="_blank" rel="noopener">Slides</a></p>
+</li>
+<li>
+<p>Code</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Analysis: <a href="https://github.com/thammegowda/007-mt-eval-macro" class="bare">https://github.com/thammegowda/007-mt-eval-macro</a></p>
+</li>
+<li>
+<p>MacroF1 code is in a fork of sacrebleu <a href="https://github.com/isi-nlp/sacrebleu" class="bare">https://github.com/isi-nlp/sacrebleu</a><br></p>
+</li>
+<li>
+<p><a href="https://github.com/mjpost/sacrebleu/pull/153">Pull request is submitted to sacrebleu</a><br>
+Usage of MacroF1 and MicroF1:<br></p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">sacrebleu $REF.txt -m macrof &lt; $HYP.detok
+sacrebleu $REF.txt -m microf &lt; $HYP.detok</code></pre>
+</div>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Video</p>
+</li>
+</ul>
+</div>
+<div class="videoblock">
+<div class="content">
+<iframe width="640" height="480" src="https://www.youtube.com/embed/MNBixjCVrwc?rel=0" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary">Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="../../../../posts/2020/11/2020-optimal-vocab-nmt/">In the previous work</a>, we framed NMT as a multi-class classifier. In this work, we evaluate NMT (or MT, NLG in general) as if it is a multi-class classifier. The overall performance of a multi-class classifier is commonly obtained by taking an average of individual class performances. Two common ways to compute averages are Micro- and Macro- averages. In many tasks used by academia, test set classes are often balanced, and in those scenarios micro and macro are essentially equivalent. However, if the test set classes are imbalanced, which is likely the case in real-world, micro and macro averages make a huge difference depending on the degree of imbalance.</p>
+</div>
+<div class="paragraph">
+<p>In NLP/linguistic terms, micro average assigns equal weight to each token (or instance), whereas macro-average assigns equal weight to each type (or class). Since the types in natural language datasets resemble Zipfian distribution, an extremely imbalanced distribution, reporting micro-averaged performance would be misleading, especially because minority classes (i.e rare types) are equally or more important than majority classes (aka stop words).</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/brown-corpus-zipf.png" alt="brown corpus zipf">
+</div>
+<div class="title">Figure 1. Type frequencies as seen on Brown Coprus show an exteme imbalance. A few types dominate the corpus where as a vast number of types are infrequent</div>
+</div>
+<div class="paragraph">
+<p><em>Do we really need one more MT evaluation metric? What is wrong with the current metrics that needs to be addressed?</em> BLEU[1], ChrF[2], and such model-free metrics that are in use today are micro-averaged metrics&#8201;&#8212;&#8201;they treat each token equally. As a result, they provide higher rewards for learning stopword types like <em>if</em>, <em>and</em>, and <em>but</em>, and significantly less reward for learning to generate content words like <em>xylophone</em>, <em>peripatetic</em>, and <em>defenestrate</em>. In other words, when we measure using micro-averaged metrics the improvements in translating content words better than baselines, we see the delta compared to baseline is so tiny; we tend to believe that the improvements are not significant. And we risk in discarding good ideas because the micro-averaged metrics marginalize rare types.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-vs-others.png" alt="2021 macroavg vs others">
+</div>
+<div class="title">Figure 2. The ‘the’ type appears 3019 times in DE-EN NewsTest19 test corpus, and zero-recall of ‘the’ results in a losses up to 18.83% BLEU, 9.38% ChrF1, 6.45% MicroF1, and 0.03% MacroF1.</div>
+</div>
+<div class="paragraph">
+<p>But in reality, these low frequency content types carry a lot of information (isnt it why they called content words?). Information theory also agrees with this statement</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/brown-corpus-infocontent.png" alt="brown corpus infocontent">
+</div>
+<div class="title">Figure 3. Rare types contain more information content than frequent types.</div>
+</div>
+<div class="paragraph">
+<p>On the other hand, a lot of model-based evaluation metrics have been proposed lately. These high performance models are opaque, expensive, and biased in several undesirable ways. For example, we looked into BLEURT[3], one of the best model-based metrics at the time of writing, and it showed preferences on certain names in an undesirable ways. In addition, the scores are not really interpretable.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 1. Scores are from BLEURT base model, and demonstrate the undesirable biases of model-based metrics. Model-free metrics such as BLEU and MacroF1 would consider each hypothesis as equally wrong.</caption>
+<colgroup>
+<col style="width: 13.3333%;">
+<col style="width: 6.6666%;">
+<col style="width: 80.0001%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reference:</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">You must be a doctor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hypothesis:</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">__ must be a doctor.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">He</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.74</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Joe</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.98</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-1.04</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">She</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-1.10</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reference:</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">It is the greatest country in the world.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hypothesis:</p></td>
+<td class="tableblock halign-left valign-top" colspan="2"><p class="tableblock">__ is the greatest country in the world.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">France</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.02</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">America</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.06</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Russia</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.16</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Canada</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-0.31</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Will a simple metric like MacroF1 be competitive for MT evaluation?</strong> We have been very skeptical too. So we&#8217;ve tested it thoroughly on several tasks, which are as follows:</p>
+</div>
+<div class="paragraph">
+<p>On <strong>WebNLG dataset</strong>[4] which has human annotations for fluency, grammar, and semantics, MacroF1 found to be a weak indicator of fluency and grammar, but a strong indicator of semantics. Even ChrF1 has a similar property: a weak indicator of fluency and grammar compared to BLEU, but a strong indicator of semantics. Since MicroF1 weighs towards frequent types that contribute to fluency and grammar, it scores relatively higher in fluency compared to MacroF1 but relatively lower on semantics.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-webnlg.png" alt="2021 macroavg webnlg">
+</div>
+<div class="title">Figure 4. On WebNLG dataset, MacroF1 is found to be a poor indicator of Fluency and Grammar, but a strong indicator of Semantics.</div>
+</div>
+<div class="paragraph">
+<p><strong>WMT Metrics</strong>[5] datasets have human judgements for tens of languages. Here MacroF1 rarely scored the best correlations in 2017. It got better in 2018. And, it scored the highest number of wins per metric in 2019. This trend is interesting; especially if you wonder how a metric that is a poor indicator of fluency and grammar (as seen on our findings on WebNLG datasets) can get such good results on the most recent WMT Metrics Task? We believe NMT models have made great progress in the recent years. The latest models can produce very fluent translations. Now we are in the era where semantics is a key discriminating factor. MacroF1 can capture adequacy better than alternatives.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-WMT-metrics.png" alt="2021 macroavg WMT metrics">
+</div>
+<div class="title">Figure 5. On WMT Metrics task, MacroF1 wins in the recent year.</div>
+</div>
+<div class="paragraph">
+<p>We also tested MT metrics on <strong>downstream task of cross-lingual information retrieval (CLIR)</strong>. This task focused more adequacy and less on fluency. We used CLSSTS 2020 datasets[6] for Lithuanian-English, Pashto-English, and Bulgarian-English and mesaured the IR performance using mean average precision (mAP). This is an IR task in which queries are in English but documents are in foreign languages. MacroF1 found to be the strongest indicator of IR task performance.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-CLIR.png" alt="2021 macroavg CLIR">
+</div>
+<div class="title">Figure 6. On a CLSSTS 2020 CLIR task, MacroF1 showed strongest correlations with IR task performance across three languages.</div>
+</div>
+<div class="paragraph">
+<p>Next, we used MacroF1 to analyse the differences between unsupervised (UNMT) and supervised NMT (SNMT). In the recent years, UNMT has shown very promising results. In many cases, UNMT has shown to achieve BLEU scores comparable with SNMT models. So we took a bunch of UNMT and SNMT models that have comparable BLEU scores and looked at their MacroF1 scores. Even though UNMT models have a comparable BLEU scores they are lagging behind SNMT by considerable margin in terms of MacroF1.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-snmt-unmt-diff.png" alt="2021 macroavg snmt unmt diff">
+</div>
+<div class="title">Figure 7. Even though SNMT and UNMT achieve comparable BLEU scores, they differ significantly in terms of MacroF1.</div>
+</div>
+<div class="paragraph">
+<p>As an added bonus, MacroF1 score can be broken down into individual type/class F1 scores. We looked at how the performance varies across all the types in vocabulary. On high frequency types, UNMT models are relatively better (i.e. better F1 score) than SNMT, which results in fluent outputs, hence good BLEU scores, but UNMT is relatively poorer in translating low frequency types, hence lower MacroF1 than SNMT.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../../../../images/2021-macroavg-snmt-unmt-enfr.png" alt="2021 macroavg snmt unmt enfr">
+</div>
+<div class="title">Figure 8. SNMT vs UNMT MacroF1 on the most frequent 500 types on EN-FR test set. UNMT outperforms SNMT on frequent types, howver, SNMT is generally better than UNMT on rare types. This trend is similar on the other languages we tested: FR-EN, EN-DE, DE-EN, EN-RO, and RO-EN.</div>
+</div>
+<div class="paragraph">
+<p><em>To learn more about this work, please refer to our paper. Send any questions to <code>tg(at)isi.edu</code>.</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_citation">Citation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://aclanthology.org/2021.naacl-main.90/" class="bare">https://aclanthology.org/2021.naacl-main.90/</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@inproceedings{gowda-etal-2021-macro,
+    title = "Macro-Average: Rare Types Are Important Too",
+    author = "Gowda, Thamme  and
+      You, Weiqiu  and
+      Lignos, Constantine  and
+      May, Jonathan",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.naacl-main.90",
+    doi = "10.18653/v1/2021.naacl-main.90",
+    pages = "1138--1157",
+}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_acknowledgements">Acknowledgements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thanks to Shantanu Agarwal, Joel Barry, and Scott Miller for their help with CLSSTS CLIR experiments, and Daniel Cohen for the valuable discussions on IR evaluation metrics.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references">References</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. 2002. Bleu: a Method for Automatic Evaluation of Machine Translation. In Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics. AssociationforComputationalLinguistics,Philadelphia,Pennsylvania,USA,311–318. <a href="https://doi.org/10.3115/1073083.1073135" class="bare">https://doi.org/10.3115/1073083.1073135</a></p>
+</li>
+<li>
+<p>Maja Popović. 2015. ChrF: Character n-gram F-score for automatic MT evaluation. In Proceedings of the Tenth Workshop on Statistical Machine Translation. Association for Computational Linguistics, Lisbon, Portugal, 392–395. <a href="https://doi.org/10.18653/v1/W15-3049" class="bare">https://doi.org/10.18653/v1/W15-3049</a></p>
+</li>
+<li>
+<p>Thibault Sellam, Dipanjan Das, and Ankur Parikh. 2020. BLEURT: Learning Robust Metrics for Text Generation. In Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics. Association for Computational Linguistics,Online,7881–7892. <a href="https://www.aclweb.org/anthology/2020.acl-main.704" class="bare">https://www.aclweb.org/anthology/2020.acl-main.704</a> <a href="https://github.com/google-research/bleurt" class="bare">https://github.com/google-research/bleurt</a></p>
+</li>
+<li>
+<p>Claire Gardent, Anastasia Shimorina, Shashi Narayan, and Laura Perez-Beltrachini. 2017. Creating Training Corpora for NLG Micro-Planners. In Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume1:LongPapers).AssociationforComputationalLinguistics,179–188. <a href="https://doi.org/10.18653/v1/P17-1017" class="bare">https://doi.org/10.18653/v1/P17-1017</a> <a href="https://gitlab.com/webnlg/webnlg-human-evaluation" class="bare">https://gitlab.com/webnlg/webnlg-human-evaluation</a></p>
+</li>
+<li>
+<p>Qingsong Ma, Johnny Wei, Ondřej Bojar, and Yvette Graham. 2019. Results of the WMT19 Metrics Shared Task: Segment-Level and Strong MT Systems Pose Big Challenges. In Proceedings of the Fourth Conference on Machine Translation (Volume 2: Shared Task Papers, Day 1). Association for Computational Linguistics, Florence, Italy, 62–90. <a href="http://www.aclweb.org/anthology/W19-5302" class="bare">http://www.aclweb.org/anthology/W19-5302</a>  <a href="http://www.statmt.org/wmt19/metrics-task.html" class="bare">http://www.statmt.org/wmt19/metrics-task.html</a></p>
+</li>
+<li>
+<p>Ilya Zavorin, Aric Bills, Cassian Corey, Michelle Morrison, Audrey Tong, and Richard Tong. 2020. Corpora for Cross- Language Information Retrieval in Six Less-Resourced Languages. In Proceedings of the workshop on Cross-Language Search and Summarization of Text and Speech (CLSSTS2020). European Language Resources Association, Marseille, France, 7–13. <a href="https://www.aclweb.org/anthology/2020.clssts-1.2" class="bare">https://www.aclweb.org/anthology/2020.clssts-1.2</a> <a href="http://users.umiacs.umd.edu/~oard/clssts/" class="bare">http://users.umiacs.umd.edu/~oard/clssts/</a></p>
+</li>
+</ol>
+</div>
+</div>
+</div></div>
+	</div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer d-flex flex-wrap py-3 my-4 border-top">
+    <div class="container-fluid justify-content-end">
+        <div class="row">
+            <ul class="nav col-8 justify-content-center">
+            </ul>
+        </div>
+        <div class="row">
+            <ul class="nav col-8">
+                    <li class="nav-item">
+                        <a href="https://twitter.com/thammegowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-twitter"></i>Twitter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://github.com/thammegowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-github"></i>Github</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.linkedin.com/in/thammegowda/" class="nav-link px-2 text-muted">
+                        <i class="fab fa-linkedin"></i>LinkedIn</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts" class="nav-link px-2 text-muted">
+                        <i class="fab fa-stack-overflow"></i>StackOverflow</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.quora.com/profile/Thamme-Gowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-quora"></i>Quora</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://instagram.com/thammegowda/" class="nav-link px-2 text-muted">
+                        <i class="fab fa-instagram"></i>Instagram</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.goodreads.com/user/show/31845074-thamme-gowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-goodreads"></i>GoodReads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://thammegowda.wordpress.com" class="nav-link px-2 text-muted">
+                        <i class="fab fa-wordpress-simple"></i>WordPress</a>
+                    </li>
+            </ul>
+            <span class="col-4 text-muted pull-right">© 2022, Thamme Gowda</span>
+        </div>
+    </div>
+</footer>
+<footer>
+
+</footer>
+</body>
+</html>

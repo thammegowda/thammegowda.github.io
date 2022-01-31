@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+
+    <meta name="description" content="">
+    <meta name="author" content="Thamme Gowda">
+    <!-- Styles -->
+    <!--
+    <link href="../../../../theme/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link href="../../../../theme/pygments.css" rel="stylesheet">
+    <link href="../../../../theme/custom.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column h-100">
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="../../../..">Thamme Gowda</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/notes">Notes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/publications.html">Publications</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/software">Software</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://gowda.ai/posts">Blog</a></li>
+            </ul>
+            <span class="navbar-text"></span>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="content">
+	<div class='article'>
+		<div class="page-header"><h1>Many-to-English Machine Translation Tools, Data, and Pretrained Models</h1></div>
+		<div class="well small"><!-- Permalink: <a class="more" href="../../../../posts/2021/04/mtdata-nlcodec-rtg-many-english/">2021-04-25 10:20:00-07:00</a> -->
+by <a class="url fn" href="../../../../author/thamme-gowda.html">Thamme Gowda <tg@isi.edu> </a>
+ in <a href="../../../../category/paper.html">Paper</a>
+tags: <a href="../../../../tag/nmt.html">NMT</a> </div>
+		<div><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Collaborators: Zhao Zhang, Chris A Mattmann, and Jonathan May</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_abstract">Abstract</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We present useful tools for machine translation research: MTData, NLCodec, and RTG.
+We demonstrate their usefulness by creating a multilingual neural machine translation model capable of translating from 500 source languages to English.
+We make this multilingual model readily downloadable and usable as a service, or as a parent model for transfer-learning to even lower-resource languages.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links">Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Paper: <a href="https://arxiv.org/abs/2104.00290" class="bare">https://arxiv.org/abs/2104.00290</a>  <a href="https://arxiv.org/pdf/2104.00290" target="_blank" rel="noopener"><span class="icon red"><i class="fa fa-download fa-2x"></i></span></a></p>
+</li>
+<li>
+<p><strong class="big red yellow-background">Demo: <a href="http://rtg.isi.edu/many-eng/v1/" target="_blank" rel="noopener">👉🏼Many-to-English translation👈🏼🔥</a></strong></p>
+</li>
+</ul>
+</div>
+<div class="videoblock">
+<div class="content">
+<iframe width="640" height="400" src="https://www.youtube.com/embed/NSY0-MvO1KE?rel=0" frameborder="0" allowfullscreen></iframe>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary">Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We announce three tools for machine translation:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">MTData</dt>
+<dd>
+<p>A tool to download machine translation datasets
+<a href="https://github.com/thammegowda/mtdata/" class="bare">https://github.com/thammegowda/mtdata/</a><br>
+ <code>pip install mtdata</code></p>
+</dd>
+<dt class="hdlist1">NLCodec</dt>
+<dd>
+<p><a href="https://isi-nlp.github.io/nlcodec/" class="bare">https://isi-nlp.github.io/nlcodec/</a><br>
+<code>pip install nlcodec</code></p>
+</dd>
+<dt class="hdlist1">RTG</dt>
+<dd>
+<p><a href="https://isi-nlp.github.io/rtg/" class="bare">https://isi-nlp.github.io/rtg/</a><br>
+<code>pip install rtg</code></p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Scripts, tables, and charts: <a href="https://github.com/thammegowda/006-many-to-eng" class="bare">https://github.com/thammegowda/006-many-to-eng</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Using these tools we first, collected a massive dataset.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Download Data</dt>
+<dd>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>From <a href="http://rtg.isi.edu/many-eng/data-v1.html" class="bare">http://rtg.isi.edu/many-eng/data-v1.html</a>.</p>
+</li>
+<li>
+<p>Also available from OPUS <a href="https://opus.nlpl.eu/MT560.php" class="bare">https://opus.nlpl.eu/MT560.php</a></p>
+</li>
+</ol>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>And then we trained massively multilingual models for many-to-English translation.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Download Models</dt>
+<dd>
+<p><a href="http://rtg.isi.edu/many-eng/models/" class="bare">http://rtg.isi.edu/many-eng/models/</a></p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Recommended: <a href="http://rtg.isi.edu/many-eng/models/rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz">rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We provide a docker image with pretrained model which can be readily usable as a translation service:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash"># pick the latest image from https://hub.docker.com/repository/docker/tgowda/rtg-model
+IMAGE=tgowda/rtg-model:500toEng-v1
+
+# To run without using GPU; requires about 5 to 6GB CPU RAM
+docker run --rm -i -p 6060:6060 $IMAGE
+
+# Recommended: use GPU (e.g. device=0)
+docker run --gpus '"device=0"' --rm -i -p 6060:6060 $IMAGE</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you prefer to not use docker, then</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 1:</strong> Setup a <code>conda</code> environment and install <code>rtg</code> library.<br></p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If <code>conda</code> is missing in your system, <a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank" rel="noopener">please install miniconda</a> to get started.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash">conda create -n rtg python=3.7
+conda activate rtg
+pip install rtg==0.5.0  # install rtg and its dependencies
+conda install -c conda-forge uwsgi  # needed to deploy service</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Download a model and run</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash"># Pick the latest version
+MODEL=rtg500eng-tfm9L6L768d-bsz720k-stp200k-ens05.tgz
+wget http://rtg.isi.edu/many-eng/models/$MODEL
+
+tar xvf $MODEL    # Extract and run
+uwsgi --http 127.0.0.1:6060 --module rtg.serve.app:app --pyargv "/path/to/extracted/dir"
+# Alternatively, without uWSGI (not recommended)
+# rtg-serve /path/to/extracted/dir
+# See "rtg-serve -h" to learn optional arguments for --pyargv "&lt;here&gt;" of uWSGI</code></pre>
+</div>
+</div>
+<div class="ulist">
+<div class="title">Interaction with REST API</div>
+<ul>
+<li>
+<p>Web Interface: a simple web interface is made at <a href="http://localhost:6060" class="bare">http://localhost:6060</a>.</p>
+</li>
+<li>
+<p>REST API is available at <a href="http://localhost:6060/translate" class="bare">http://localhost:6060/translate</a>.<br>
+An example interaction with REST API:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>API=http://localhost:6060/translate
+curl $API --data "source=Comment allez-vous?" \
+   --data "source=Bonne journée"
+
+# API also accepts input as JSON data
+curl -X POST -H "Content-Type: application/json" $API\
+  --data '{"source":["Comment allez-vous?", "Bonne journée"]}'</pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+To learn more about RTG service and how to interact with it, go to <a href="https://isi-nlp.github.io/rtg/#_rtg_serve" target="_blank" rel="noopener">RTG Docs</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Decoding in Batch Mode</div>
+<div class="content">
+<pre class="highlight"><code class="language-bash" data-lang="bash"># `pip install rtg==0.5.0` should have already installed sacremoses-xt
+pip install sacremoses-xt==0.0.44
+sacremoses normalize -q -d -p -c tokenize -a -x -p :web: &lt; input.src &gt; input.src.tok
+
+CUDA_VISIBLE_DEVICES=0   # set GPU device ID
+rtg-decode /path/to/model-extract -if input.src.tok -of output.out
+
+# post process; drop &lt;unk&gt;s, detokenize
+cut -f1 output.out | sed 's/&lt;unk&gt;//g' | sacremoses detokenize &gt; output.out.detok</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Parent-Child Transfer for Low Resource MT</div>
+<p>The pretrained model can be adopted to a specific dataset, using parent-child transfer setup.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<a href="https://isi-nlp.github.io/rtg/#conf-parent-child" target="_blank" rel="noopener">Refer to RTG documentation for parent-child transfer</a>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Learning rate of child model trainer is a crucial parameter: higher learning rate would destroy parent model&#8217;s weights, and lower learning rate means less adaptation to child dataset.
+Hence, learning rate has to be just right; refer to <code>conf.yml</code> files in <a href="https://github.com/thammegowda/006-many-to-eng/tree/master/lowres-xfer" class="bare">https://github.com/thammegowda/006-many-to-eng/tree/master/lowres-xfer</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_citation">Citation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://aclanthology.org/2021.acl-demo.37/" class="bare">https://aclanthology.org/2021.acl-demo.37/</a></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>@inproceedings{gowda-etal-2021-many,
+    title = "Many-to-{E}nglish Machine Translation Tools, Data, and Pretrained Models",
+    author = "Gowda, Thamme  and
+      Zhang, Zhao  and
+      Mattmann, Chris  and
+      May, Jonathan",
+    booktitle = "Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing: System Demonstrations",
+    month = aug,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.acl-demo.37",
+    doi = "10.18653/v1/2021.acl-demo.37",
+    pages = "306--316",
+}</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_acknowledgements">Acknowledgements</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Thanks to USC CARC, and TACC for providing computing resources.
+Thanks to Jörg Tiedemann for hosting the dataset at OPUS.</p>
+</div>
+</div>
+</div></div>
+	</div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer d-flex flex-wrap py-3 my-4 border-top">
+    <div class="container-fluid justify-content-end">
+        <div class="row">
+            <ul class="nav col-8 justify-content-center">
+            </ul>
+        </div>
+        <div class="row">
+            <ul class="nav col-8">
+                    <li class="nav-item">
+                        <a href="https://twitter.com/thammegowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-twitter"></i>Twitter</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://github.com/thammegowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-github"></i>Github</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.linkedin.com/in/thammegowda/" class="nav-link px-2 text-muted">
+                        <i class="fab fa-linkedin"></i>LinkedIn</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts" class="nav-link px-2 text-muted">
+                        <i class="fab fa-stack-overflow"></i>StackOverflow</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.quora.com/profile/Thamme-Gowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-quora"></i>Quora</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://instagram.com/thammegowda/" class="nav-link px-2 text-muted">
+                        <i class="fab fa-instagram"></i>Instagram</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://www.goodreads.com/user/show/31845074-thamme-gowda" class="nav-link px-2 text-muted">
+                        <i class="fab fa-goodreads"></i>GoodReads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://thammegowda.wordpress.com" class="nav-link px-2 text-muted">
+                        <i class="fab fa-wordpress-simple"></i>WordPress</a>
+                    </li>
+            </ul>
+            <span class="col-4 text-muted pull-right">© 2022, Thamme Gowda</span>
+        </div>
+    </div>
+</footer>
+<footer>
+
+</footer>
+</body>
+</html>
