@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Thamme Gowda{% endblock %}
+
+{% block head %}
+    <style>
+        #name {
+            padding: 10px;
+        }
+
+        .degree {
+            padding: 5px;
+            text-align: center;
+        }
+
+        .job {
+            padding: 5px;
+            text-align: center;
+        }
+
+        .img-thumbnail {
+            max-width: 160px;
+            max-height: 160px;
+            width: auto;
+            height: auto;
+        }
+    </style>
+{% endblock head %}
+
+{% block content %}
+    <section id="home" class="section">
+        <div class="row d-flex justify-content-center">
+            <div class="p-4">
+                <img src="{{ static }}/images/tg-202005-min.jpeg" width="100" class="rounded-circle"/>
+                <h3>Thamme Gowda</h3>
+                <span>Email: <code>tg [at] isi.edu</code> | <code>tgowdan [at] gmail.com</code> </span> <br/>
+                <span>Office: #919, ISI Marina del Rey</span>
+            </div>
+            <ul class="nav p-4">
+                {% for name, icon, link in SOCIAL %}
+                    <li class="nav-item"><a href="{{ link }}" class="nav-link px-2 text-muted">
+                        <i class="fab fa-2x fa-{{ icon }}"></i></a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="row">
+            <p>I am a research programmer at USC ISI. In addition, I am pursuing a Ph.D. in Computer Science (advised by
+                <a href="https://www.isi.edu/~jonmay/" target="_blank">Prof. Jonathan May</a>)
+                A copy of <a href="{{ static }}/files/TG-CV.pdf" target="_blank"> my CV is here.</a>
+                My research topic is <a href="{{ static }}/files/2022-TG-diss-proposal.pdf" target="_blank">the rare
+                    phenomena learning in (neural) machine translation</a>.
+                Recently, I've created a translation model that can translate 500 languages into
+                English. See its demo at: <a href="http://rtg.isi.edu/many-eng" target="_blank">
+                    http://rtg.isi.edu/many-eng</a>
+            </p>
+        </div>
+
+        <div class="row">
+            <h3>News:</h3>
+            <ul>
+                <li>I'm organizing Natural Language Seminar Series at USC ISI (for 2021-22 academic year). See <a
+                        href="https://nlg.isi.edu/nl-seminar/" target="_blank">https://nlg.isi.edu/nl-seminar/</a> for
+                    more info!
+                </li>
+                <li>I've passed my Ph.D. dissertation proposal! (<a href="{{ static }}/files/2022-TG-diss-proposal.pdf"
+                                                                    target="_blank">proposal slides</a>)
+                </li>
+            </ul>
+        </div>
+    </section>
+    <section id="education" class="section">
+        <div>
+            <h2>Education</h2>
+            <div class="d-flex align-content-around flex-wrap">
+                <div class="degree">
+                    <span>PhD in CS</span>
+                    <p>2018-[2022]</p>
+                    <a href="https://viterbischool.usc.edu/" target="_blank">
+                        <img src="{{ static }}/images/logo-viterbi.jpg" class="img-thumbnail"/></a>
+                </div>
+                <div class="degree">
+                    <span>MS in CS</span>
+                    <p>2015-2017</p>
+                    <a href="https://viterbischool.usc.edu/" target="_blank">
+                        <img src="{{ static }}/images/logo-viterbi.jpg" class="img-thumbnail"/></a>
+                </div>
+                <div class="degree">
+                    <span>BE in CS&E</span>
+                    <p>2008-2012</p>
+                    <a href="https://vtu.ac.in/" target="_blank">
+                        <img src="{{ static }}/images/logo-VTU.jpg" class="img-thumbnail"/></a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="experience" class="section">
+        <div class="section">
+            <h2>Professional Career</h2>
+            <div class="d-flex align-content-around flex-wrap">
+                <div class="job">
+                    <span>Research Programmer (I ⇨ II)</span>
+                    <p>2017-present</p>
+                    <a href="https://www.isi.edu/" target="_blank">
+                        <img src="{{ static }}/images/logo-USCISI.jpg" class="img-thumbnail"/></a>
+                </div>
+                <div class="job">
+                    <span>Data Scientist (intern)</span>
+                    <p>2016-2017</p>
+                    <a href="https://www.jpl.nasa.gov/" target="_blank">
+                        <img src="{{ static }}/images/logo-NASA-JPL.jpg" class="img-thumbnail"/></a>
+                </div>
+                <div class="job">
+                    <span>Research Assistant</span>
+                    <p>2015-2016</p>
+                    <a href="https://irds.usc.edu/" target="_blank">
+                        <img src="{{ static }}/images/logo-viterbi.jpg" class="img-thumbnail"/>
+                    </a>
+                </div>
+                <div class="job">
+                    <span>Technical Co-Founder</span>
+                    <p>2014-[2015]</p>
+                    <a href="https://datoin.com/" target="_blank">
+                        <img src="{{ static }}/images/logo-datoin.jpg" class="img-thumbnail"/>
+                    </a>
+                </div>
+                <div class="job">
+                    <span>Software Engineer</span>
+                    <p>2012-2014</p>
+                    <a href="https://in.linkedin.com/company/simplyphi-software-solutions-pvt-ltd">
+                        <img src="{{ static }}/images/logo-simplyphi.jpg" class="img-thumbnail"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section" id="more">
+        <h2 id="_more">More ?</h2>
+        <div class="sectionbody">
+                <p>I speak Kannada/ಕನ್ನಡ, Telugu/తెలుగు, and Hindi/हिन्दी (+English, of course!).
+                    I was raised by a family of farmers in a southern Indian village.
+                    So, beside the "professional" experience that I have displayed here, I also have
+                    much more experience in agriculture that you will not hear: vineyard, silkworms,
+                    dairy, sheep, poultry...!</p>
+                <p>I came to this grad school for learning the artificial intelligence, but I also
+                    ended up learning a bit about myself/consciousness:</p>
+            <div class="quoteblock">
+
+                <figure class="text-center">
+                  <blockquote class="blockquote">
+                    <p>While coding an artificial soul for machines<br>
+                            He wins his gifts, defeats his curses<br>
+                            And discovers his own soul that thinks and feels!</p>
+                  </blockquote>
+                  <figcaption class="blockquote-footer">
+                     <cite title="Self'-reflection; 2020">Self'-reflection; 2020</cite>
+                  </figcaption>
+                </figure>
+
+
+                 <figure class="text-center">
+                  <blockquote class="blockquote">
+                    <p>Consciousness is divine [Prajnanam Brahman]<br>
+                        This self/Atma is divine [Ayam Atma Brahman]<br>
+                        You are that [Tat Vam Asi]<br>
+                        I am (part-of) it [Aham Brahmasmi]</p>
+                  </blockquote>
+                  <figcaption class="blockquote-footer">
+                     <cite title="The Great Sayings of the Upanishads; BCE">The Great Sayings of the Upanishads; BCE</cite>
+                  </figcaption>
+                </figure>
+            </div>
+        </div>
+    </section>
+{% endblock %}
