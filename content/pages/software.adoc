@@ -18,7 +18,11 @@ Solving problems using math and computers is my favourite job to do.
 In early days of my career, I aspired to be a good software engineer, and I passionately pursued it until I slowly transitioned towards a research career.
 While I write less code as a researcher than what I'm used to doing as a software engineer, I emphasize on good software engineering practices, and open sourcing of tools with a permissible license.
 In the beginning (2012-2016) I wrote much of my code in Java/Groovy/Scala, but in the recent years (2016-Now), Python has become my go to choice. I  have released a bunch of tools to https://pypi.org/user/Thamme.Gowda/[PyPi^].
+
+
+image::https://stackexchange.com/users/flair/1632148.png[float="right",align="center", link="https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts"]
 I sometimes participate in https://stackoverflow.com/users/1506477/thamme-gowda[StackOverflow QA threads^].
+
 
 Here are some of my selected projects:
 

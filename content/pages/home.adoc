@@ -12,7 +12,7 @@
 :description: Thamme Gowda's home page at USC ISI
 :keywords: Thamme, Gowda, Thamme Gowda, TG, Narayanaswamy
 :url:
-:save_as: index.html
+:save_as: index2.html
 :template: page
 
 //dont show title on the home page
@@ -28,7 +28,7 @@
 </style>
 ++++
 // == About me
-+++<img src="{static}/images/tg-202005.jpg" width="160" height="160" align="right" />+++
++++<img src="{static}/images/tg-202005.jpeg" width="160" height="160" align="right" />+++
 My name is https://isi.edu/~tg/[Thamme Gowda], aka 'TG'.
 I am doing a bunch of tasks now, maybe you want to know me as one of these:
 

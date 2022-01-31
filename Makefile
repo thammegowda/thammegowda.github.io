@@ -58,6 +58,7 @@ help:
 
 html:
 	"$(PELICAN)" "$(INPUTDIR)" -o "$(OUTPUTDIR)" -s "$(CONFFILE)" $(PELICANOPTS)
+	[[ -e "$(OUTPUTDIR)/index.html" ]] || ln -s home.html "$(OUTPUTDIR)/index.html"
 
 clean:
 	[ ! -d "$(OUTPUTDIR)" ] || rm -rf "$(OUTPUTDIR)"

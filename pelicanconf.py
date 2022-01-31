@@ -10,7 +10,7 @@ SITEURL = 'https://gowda.ai'
 
 PATH = 'content'
 THEME_TEMPLATES_OVERRIDES = ['templates/']  # overridden and new templates goes here
-DIRECT_TEMPLATES = ['index', 'archives', 'publications',]  # 'categories', 'tags', 'authors',
+DIRECT_TEMPLATES = ['index', 'archives', 'publications', 'home']  # 'categories', 'tags', 'authors', 'home',
 TIMEZONE = 'America/Los_Angeles'
 #PAGINATED_TEMPLATES = {'index': 15}
 INDEX_SAVE_AS = 'posts/index.html'
@@ -62,15 +62,14 @@ LINKS = (('USC', 'https://usc.edu/'),
 
 # Social widget
 SOCIAL = (
-    ('tg@isi.edu', 'mailto:'),
-    ('Twitter', 'https://twitter.com/thammegowda'),
-    ('Github', 'https://github.com/thammegowda'),
-    ('LinkedIn', 'https://www.linkedin.com/in/thammegowda/'),
-    ('StackOverflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
-    ('Quora', 'https://www.quora.com/profile/Thamme-Gowda'),
-    ('Instagram', 'https://instagram.com/thammegowda/'),
-    ('GoodReads', 'https://www.goodreads.com/user/show/31845074-thamme-gowda'),
-    ('WordPress', 'https://thammegowda.wordpress.com'),
+    ('Twitter', 'twitter', 'https://twitter.com/thammegowda'),
+    ('Github', 'github', 'https://github.com/thammegowda'),
+    ('LinkedIn', 'linkedin', 'https://www.linkedin.com/in/thammegowda/'),
+    ('StackOverflow', 'stack-overflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
+    ('Quora', 'quora', 'https://www.quora.com/profile/Thamme-Gowda'),
+    ('Instagram', 'instagram', 'https://instagram.com/thammegowda/'),
+    ('GoodReads', 'goodreads', 'https://www.goodreads.com/user/show/31845074-thamme-gowda'),
+    ('WordPress', 'wordpress-simple', 'https://thammegowda.wordpress.com'),
 )
 
 DEFAULT_PAGINATION = 15
