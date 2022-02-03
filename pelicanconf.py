@@ -85,9 +85,9 @@ PLUGINS = ['asciidoc_reader', 'assets', 'pelican.plugins.webassets', 'gravatar',
 
 THEME = "theme-bootstrap5.1"
 
-GOOGLE_ANALYTICS = 'UA-109985365-1'
+# GOOGLE_ANALYTICS = 'UA-109985365-1'
+GOOGLE_ANALYTICS = 'G-51QC82N7TZ'   # Upgraded to new analytics
 TWITTER_USERNAME = 'thammegowda'
-
 
 
 # URLS
