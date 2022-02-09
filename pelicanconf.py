@@ -62,14 +62,15 @@ LINKS = (('USC', 'https://usc.edu/'),
 
 # Social widget
 SOCIAL = (
-    ('Twitter', 'twitter', 'https://twitter.com/thammegowda'),
-    ('Github', 'github', 'https://github.com/thammegowda'),
-    ('LinkedIn', 'linkedin', 'https://www.linkedin.com/in/thammegowda/'),
-    ('StackOverflow', 'stack-overflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
-    ('Quora', 'quora', 'https://www.quora.com/profile/Thamme-Gowda'),
-    ('Instagram', 'instagram', 'https://instagram.com/thammegowda/'),
-    ('GoodReads', 'goodreads', 'https://www.goodreads.com/user/show/31845074-thamme-gowda'),
-    ('WordPress', 'wordpress-simple', 'https://thammegowda.wordpress.com'),
+    ('Scholar', 'fab ai ai-google-scholar-square', 'https://scholar.google.com/citations?user=7Ed3-tMAAAAJ'),
+    ('Twitter', 'fa-twitter', 'https://twitter.com/thammegowda'),
+    ('Github', 'fa-github', 'https://github.com/thammegowda'),
+    ('LinkedIn', 'fa-linkedin', 'https://www.linkedin.com/in/thammegowda/'),
+    ('StackOverflow', 'fa-stack-overflow', 'https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts'),
+    ('Quora', 'fa-quora', 'https://www.quora.com/profile/Thamme-Gowda'),
+    ('Instagram', 'fa-instagram', 'https://instagram.com/thammegowda/'),
+    ('GoodReads', 'fa-goodreads', 'https://www.goodreads.com/user/show/31845074-thamme-gowda')
+    #('WordPress', 'fa-wordpress-simple', 'https://thammegowda.wordpress.com'),
 )
 
 DEFAULT_PAGINATION = 15

@@ -18,6 +18,7 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
     <link href="{{ SITEURL }}/theme/pygments.css" rel="stylesheet">
     <link href="{{ SITEURL }}/theme/custom.css" rel="stylesheet">
     {% include 'analytics.html' %}
@@ -67,8 +68,8 @@
             <ul class="nav col-8">
                 {% for name, icon, link in SOCIAL %}
                     <li class="nav-item">
-                        <a href="{{ link }}" class="nav-link px-2 text-muted">
-                        <i class="fab fa-{{ icon }}"></i>{{ name }}</a>
+                        <a href="{{ link }}" class="nav-link px-2 text-muted" target="_blank">
+                        <i class="fab {{ icon }}"></i>{{ name }}</a>
                     </li>
                 {% endfor %}
             </ul>

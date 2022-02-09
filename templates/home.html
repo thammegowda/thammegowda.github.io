@@ -36,34 +36,32 @@
 {% block content %}
     <section id="home" class="section container">
         <div class="row g-0">
-            <div class="col col-12 col-md-6">
+            <div class="col col-12 col-md-4">
                 <div class="pb-3">
-                    <div class="justify-content-md-center">
+                    <div style="text-align: center">
                         <img src="{{ static }}/images/tg-202005-min.jpeg" width="100" class="rounded-circle"/>
                         <h3>Thamme Gowda</h3>
                         <span>Email: <code>tg [at] isi.edu</code></span><br/>
-                        <span>Office: #919, ISI Marina del Rey</span>
+                        <span>Office: #919, ISI Marina del Rey</span> <br/>
+                        <span><a href="{{ static }}/files/TG-CV.pdf" target="_blank">Curriculum Vitae</a></span>
                     </div>
-                    <ul class="nav py-3">
-                        {% for name, icon, link in SOCIAL %}
-                            <li class="nav-item"><a href="{{ link }}" class="nav-link px-2 text-muted">
-                                <i class="fab fa-2x fa-{{ icon }}"></i></a>
-                            </li>
-                        {% endfor %}
-                    </ul>
                 </div>
             </div>
-            <div class="col col-12 col-md-6">
-                <p>I am a research programmer at USC ISI. In addition, I am pursuing a Ph.D. in Computer Science
-                    (advised by
-                    <a href="https://www.isi.edu/~jonmay/" target="_blank">Prof. Jonathan May</a>)
-                    A copy of <a href="{{ static }}/files/TG-CV.pdf" target="_blank"> my CV is here.</a>
+            <div class="col col-12 col-md-8">
+                <p>I am a research programmer at USC ISI. In addition, I am pursuing a Ph.D. in Computer Science, advised by
+                    <a href="https://www.isi.edu/~jonmay/" target="_blank">Prof. Jonathan May</a>.
                     My research topic is <a href="{{ static }}/files/2022-TG-diss-proposal.pdf" target="_blank">the rare
                         phenomena learning in (neural) machine translation</a>.
                     Recently, I've created a translation model that can translate 500 languages into
-                    English. See its demo at: <a href="http://rtg.isi.edu/many-eng" target="_blank">
-                        http://rtg.isi.edu/many-eng</a>
+                    English. See its demo at: <a href="http://rtg.isi.edu/many-eng" target="_blank">http://rtg.isi.edu/many-eng</a>
                 </p>
+                <ul class="nav py-3">
+                        {% for name, icon, link in SOCIAL %}
+                            <li class="nav-item"><a href="{{ link }}" class="nav-link px-2 text-muted" target="_blank">
+                                <i class="fab fa-2x {{ icon }}"></i></a>
+                            </li>
+                        {% endfor %}
+                    </ul>
             </div>
         </div>
         <div class="row">
