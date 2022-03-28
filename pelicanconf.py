@@ -37,6 +37,7 @@ DISPLAY_CATEGORIES_ON_MENU = False
 # When you don’t specify a category in your post metadata, set this setting to True, and organize your articles in subfolders, the subfolder will become the category of your post. If set to False, DEFAULT_CATEGORY will be used as a fallback.
 USE_FOLDER_AS_CATEGORY = True
 
+STATIC_CREATE_LINKS = True
 STATIC_PATHS = ['images', 'css', 'js', 'projs/csci644hw3', 'fevicon.ico', 'files', 'CNAME']
 ARTICLE_EXCLUDES = ['projs/csci644hw3']
 

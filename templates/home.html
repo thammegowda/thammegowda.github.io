@@ -6,28 +6,23 @@
         #name {
             padding: 10px;
         }
-
         .degree {
             padding: 5px;
             text-align: center;
         }
-
         .job {
             padding: 5px;
             text-align: center;
         }
-
         .img-thumbnail {
             max-width: 10rem;
             max-height: 10rem;
             width: auto;
             height: auto;
         }
-
         .img-thumbnail:hover {
             opacity: 0.65;
         }
-
         section {
             margin-top: 1.5rem;;
         }
@@ -49,12 +44,11 @@
                 </div>
             </div>
             <div class="col col-12 col-md-8">
-                <p>I am a research programmer at USC ISI. In addition, I am pursuing a Ph.D. in Computer Science, advised by
-                    <a href="https://www.isi.edu/~jonmay/" target="_blank">Prof. Jonathan May</a>.
-                    My research topic is <a href="{{ static }}/files/2022-TG-diss-proposal.pdf" target="_blank">the rare
+                <p>I am a research programmer at USC ISI.
+                    My research topic is <a href="{{ static }}/files/2022-TG-diss-defense.pdf" target="_blank"> rare
                         phenomena learning in (neural) machine translation</a>.
-                    Recently, I've created a translation model that can translate 500 languages into
-                    English. See its demo at: <a href="http://rtg.isi.edu/many-eng" target="_blank">http://rtg.isi.edu/many-eng</a>
+                    Recently, I've created a translation model that can translate 600 languages into
+                    English; see its demo and learn more at: <a href="http://rtg.isi.edu/many-eng" target="_blank">http://rtg.isi.edu/many-eng</a>
                 </p>
                 <ul class="nav py-3">
                         {% for name, icon, link in SOCIAL %}
@@ -68,15 +62,14 @@
         <div class="row">
             <h3>News:</h3>
             <ul class="ist-group">
-                <li class="ist-group-item">I'm organizing Natural Language Seminar Series at USC ISI (for 2021-22
+               <!-- <li class="ist-group-item">I'm organizing Natural Language Seminar Series at USC ISI (for 2021-22
                     academic year). See <a
                             href="https://nlg.isi.edu/nl-seminar/" target="_blank">https://nlg.isi.edu/nl-seminar/</a>
-                    for
-                    more info!
-                </li>
-                <li class="ist-group-item">I've passed my Ph.D. dissertation proposal! (<a
-                        href="{{ static }}/files/2022-TG-diss-proposal.pdf"
-                        target="_blank">proposal slides</a>)
+                    for  more info!
+                </li> -->
+                <li class="ist-group-item"><code>2022/03/22: </code>
+                    I've successfully defended my Ph.D. dissertation! (
+                    <a href="{{ static }}/files/2022-TG-diss-defense.pdf" target="_blank">defense slides</a>).
                 </li>
             </ul>
         </div>
@@ -87,7 +80,7 @@
             <div class="d-flex align-content-around flex-wrap">
                 <div class="degree mx-2">
                     <span>PhD in CS</span>
-                    <p>2018-[2022]</p>
+                    <p>2018-2022</p>
                     <a href="https://viterbischool.usc.edu/" target="_blank">
                         <img src="{{ static }}/images/logo-viterbi.jpg" class="img-thumbnail"/></a>
                 </div>
@@ -104,7 +97,6 @@
                         <img src="{{ static }}/images/logo-VTU.jpg" class="img-thumbnail"/></a>
                 </div>
             </div>
-
         </div>
     </section>
 
