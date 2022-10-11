@@ -13,20 +13,11 @@
 
 <body class="container">
     <div class="wrap">
-
         <section>
             <h1>BibTeX Filter</h1>
-            <p>This web app helps in filtering bibtex entries (those you use) from a large bibtex database. My usecase:
-                I start my papers with ACL Anothology (a large db with thousands of entries) and this filter help pick
-                the articles that I actually used in my paper.</p>
-            <b>How to use:</b>
-            <ol>
-                <li>Select/Chose your .bib file</li>
-                <li> Paste your TeX/LaTeX text</li>
-                <li>Click Parse and Filter. If there are no errors, you will be able to download/save filered refs.bib
-                    file.</li>
-                <br />
-
+            <p>This web app helps in filtering bibtex entries (those you use) from a large bibtex database. 
+                My usecase: We start drafting a paper with a large BibTeX db with thousands of entries(e.g., ACL Anothology.bib) and later use this filter to select the subset of articles that we actually used in the paper.</p>
+                <p>It is a three-step process:</p>
                 <form action="#" onsubmit="parse_data(); return false;">
                     <div>
                         <label for="dbfile" class="form-label">Step 1: Select your BibTeX file (*.bib) with all
@@ -39,6 +30,7 @@
                     </div>
                     <div>
                         Step 3: <button id="submit" type="submit" class="btn btn-primary my-3">Parse and Filter</button>
+                        <p>If there are no errors, you will be able to download/save filered refs.bib</p> 
                     </div>
                 </form>
         </section>
@@ -119,10 +111,10 @@
     </div>
     <footer class="row" style="text-align: center">
         <small class="col-12 font-weight-light float-none">Created by <a href="https://github.com/thammegowda/boteval" target="_blank"> Thamme Gowda</a>.
-            Powered by <a href="https://github.com/ORCID/bibtexParseJs" target="_blank">ORCID/bibtexParseJs</a>.
-            This is a single-page open-source application (right click > 'View Source' for source code).
-            Parsing and filtering happens within your browser (i.e., your data never leaves your browser).
-            Feel free to fork this page (sharing credits would be greatly appreaciated). </small>
+            Powered by <a href="https://github.com/ORCID/bibtexParseJs" target="_blank">ORCID/bibtexParseJs</a>. <br/>
+            This is a single-page open-source application (right click > 'View Source' for source code). <br/>
+            Parsing and filtering happens within your browser (i.e., your data never leaves your browser). <br/>
+            Feel free to fork this page (sharing credits would be greatly appreciated!). </small>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-51QC82N7TZ"></script>
         <script>
         window.dataLayer = window.dataLayer || [];
@@ -132,5 +124,4 @@
         </script>
     </footer>
 </body>
-
 </html>
