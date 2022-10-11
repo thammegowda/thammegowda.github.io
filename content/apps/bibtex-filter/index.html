@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BibTeX Filter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="bibtexParse.js"></script>
+</head>
+
+<body class="container">
+    <div class="wrap">
+
+        <section>
+            <h1>BibTeX Filter</h1>
+            <p>This web app helps in filtering bibtex entries (those you use) from a large bibtex database. My usecase:
+                I start my papers with ACL Anothology (a large db with thousands of entries) and this filter help pick
+                the articles that I actually used in my paper.</p>
+            <b>How to use:</b>
+            <ol>
+                <li>Select/Chose your .bib file</li>
+                <li> Paste your TeX/LaTeX text</li>
+                <li>Click Parse and Filter. If there are no errors, you will be able to download/save filered refs.bib
+                    file.</li>
+                <br />
+
+                <form action="#" onsubmit="parse_data(); return false;">
+                    <div>
+                        <label for="dbfile" class="form-label">Step 1: Select your BibTeX file (*.bib) with all
+                            references</label>
+                        <input class="form-control form-control-lg" id='dbfile' type="file" name="refs" required>
+                    </div>
+                    <div class="my-2">
+                        <textarea class="form-control" id="text" cols="120" rows="5" required
+                            placeholder="Step 2: Paste your TeX/LaTeX content having \cite{}"></textarea>
+                    </div>
+                    <div>
+                        Step 3: <button id="submit" type="submit" class="btn btn-primary my-3">Parse and Filter</button>
+                    </div>
+                </form>
+        </section>
+        <hr />
+        <script type="text/javascript">
+            let db_refs = null;
+            let uniq_keys = null;
+
+            function download_text(text, filename = 'refs.bib') {
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+                element.setAttribute('target', '_blank');
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            }
+
+            function filter_refs() {
+                console.log(`DB has ${db_refs.length} entries`)
+                console.log(`We have found ${uniq_keys.size} keys`)
+                let chosen = []
+                let missing_keys = []
+                let key2obj = new Map(db_refs.map(r => [r.citationKey, r]))
+                for (const key of uniq_keys) {
+                    if (key2obj.has(key)) {
+                        chosen.push(key2obj.get(key))
+                    } else {
+                        missing_keys.push(key)
+                    }
+                }
+                console.log(`Found ${chosen.length} valid entries;  ${missing_keys.length} keys are missing`)
+                console.log(missing_keys)
+                let res = bibtexParse.toBibtex(chosen, compact = false)
+                download_text(res)
+                if (missing_keys.length > 0) {
+                    alert(`missing bibtex for ${missing_keys.length} keys and are not included in output:\n  ${missing_keys.join("\n  ")}\n`)
+                }
+            }
+
+            function parse_data() {
+                const text = document.getElementById('text').value
+                const display = document.getElementById('display')
+                if (!text) {
+                    alert('Please paste your TeXLaTex code')
+                    return
+                }
+                let dbfile = document.getElementById('dbfile').files
+                if (!dbfile) {
+                    alert('Please select references db file (eg file with .bib) ext')
+                    return
+                }
+                const regex = /cite[tp]?\{(?<key>[^}]+)\}/g
+                let keys_set = new Set()
+
+                for (const match of text.matchAll(regex)) {
+                    for (const key of match.groups['key'].split(',')) {
+                        keys_set.add(key.trim())
+                    }
+                }
+                uniq_keys = keys_set
+                console.log('Uniques keys found ' + uniq_keys.size)
+                //console.log(uniq_keys)
+
+                dbfile = dbfile[0]
+                const reader = new FileReader();
+                reader.readAsText(dbfile);
+                reader.onload = () => {
+                    var db_text = reader.result
+                    console.log('db text loaded; string length ' + db_text.length)
+                    db_refs = bibtexParse.toJSON(db_text);
+                    console.log('db parsed; num entries: ' + db_refs.length)
+                    filter_refs()
+                };
+            }
+        </script>
+    </div>
+    <footer class="row" style="text-align: center">
+        <small class="col-12 font-weight-light float-none">Created by <a href="https://github.com/thammegowda/boteval" target="_blank"> Thamme Gowda</a>.
+            Powered by <a href="https://github.com/ORCID/bibtexParseJs" target="_blank">ORCID/bibtexParseJs</a>.
+            This is a single-page open-source application (right click > 'View Source' for source code).
+            Parsing and filtering happens within your browser (i.e., your data never leaves your browser).
+            Feel free to fork this page (sharing credits would be greatly appreaciated). </small>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-51QC82N7TZ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-51QC82N7TZ');
+        </script>
+    </footer>
+</body>
+
+</html>

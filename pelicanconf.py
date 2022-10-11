@@ -38,8 +38,9 @@ DISPLAY_CATEGORIES_ON_MENU = False
 USE_FOLDER_AS_CATEGORY = True
 
 STATIC_CREATE_LINKS = True
-STATIC_PATHS = ['images', 'css', 'js', 'projs/csci644hw3', 'fevicon.ico', 'files', 'CNAME']
-ARTICLE_EXCLUDES = ['projs/csci644hw3']
+STATIC_PATHS = ['images', 'css', 'js', 'projs/csci644hw3', 'fevicon.ico', 'files', 'CNAME', 'apps']
+# exclude from parsing
+ARTICLE_EXCLUDES = ['projs/csci644hw3', 'apps/bibtex-filter']
 
 MENUITEMS = (
     ('Notes', f'{SITEURL}/notes'),
