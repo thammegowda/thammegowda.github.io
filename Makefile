@@ -9,14 +9,14 @@ OUTPUTDIR=$(BASEDIR)/docs
 CONFFILE=$(BASEDIR)/pelicanconf.py
 PUBLISHCONF=$(BASEDIR)/publishconf.py
 
-FTP_HOST=holst.isi.edu
-FTP_USER=tg
-FTP_TARGET_DIR=public_html
+#FTP_HOST=holst.isi.edu
+#FTP_USER=tg
+#FTP_TARGET_DIR=public_html
 
-SSH_HOST=holst.isi.edu
-SSH_PORT=19888
-SSH_USER=tg
-SSH_TARGET_DIR=~/public_html
+#SSH_HOST=holst.isi.edu
+#SSH_PORT=19888
+#SSH_USER=tg
+#SSH_TARGET_DIR=~/public_html
 
 
 DEBUG ?= 0
