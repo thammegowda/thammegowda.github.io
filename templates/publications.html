@@ -23,6 +23,7 @@
     <a href="https://www.semanticscholar.org/author/Thamme-Gowda/145845766" class="bare">Semantic
       Scholar</a>
   <ol>
+    But here is a list:
     {% for key, year, text, bibtex, pdf, slides, poster in publications|sort(attribute='1',
     reverse=True) %}
     <li id="{{ key }}">{{ text.replace('Thamme Gowda', '<b>Thamme Gowda</b>' ) }}

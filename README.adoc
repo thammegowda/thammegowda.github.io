@@ -11,8 +11,8 @@ conda activate pelican
 pip install bulrush==0.5.0 pelican-webassets==2.0.0 pybtex==0.24.0
 
 # get pelican plugins and themes
-git clone --recursive https://github.com/getpelican/pelican-plugins
-git clone --recursive https://github.com/getpelican/pelican-themes
+git clone --recursive --depth=1 https://github.com/getpelican/pelican-plugins
+git clone --recursive --depth=1 https://github.com/getpelican/pelican-themes
 git clone git@github.com:vene/pelican-bibtex.git pelican-plugins/pelican-bibtex
 
 
