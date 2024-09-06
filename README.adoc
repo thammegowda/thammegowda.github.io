@@ -1,24 +1,9 @@
-
 == Setup
 
 [source,bash]
 ----
-# create an env if not exists
-conda create -n pelican python=3.9 pip
-conda activate pelican
-
-# install python packages if not already
-pip install bulrush==0.5.0 pelican-webassets==2.0.0 pybtex==0.24.0
-
-# get pelican plugins and themes
-git clone --recursive --depth=1 https://github.com/getpelican/pelican-plugins
-git clone --recursive --depth=1 https://github.com/getpelican/pelican-themes
-git clone git@github.com:vene/pelican-bibtex.git pelican-plugins/pelican-bibtex
-
-
-
-# TODO: Install asciidoctor
-gem install asciidoctor
+git clone --recurse-submodules -j8 git@github.com:thammegowda/thammegowda.github.io.git
+bash setup.sh
 
 ----
 
@@ -26,6 +11,7 @@ gem install asciidoctor
 
    make clean
    make html
+
 
 == Development
 

@@ -1,0 +1,11 @@
+name: pelican
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - asciidoctor
+  - pip:
+    - bulrush==0.6.3
+    - pelican-webassets==2.0.0
+    - pybtex==0.24.0

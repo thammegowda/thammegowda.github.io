@@ -43,10 +43,10 @@ STATIC_PATHS = ['images', 'css', 'js', 'projs/csci644hw3', 'fevicon.ico', 'files
 ARTICLE_EXCLUDES = ['projs/csci644hw3', 'apps/bibtex-filter']
 
 MENUITEMS = (
-    ('Notes', f'{SITEURL}/notes'),
-    ('Publications', f'{SITEURL}/publications.html'),
-    ('Software', f'{SITEURL}/software'),
-    ('Blog', f'{SITEURL}/posts'),
+    ('Notes', f'/notes'),
+    ('Publications', f'/publications.html'),
+    ('Software', f'/software'),
+    ('Blog', f'/posts'),
 )
 
 #     ('Home', f'{SITEURL}'),
