@@ -24,10 +24,10 @@
     {% include 'analytics.html' %}
     {% block head %}{% endblock %}
 </head>
-<body class="container">
+<body class="container-fluid">
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
+    <div class="container-fluid">
         <a class="navbar-brand" href="{{ SITEURL }}">{{ SITENAME }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@
     </div>
 </nav>
 
-<div class="container">
+<div class="container-fluid">
     {% block content %}{% endblock %}
 </div>
 
@@ -72,8 +72,8 @@
                         <i class="fab {{ icon }}"></i>{{ name }}</a>
                     </li>
                 {% endfor %}
+                <li class="text-muted nav-item"> <a href="#" class="nav-link px-2 text-muted">| © Thamme Gowda</a></li>
             </ul>
-            <span class="col-4 text-muted pull-right">© 2022, Thamme Gowda</span>
         </div>
     </div>
 </footer>

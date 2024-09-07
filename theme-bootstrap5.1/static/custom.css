@@ -1,9 +1,17 @@
-body {
-    font-size: 1.3rem;
+
+.blockquote{
+    font-size: 1.05em;
 }
 
 .content {
     padding-top: 20px;
+}
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.5em;
 }
 
 blockquote cite a, blockquote cite a:visited {
