@@ -1,6 +1,8 @@
-.idea
-__pycache__
-#pelican-plugins
-/bulrush-xt/
-.history
-.vscode
+public/
+resources/
+.hugo_build.lock
+__pycache__/
+*.pyc
+.history/
+.vscode/
+data/publications.yaml

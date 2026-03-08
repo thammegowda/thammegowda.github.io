@@ -1,0 +1,112 @@
+baseURL: "https://gowda.ai/"
+languageCode: en-us
+title: "Thamme Gowda"
+theme: PaperMod
+pagination:
+  pagerSize: 15
+defaultContentLanguage: en
+
+# Security: allow asciidoctor
+security:
+  exec:
+    allow:
+      - ^asciidoctor$
+
+markup:
+  asciidocExt:
+    backend: html5
+    extensions: []
+    attributes:
+      icons: font
+      source-highlighter: rouge
+    safeMode: unsafe
+    trace: false
+  highlight:
+    noClasses: false
+
+# URLs controlled via explicit `url:` in front matter for backward compatibility
+# permalinks:
+#   posts: "/posts/:year/:month/:slug/"
+
+# Output formats
+outputs:
+  home:
+    - HTML
+    - RSS
+
+# Google Analytics
+services:
+  googleAnalytics:
+    id: G-51QC82N7TZ
+
+params:
+  env: production
+  author: Thamme Gowda
+  description: "Thamme Gowda - Research Scientist at Microsoft Translator"
+  keywords:
+    - NLP
+    - Machine Translation
+    - Research
+    - Computer Science
+
+  defaultTheme: auto
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowToc: true
+  TocOpen: false
+
+  homeInfoParams:
+    Title: ""
+    Content: ""
+
+  socialIcons:
+    - name: googlescholar
+      url: "https://scholar.google.com/citations?user=7Ed3-tMAAAAJ"
+    - name: github
+      url: "https://github.com/thammegowda"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/thammegowda/"
+    - name: twitter
+      url: "https://twitter.com/thammegowda"
+    - name: stackoverflow
+      url: "https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts"
+    - name: instagram
+      url: "https://instagram.com/thammegowda/"
+    - name: goodreads
+      url: "https://www.goodreads.com/user/show/31845074-thamme-gowda"
+    - name: email
+      url: "mailto:tgowdan@gmail.com"
+
+  assets:
+    favicon: "/favicon.ico"
+
+  label:
+    text: "Thamme Gowda"
+    icon: ""
+    iconHeight: 35
+
+menu:
+  main:
+    - identifier: home
+      name: Home
+      url: /
+      weight: 1
+    - identifier: publications
+      name: Publications
+      url: /publications/
+      weight: 2
+    - identifier: blog
+      name: Blog
+      url: /posts/
+      weight: 3
+    - identifier: software
+      name: Software
+      url: /software/
+      weight: 4
+    - identifier: notes
+      name: Notes
+      url: /notes/
+      weight: 5
