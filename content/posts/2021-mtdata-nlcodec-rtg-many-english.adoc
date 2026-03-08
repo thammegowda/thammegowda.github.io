@@ -1,16 +1,16 @@
-= Many-to-English Machine Translation Tools, Data, and Pretrained Models
-:author: Thamme Gowda <tg@isi.edu>
-//; Jonathan May <jonmay@isi.edu>
-:date: 2021-04-25 10:20
-// :modified: 2020-12-04 18:40
-:tags: NMT
-:category: Paper
-:template: article
-:slug: mtdata-nlcodec-rtg-many-english
-:icons: font
-:lang: en
-:summary: Many-to-English Machine Translation Tools, Data, and Pretrained Models
-:description: We present useful tools for machine translation research: MTData, NLCodec, and RTG. We demonstrate their usefulness by creating a multilingual neural machine translation model capable of translating from 500 source languages to English. We make this multilingual model readily downloadable and usable as a service, or as a parent model for transfer-learning to even lower-resource languages.
+---
+title: "Many-to-English Machine Translation Tools, Data, and Pretrained Models"
+date: 2021-04-25T10:20:00
+author: "Thamme Gowda"
+summary: "Many-to-English Machine Translation Tools, Data, and Pretrained Models"
+description: "We present useful tools for machine translation research: MTData, NLCodec, and RTG. We demonstrate their usefulness by creating a multilingual neural machine translation model capable of translating from 500 source languages to English. We make this multilingual model readily downloadable and usable as a service, or as a parent model for transfer-learning to even lower-resource languages."
+slug: "mtdata-nlcodec-rtg-many-english"
+url: "/posts/2021/04/mtdata-nlcodec-rtg-many-english/"
+tags: ["NMT"]
+categories: ["Paper"]
+ShowToc: true
+TocOpen: false
+---
 
 __Collaborators: Zhao Zhang, Chris A Mattmann, and Jonathan May__
 
@@ -167,4 +167,5 @@ https://aclanthology.org/2021.acl-demo.37/
 
 Thanks to USC CARC, and TACC for providing computing resources.
 Thanks to Jörg Tiedemann for hosting the dataset at OPUS.
+
 

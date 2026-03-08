@@ -1,22 +1,16 @@
-= Sequence Transduction: Generalization and Challenges
-:author: Thamme Gowda <tg@isi.edu>
-//; Jonathan May <jonmay@isi.edu>
-:date: 2021-05-04 10:20
-// :modified: 2020-12-04 18:40
-:tags: NMT
-:category: Note
-:template: article
-:slug: nmt-generalization-n-challenges
-:icons: font
-:lang: en
-:summary:
-:description: Sequence to sequence transduction is a general problem, for which many other problems are special cases. I also highlight some challenges of this general problem.
+---
+title: "Sequence Transduction: Generalization and Challenges"
+date: 2021-05-04T10:20:00
+author: "Thamme Gowda"
+description: "Sequence to sequence transduction is a general problem, for which many other problems are special cases. I also highlight some challenges of this general problem."
+slug: "nmt-generalization-n-challenges"
+url: "/posts/2021/05/nmt-generalization-n-challenges/"
+tags: ["NMT"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+---
 
-//== Abstract
-
-// == Links
-
-//== Summary
 Sequence-to-sequence transduction, e.g. neural machine translation (NMT), is a general problem.
 This task involves transformation of a sequence of symbols to another sequence of symbols, where both input and output can have varying lengths.
 
@@ -45,3 +39,4 @@ A, B, C, and D are special cases of E. this implies,
 
 
 // == Acknowledgements
+
