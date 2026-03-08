@@ -1,23 +1,23 @@
-= I Let Two AI Agents Race to Modernize pigz
-:author: Thamme Gowda <tgowdan@gmail.com>
-:date: 2026-03-07 20:20
-:tags: AI, Agent, C++, Compression, pigz
-:category: Note
-:template: article
-:slug: pigzpp-with-agents
-:icons: font
-:lang: en
-:toc: macro
-:toclevels: 2
-:summary: I gave Claude Opus 4.6 and GPT 5.4 the same task: rewrite pigz (a parallel gzip tool) in modern C++23. After 70 minutes, one delivered a clean-room rewrite, the other a wrapper around the old code. Then I pushed the winner to beat pigz -- and it did.
-:description: I gave Claude Opus 4.6 and GPT 5.4 the same task: rewrite pigz in modern C++23 as a thread-safe library. One agent did a clean-room rewrite, the other wrapped the legacy code. The winner went on to beat pigz by up to 1.8x compression and 2.4x decompression.
+---
+title: "I Let Two AI Agents Race to Modernize pigz"
+date: 2026-03-07T20:20:00
+author: "Thamme Gowda"
+summary: "I gave Claude Opus 4.6 and GPT 5.4 the same task: rewrite pigz (a parallel gzip tool) in modern C++23. After 70 minutes, one delivered a clean-room rewrite, the other a wrapper around the old code. Then I pushed the winner to beat pigz -- and it did."
+description: "I gave Claude Opus 4.6 and GPT 5.4 the same task: rewrite pigz in modern C++23 as a thread-safe library. One agent did a clean-room rewrite, the other wrapped the legacy code. The winner went on to beat pigz by up to 1.8x compression and 2.4x decompression."
+slug: "pigzpp-with-agents"
+url: "/posts/2026/03/pigzpp-with-agents/"
+tags: ["AI", "Agent", "C++", "Compression", "pigz"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+---
 
 toc::[]
 
 Compression is everywhere -- from PNG/JPG images to reducing network bandwidth for faster transfers.
 It's also one of those fascinating areas where you learn about trade-offs: you can find a method that's great at reducing size but painfully slow (gzip level 9), or one that's "okay" but fast (e.g. gzip level 3), or a trade-off (e.g. gzip level 6).
 
-== The Itch
+== The Need for Faster Compression
 
 Ever since I started working on machine translation, our datasets have been kept compressed.
 Initially I just used gzip/gunzip/zcat directly or via tar.
@@ -315,3 +315,4 @@ If I couldn't objectively measure whether the output was correct and fast, I wou
 '''
 
 _pigzpp is open source: https://github.com/thammegowda/pigzpp[github.com/thammegowda/pigzpp^]_
+

@@ -1,0 +1,113 @@
+{{ define "main" }}
+<div class="post-content">
+  <section id="home" style="margin-bottom: 2rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
+      <div style="text-align: center; flex: 0 0 auto;">
+        <img src="/images/tg-202005-min.jpeg" alt="Thamme Gowda"
+             style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;" />
+        <h2 style="margin-top: 0.5rem; margin-bottom: 0.25rem;">Thamme Gowda</h2>
+        <p style="color: var(--secondary); font-size: 0.9rem;">
+          Email: <code>tgowdan [at] gmail [dot] com</code><br/>
+          <a href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">Curriculum Vitae</a>
+        </p>
+      </div>
+      <div style="flex: 1; min-width: 280px;">
+        <p>Thamme Gowda is a Research Scientist at <a href="https://translator.microsoft.com/" target="_blank" rel="noopener">Microsoft Translator</a>.
+          He obtained his Ph.D. (2022) and MS (2017) from <a href="https://viterbischool.usc.edu/" target="_blank" rel="noopener">USC</a>, both majoring in Computer Science.
+          Previously, he worked as a Research Engineer at <a href="https://isi.edu" target="_blank" rel="noopener">USC ISI</a> (2017–22; for <a href="https://www.linkedin.com/posts/thammegowda_usc-fighton-gratitude-activity-6968419016268804096-_Ry0/" target="_blank" rel="noopener">five years!</a>),
+          a Data Scientist intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener">NASA JPL</a> (2016–17),
+          a Committer and PMC member at <a href="https://people.apache.org/phonebook.html?uid=thammegowda" target="_blank" rel="noopener">the Apache Software Foundation</a>,
+          a full-stack software developer at a startup (2012–14),
+          and co-founder at <a href="https://datoin.com/home/aboutus/#teamlink" target="_blank" rel="noopener">Datoin.com</a> (2014–15).</p>
+        <p>His recent focus is on neural machine translation and rare phenomena learning problem
+          (<a href="/files/2022-TG-diss-1space.pdf" target="_blank" rel="noopener">dissertation</a>,
+           <a href="/files/2022-TG-diss-defense.pdf" target="_blank" rel="noopener">slides</a>).</p>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+          {{ range .Site.Params.socialIcons }}
+          <a href="{{ .url }}" target="_blank" rel="noopener noreferrer me" title="{{ .name }}" style="font-size: 1.5rem;">
+            {{ partial "svg.html" . }}
+          </a>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="education" style="margin-bottom: 2rem;">
+    <h2>Education</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+      {{ $degrees := slice
+        (dict "title" "PhD in CS" "years" "2018–2022" "url" "https://viterbischool.usc.edu/" "logo" "/images/logo-viterbi.jpg")
+        (dict "title" "MS in CS" "years" "2015–2017" "url" "https://viterbischool.usc.edu/" "logo" "/images/logo-viterbi.jpg")
+        (dict "title" "BE in CS&E" "years" "2008–2012" "url" "https://vtu.ac.in/" "logo" "/images/logo-VTU.jpg")
+      }}
+      {{ range $degrees }}
+      <div style="text-align: center; padding: 0.75rem;">
+        <strong>{{ .title }}</strong>
+        <p style="color: var(--secondary); margin: 0.25rem 0;">{{ .years }}</p>
+        <a href="{{ .url }}" target="_blank" rel="noopener">
+          <img src="{{ .logo }}" alt="{{ .title }}"
+               style="max-width: 8rem; max-height: 8rem; border-radius: 8px; border: 1px solid var(--border); transition: opacity 0.2s;"
+               onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" />
+        </a>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+
+  <section id="experience" style="margin-bottom: 2rem;">
+    <h2>Professional Career</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+      {{ $jobs := slice
+        (dict "title" "Research Scientist" "years" "2022/11 – Now" "url" "https://translator.microsoft.com/" "logo" "/images/logo-Microsoft.png")
+        (dict "title" "Research Engineer" "years" "2017/07 – 2022/10" "url" "https://www.isi.edu/" "logo" "/images/logo-USCISI.jpg")
+        (dict "title" "Data Scientist (intern)" "years" "2016 – 2017" "url" "https://www.jpl.nasa.gov/" "logo" "/images/logo-NASA-JPL.jpg")
+        (dict "title" "Research Assistant" "years" "2015 – 2016" "url" "https://irds.usc.edu/" "logo" "/images/logo-viterbi.jpg")
+        (dict "title" "Technical Co-Founder" "years" "2014 – 2015" "url" "https://datoin.com/" "logo" "/images/logo-datoin.jpg")
+        (dict "title" "Software Engineer" "years" "2012 – 2014" "url" "https://in.linkedin.com/company/simplyphi-software-solutions-pvt-ltd" "logo" "/images/logo-simplyphi.jpg")
+      }}
+      {{ range $jobs }}
+      <div style="text-align: center; padding: 0.75rem;">
+        <strong>{{ .title }}</strong>
+        <p style="color: var(--secondary); margin: 0.25rem 0;">{{ .years }}</p>
+        <a href="{{ .url }}" target="_blank" rel="noopener">
+          <img src="{{ .logo }}" alt="{{ .title }}"
+               style="max-width: 8rem; max-height: 8rem; border-radius: 8px; border: 1px solid var(--border); transition: opacity 0.2s;"
+               onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" />
+        </a>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+
+  <section id="more" style="margin-bottom: 2rem;">
+    <h2>More?</h2>
+    <p>I speak Kannada/ಕನ್ನಡ, Telugu/తెలుగు, and Hindi/हिन्दी (+English, of course!).
+      I was raised by a family of farmers in a southern Indian village.
+      So, beside the "professional" experience that I have displayed here, I also have
+      much more experience in agriculture that you will not hear: vineyard, silkworms,
+      dairy, sheep, poultry…!</p>
+    <p>I came to this grad school for learning the artificial intelligence, but I also
+      ended up learning a bit about myself/consciousness:</p>
+
+    <figure style="text-align: center; margin: 1.5rem 0;">
+      <blockquote style="font-style: italic; color: var(--secondary); line-height: 1.8; border-left: 3px solid var(--tertiary); padding-left: 1rem;">
+        <p>While coding an artificial soul for machines<br/>
+          He wins his gifts, defeats his curses<br/>
+          And discovers his own soul that thinks and feels!</p>
+      </blockquote>
+      <figcaption style="color: var(--secondary); font-size: 0.9rem;">— <cite>Self'-reflection; 2020</cite></figcaption>
+    </figure>
+
+    <figure style="text-align: center; margin: 1.5rem 0;">
+      <blockquote style="font-style: italic; color: var(--secondary); line-height: 1.8; border-left: 3px solid var(--tertiary); padding-left: 1rem;">
+        <p>Consciousness is divine [Prajnanam Brahman]<br/>
+          This self/Atma is divine [Ayam Atma Brahman]<br/>
+          You are that [Tat Vam Asi]<br/>
+          I am (part-of) it [Aham Brahmasmi]</p>
+      </blockquote>
+      <figcaption style="color: var(--secondary); font-size: 0.9rem;">— <cite>The Great Sayings of the Upanishads; BCE</cite></figcaption>
+    </figure>
+  </section>
+</div>
+{{ end }}
