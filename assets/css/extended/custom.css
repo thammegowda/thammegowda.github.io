@@ -1,0 +1,306 @@
+/* Custom overrides for PaperMod theme */
+
+
+:root {
+    /* Fonts: Source Sans 3 (web sub for National 2), Source Serif 4 (sub for Adobe Caslon) */
+    --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-serif: 'Source Serif 4', 'Georgia', serif;
+}
+
+/* Light mode — USC Cardinal accents on warm light background */
+:root {
+    --theme: #faf8f5;
+    --entry: #fff;
+    --primary: #1a1a1a;
+    --secondary: #767676;
+    --tertiary: rgba(153, 0, 0, 0.08);
+    --content: #333;
+    --border: #e0dcd5;
+    --code-bg: #f5f2ec;
+    --code-block-bg: #1e1e1e;
+}
+
+/* Dark mode — Cardinal and Gold pop against dark */
+.dark {
+    --theme: #141010;
+    --entry: #1c1616;
+    --primary: #f0e8e0;
+    --secondary: #b0a89e;
+    --tertiary: rgba(153, 0, 0, 0.15);
+    --content: #d4cec6;
+    --border: #3a3030;
+    --code-bg: #1c1616;
+    --code-block-bg: #0d0a0a;
+}
+
+/* Global font application */
+body {
+    font-family: var(--font-sans);
+}
+
+/* Headings use serif font for academic feel */
+h1, h2, h3, h4, h5, h6,
+.post-title,
+.entry-hint-parent {
+    font-family: var(--font-serif);
+    font-weight: 700;
+}
+
+/* Links: Cardinal red */
+a {
+    color: #990000;
+}
+
+a:hover {
+    color: #FFCC00;
+}
+
+.dark a {
+    color: #e0a0a0;
+}
+
+.dark a:hover {
+    color: #FFCC00;
+}
+
+/* Navbar: subtle Cardinal accent */
+.nav {
+    font-family: var(--font-sans);
+    font-weight: 600;
+}
+
+.nav a.active,
+.nav a:hover {
+    color: #990000 !important;
+}
+
+.dark .nav a.active,
+.dark .nav a:hover {
+    color: #FFCC00 !important;
+}
+
+/* Site title/logo: Cardinal */
+.logo a {
+    font-family: var(--font-serif);
+    font-weight: 700;
+}
+
+/* Post meta — lighter, sans-serif */
+.post-meta {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--secondary);
+}
+
+/* Tags: Cardinal-tinted pills */
+.post-tags a {
+    background: rgba(153, 0, 0, 0.08);
+    border: 1px solid rgba(153, 0, 0, 0.2);
+    color: #990000;
+}
+
+.post-tags a:hover {
+    background: #990000;
+    color: #fff;
+    border-color: #990000;
+}
+
+.dark .post-tags a {
+    background: rgba(153, 0, 0, 0.15);
+    border-color: rgba(153, 0, 0, 0.3);
+    color: #e0a0a0;
+}
+
+.dark .post-tags a:hover {
+    background: #990000;
+    color: #FFCC00;
+    border-color: #990000;
+}
+
+/* Footer social icons: Gold on hover */
+.social-icons a:hover svg {
+    fill: #FFCC00;
+}
+
+/* Pagination active: Cardinal */
+.pagination a.active {
+    background: #990000;
+    color: #fff;
+}
+
+/* Breadcrumbs */
+.breadcrumbs a {
+    color: #990000;
+}
+
+/* Selection highlight: Gold */
+::selection {
+    background: rgba(255, 204, 0, 0.3);
+    color: inherit;
+}
+
+/* ===== End Custom Theme ===== */
+
+/* Improve table styling (exclude admonition tables) */
+.post-content table:not(.admonitionblock table) {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.post-content > table th,
+.post-content > table td,
+.post-content > .table-wrapper table th,
+.post-content > .table-wrapper table td,
+.post-content .tableblock th,
+.post-content .tableblock td {
+    padding: 0.5rem 1rem;
+    text-align: left;
+    border: 1px solid var(--border);
+}
+
+.post-content > table th,
+.post-content > .table-wrapper table th,
+.post-content .tableblock th {
+    background: var(--code-bg);
+    font-weight: 600;
+}
+
+.post-content > table tbody tr:nth-child(odd),
+.post-content > .table-wrapper table tbody tr:nth-child(odd),
+.post-content .tableblock tbody tr:nth-child(odd) {
+    background: var(--code-bg);
+}
+
+/* Article max-width for readability */
+.post-content {
+    max-width: 65rem;
+    margin: 0 auto;
+}
+
+/* AsciiDoc TOC styling */
+#toc.toc {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+#toc .title {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+#toc ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+/* AsciiDoc admonition blocks */
+.admonitionblock {
+    margin: 1.5rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.admonitionblock table {
+    border-collapse: collapse;
+    width: 100%;
+    border: none;
+    margin: 0;
+}
+
+.admonitionblock table,
+.admonitionblock table th,
+.admonitionblock table td {
+    border: none !important;
+    background: transparent !important;
+}
+
+.admonitionblock td.icon {
+    width: 3rem;
+    text-align: center;
+    vertical-align: top;
+    padding: 1rem 0.5rem 1rem 1rem;
+    font-size: 1.4rem;
+}
+
+.admonitionblock td.content {
+    padding: 0.75rem 1rem;
+    vertical-align: top;
+}
+
+/* Hide the Font Awesome <i> and replace with emoji via ::before */
+.admonitionblock td.icon i {
+    font-style: normal;
+    font-size: 0;
+}
+
+.admonitionblock td.icon i::before {
+    font-size: 1.4rem;
+}
+
+/* NOTE */
+.admonitionblock.note {
+    background: rgba(56, 132, 244, 0.08);
+    border-left: 4px solid #3884f4;
+}
+.admonitionblock.note td.icon i::before { content: "ℹ️"; }
+
+/* TIP */
+.admonitionblock.tip {
+    background: rgba(40, 167, 69, 0.08);
+    border-left: 4px solid #28a745;
+}
+.admonitionblock.tip td.icon i::before { content: "💡"; }
+
+/* WARNING */
+.admonitionblock.warning {
+    background: rgba(255, 193, 7, 0.08);
+    border-left: 4px solid #ffc107;
+}
+.admonitionblock.warning td.icon i::before { content: "⚠️"; }
+
+/* CAUTION */
+.admonitionblock.caution {
+    background: rgba(253, 126, 20, 0.08);
+    border-left: 4px solid #fd7e14;
+}
+.admonitionblock.caution td.icon i::before { content: "🔥"; }
+
+/* IMPORTANT */
+.admonitionblock.important {
+    background: rgba(220, 53, 69, 0.08);
+    border-left: 4px solid #dc3545;
+}
+.admonitionblock.important td.icon i::before { content: "❗"; }
+
+.admonitionblock .title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+/* Publications list styling */
+#content ol li {
+    margin-bottom: 1rem;
+}
+
+/* Improve image display in posts */
+.post-content .imageblock {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.post-content .imageblock img {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+.post-content .imageblock .title {
+    font-size: 0.9rem;
+    color: var(--secondary);
+    margin-top: 0.5rem;
+    font-style: italic;
+}

@@ -1,0 +1,36 @@
+{{ define "main" }}
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">Publications</h1>
+  </header>
+  <div class="post-content">
+    <p>
+      <a href="https://scholar.google.com/citations?user=7Ed3-tMAAAAJ" target="_blank" rel="noopener">Google Scholar</a> ·
+      <a href="https://dblp.uni-trier.de/pers/hd/g/Gowda:Thamme" target="_blank" rel="noopener">DBLP</a> ·
+      <a href="https://www.semanticscholar.org/author/Thamme-Gowda/145845766" target="_blank" rel="noopener">Semantic Scholar</a>
+    </p>
+
+    <ol reversed>
+      {{ range .Site.Data.publications }}
+      <li id="{{ .key }}" style="margin-bottom: 1.5rem; line-height: 1.6;">
+        {{ $authors := replace .authors_formatted "Thamme Gowda" "<strong>Thamme Gowda</strong>" }}
+        {{ $authors = replace $authors "Gowda, Thamme" "<strong>Gowda, Thamme</strong>" }}
+        {{ $authors | safeHTML }}.
+        <em>"{{ .title_formatted }}"</em>.
+        {{ with .venue }}{{ . }}.{{ end }}
+        {{ with .year }}{{ . }}.{{ end }}
+        {{ with .url }}
+          <a href="{{ . }}" target="_blank" rel="noopener">[Link]</a>
+        {{ end }}
+        {{ with .doi }}
+          <a href="https://doi.org/{{ . }}" target="_blank" rel="noopener">[DOI]</a>
+        {{ end }}
+        {{ $bibID := printf "bib-%s" .key }}
+        <a href="#" onclick="event.preventDefault(); var el=document.getElementById('{{ $bibID }}'); el.style.display = el.style.display==='none'?'block':'none';">[BibTeX]</a>
+        <pre id="{{ $bibID }}" style="display:none; background: var(--code-bg); padding: 1rem; border-radius: 4px; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap;">{{ .bibtex }}</pre>
+      </li>
+      {{ end }}
+    </ol>
+  </div>
+</article>
+{{ end }}

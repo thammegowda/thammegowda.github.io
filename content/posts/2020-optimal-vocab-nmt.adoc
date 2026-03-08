@@ -1,17 +1,17 @@
-= Finding the Optimal Vocabulary for Neural Machine Translation
-:author: Thamme Gowda <tg@isi.edu>
-//; Jonathan May <jonmay@isi.edu>
-:date: 2020-11-1 10:20
-// :modified: 2020-12-04 18:40
-:tags: NMT
-:category: Paper
-:template: article
-:slug: 2020-optimal-vocab-nmt
-:icons: font
-:summary: Finding the Optimal Vocabulary for Neural Machine Translation
-:description: We cast neural machine translation (NMT) as a classification task in an autoregressive setting and analyze the limitations of both classification and autoregression components. \
-Classifiers are known to perform better with balanced class distributions during training. \
-Since the Zipfian nature of languages causes imbalanced classes, we explore its effect on NMT. \
+---
+title: "Finding the Optimal Vocabulary for Neural Machine Translation"
+date: 2020-11-01T10:20:00
+author: "Thamme Gowda"
+summary: "Finding the Optimal Vocabulary for Neural Machine Translation"
+description: "We cast neural machine translation (NMT) as a classification task in an autoregressive setting and analyze the limitations of both classification and autoregression components. Classifiers are known to perform better with balanced class distributions during training. Since the Zipfian nature of languages causes imbalanced classes, we explore its effect on NMT."
+slug: "2020-optimal-vocab-nmt"
+url: "/posts/2020/11/2020-optimal-vocab-nmt/"
+tags: ["NMT"]
+categories: ["Paper"]
+ShowToc: true
+TocOpen: false
+---
+
 We analyze the effect of various vocabulary sizes on NMT performance on multiple languages with many data sizes, and reveal an explanation for _why_ certain vocabulary sizes are better than others.
 
 == Abstract
