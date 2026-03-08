@@ -1,17 +1,84 @@
 
+body {
+    background-color: #f5f3ef;
+}
+
+.navbar.bg-light {
+    background-color: #eae7e1 !important;
+}
+
 .blockquote{
     font-size: 1.05em;
 }
 
 .content {
     padding-top: 20px;
+    font-size: 1.1rem;
+    line-height: 1.75;
 }
+
+.article {
+    max-width: 65rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#toc.toc {
+    background-color: rgba(0, 0, 0, 0.03);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+}
+
+#toc .title {
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+}
+
+#toc ul {
+    margin-bottom: 0;
+    padding-left: 1.2rem;
+}
+
+#toc li {
+    margin-bottom: 0.15rem;
+    font-size: 0.95rem;
+}
+
 h1 {
-    font-size: 2em;
+    font-size: 1.8rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
 h2 {
-    font-size: 1.5em;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+}
+
+h3 {
+    font-size: 1.3rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+h4 {
+    font-size: 1.15rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+h5, h6 {
+    font-size: 1.05rem;
+}
+
+.article .well {
+    font-size: 0.9rem;
+    color: #666;
 }
 
 blockquote cite a, blockquote cite a:visited {
@@ -35,12 +102,36 @@ blockquote p, .attribution {
 }
 
 pre {
-    font-family: Times, sans-serif;
-    font-size: 16px;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9rem;
     font-style: normal;
     font-variant: normal;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 1.5;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+table th, table td {
+    padding: 0.5rem 1rem;
+    text-align: left;
+}
+
+table th {
+    border-bottom: 2px solid #ccc;
+    font-weight: 600;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+table tbody tr:nth-child(even) {
+    background-color: transparent;
 }
 
 a, a:visited {
