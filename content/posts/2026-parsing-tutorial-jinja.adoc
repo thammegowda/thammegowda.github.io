@@ -1,0 +1,1270 @@
+---
+title: "Building a Jinja2 Template Engine from Scratch in C++"
+date: 2026-03-10T12:00:00
+author: "TG Gowda"
+summary: "Modern LLMs are chat models that use Jinja2 templates to format conversations. But Jinja is Python-centric, making deployment hard in C++ and edge environments. Here's how to build a Jinja2 template engine from scratch in C++ -- covering lexing, parsing, and evaluation -- so you can render chat templates natively without Python."
+description: "A tutorial on building a Jinja2 template engine in C++ for rendering LLM chat templates. Covers the lexer, recursive descent parser, and tree-walking evaluator, with real examples from HuggingFace model templates."
+slug: "parsing-tutorial-jinja"
+url: "/posts/2026/03/parsing-tutorial-jinja/"
+tags: ["AI", "C++", "Parsing", "LLM", "Jinja"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+---
+
+toc::[]
+
+== Why Jinja2 in C++?
+
+Modern LLMs are _chat_ models.
+They don't just take a raw text prompt -- they expect a structured conversation formatted using a **chat template**.
+These templates are written in https://jinja.palletsprojects.com/[Jinja2^], the Python templating language, and are shipped as part of every model's `tokenizer_config.json` on HuggingFace.
+
+Here's a typical one (Qwen2-style):
+
+[source,django]
+----
+{% for message in messages %}
+{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}
+{% endfor %}
+{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}
+----
+
+The problem? **Jinja is Python-centric.**
+If you want to run inference in C++, deploy to a phone via ONNX Runtime, run in a browser with WebAssembly, or embed in any non-Python environment -- you're stuck.
+You either pull in a Python interpreter as a dependency (heavy, slow to start, hard to sandbox) or you skip chat templates entirely and hardcode formatting (brittle, model-specific).
+
+The real solution: **build a Jinja2 template engine in C++** with minimal dependencies.
+Then you can compile it to native code, to WebAssembly, or link it into any C/C++ runtime.
+
+This post walks through how to do exactly that.
+We'll cover the three classical phases of language processing -- lexing, parsing, and evaluation -- building a template engine that can render real HuggingFace chat templates.
+
+NOTE: The code in this tutorial is from the https://github.com/thammegowda/tokenizerspp[tokenizerspp^] project, specifically the `tokenizerpp` Jinja2 engine.
+
+== What Does a Jinja2 Template Look Like?
+
+A Jinja2 template is text with special markers:
+
+[source,django]
+----
+Hello {{ name }}!
+
+{% for item in items %}
+  - {{ item }}
+{% endfor %}
+
+{% if show_footer %}
+Thanks!
+{% endif %}
+----
+
+There are three kinds of markers:
+
+[cols="1,2,3"]
+|===
+| Marker | Syntax | Purpose
+
+| Variable | `{{ expr }}` | Evaluate expression, insert result
+| Block | `{% statement %}` | Control flow (for, if, set)
+| Comment | `{# text #}` | Ignored entirely
+|===
+
+Everything else is literal text -- passed through unchanged.
+
+=== Our Goal
+
+Given this template:
+
+[source,django]
+----
+{% for message in messages %}
+{{ message.role }}: {{ message.content }}
+{% endfor %}
+----
+
+And this data:
+
+[source,json]
+----
+{
+  "messages": [
+    {"role": "user", "content": "Hello"},
+    {"role": "assistant", "content": "Hi there!"}
+  ]
+}
+----
+
+Produce:
+
+[source]
+----
+user: Hello
+assistant: Hi there!
+----
+
+== The Three Phases
+
+Every language processor -- compiler, interpreter, or template engine -- works in three phases:
+
+[source]
+----
+    Source Text
+        │
+        ▼
+   ┌─────────┐
+   │  LEXER  │  "Tokenize" — break text into meaningful chunks
+   └────┬────┘
+        │  Tokens
+        ▼
+   ┌─────────┐
+   │ PARSER  │  "Parse" — organize tokens into a tree structure
+   └────┬────┘
+        │  AST (Abstract Syntax Tree)
+        ▼
+   ┌──────────┐
+   │EVALUATOR │  "Render" — walk the tree, produce output
+   └──────────┘
+        │
+        ▼
+    Output Text
+----
+
+Think of it like reading a sentence:
+
+- **Lexer**: "The cat sat on the mat" → [The] [cat] [sat] [on] [the] [mat]
+- **Parser**: Subject="The cat", Verb="sat", Prepositional="on the mat"
+- **Evaluator**: Understand the meaning and act on it
+
+Let's build each phase.
+
+
+== Phase 1: The Lexer
+
+A **lexer** (or _tokenizer_ or _scanner_) reads raw characters and groups them into meaningful chunks called **tokens**.
+
+When you read `x + 42`, your brain doesn't process it character by character.
+You see three things: the variable `x`, the operator `+`, and the number `42`.
+That's what a lexer does.
+
+=== Two Levels of Lexing
+
+Jinja2 requires _two_ levels of lexing:
+
+**Level 1 -- Template Tokenizer** splits the template into chunks:
+
+[source]
+----
+"Hello {{ name }}! {% if happy %}:){% endif %}"
+
+  →  Text("Hello ")
+  →  VarTag("name")
+  →  Text("! ")
+  →  BlockTag("if happy")
+  →  Text(":)")
+  →  BlockTag("endif")
+----
+
+This is simple string scanning -- find `{{`, `}}`, `{%`, `%}`, `{#`, `#}`.
+
+**Level 2 -- Expression Lexer** tokenizes _inside_ each `{{ ... }}` and `{% ... %}`:
+
+[source]
+----
+"message['role'] == 'user'"
+
+  →  Ident("message")
+  →  LBracket
+  →  String("role")
+  →  RBracket
+  →  Eq
+  →  String("user")
+----
+
+This is the one we need to build properly.
+
+=== Token Types
+
+Every token has a _kind_ (what type it is) and a _value_ (the actual text):
+
+[source,cpp]
+----
+enum class TokenKind {
+    // Literals
+    Ident, Integer, Float, String,
+
+    // Keywords
+    KW_True, KW_False, KW_None,
+    KW_And, KW_Or, KW_Not, KW_In, KW_Is,
+    KW_If, KW_Else, KW_Elif,
+    KW_For, KW_Endfor, KW_Endif, KW_Set,
+
+    // Operators
+    Plus, Minus, Star, Slash, DoubleSlash, Percent, DoubleStar, Tilde,
+
+    // Comparison
+    Eq, NotEq, Lt, Gt, LtEq, GtEq,
+
+    // Punctuation
+    LParen, RParen, LBracket, RBracket, LBrace, RBrace,
+    Dot, Comma, Colon, Pipe, Assign,
+
+    Eof,
+};
+
+struct Token {
+    TokenKind kind;
+    std::string text;
+    size_t offset;  // byte position in source (for error messages)
+};
+----
+
+The `offset` field is crucial for error messages.
+When something goes wrong, we can point to the exact character:
+
+[source]
+----
+Error at position 15: expected ')' but found ']'
+  message['role']
+                ^
+----
+
+=== The Lexer Implementation
+
+The lexer scans left-to-right, one character at a time, dispatching on the current character:
+
+[source,cpp]
+----
+class ExprLexer {
+public:
+    explicit ExprLexer(std::string_view source) : src_(source) {}
+
+    std::vector<Token> lex_all() {
+        std::vector<Token> tokens;
+        while (true) {
+            auto tok = next_token();
+            tokens.push_back(tok);
+            if (tok.kind == TokenKind::Eof) break;
+        }
+        return tokens;
+    }
+
+private:
+    std::string_view src_;
+    size_t pos_ = 0;
+
+    char peek() const { return pos_ < src_.size() ? src_[pos_] : '\0'; }
+    char advance() { return src_[pos_++]; }
+
+    void skip_whitespace() {
+        while (pos_ < src_.size() && std::isspace(src_[pos_]))
+            ++pos_;
+    }
+
+    Token next_token() {
+        skip_whitespace();
+        if (pos_ >= src_.size())
+            return {TokenKind::Eof, "", pos_};
+
+        size_t start = pos_;
+        char ch = peek();
+
+        if (std::isalpha(ch) || ch == '_')
+            return lex_ident(start);
+        if (std::isdigit(ch))
+            return lex_number(start);
+        if (ch == '"' || ch == '\'')
+            return lex_string(start);
+
+        return lex_operator(start);
+    }
+};
+----
+
+=== Identifiers and Keywords
+
+An identifier starts with a letter or underscore, followed by letters, digits, or underscores.
+After reading it, we check if it matches a keyword:
+
+[source,cpp]
+----
+Token lex_ident(size_t start) {
+    while (pos_ < src_.size() && (std::isalnum(src_[pos_]) || src_[pos_] == '_'))
+        ++pos_;
+
+    std::string text(src_.substr(start, pos_ - start));
+
+    static const std::unordered_map<std::string, TokenKind> keywords = {
+        {"true", TokenKind::KW_True}, {"True", TokenKind::KW_True},
+        {"false", TokenKind::KW_False}, {"False", TokenKind::KW_False},
+        {"none", TokenKind::KW_None}, {"None", TokenKind::KW_None},
+        {"and", TokenKind::KW_And}, {"or", TokenKind::KW_Or},
+        {"not", TokenKind::KW_Not}, {"in", TokenKind::KW_In},
+        {"is", TokenKind::KW_Is},
+        {"if", TokenKind::KW_If}, {"else", TokenKind::KW_Else},
+        {"elif", TokenKind::KW_Elif},
+        {"for", TokenKind::KW_For}, {"endfor", TokenKind::KW_Endfor},
+        {"endif", TokenKind::KW_Endif}, {"set", TokenKind::KW_Set},
+    };
+
+    auto it = keywords.find(text);
+    TokenKind kind = (it != keywords.end()) ? it->second : TokenKind::Ident;
+    return {kind, std::move(text), start};
+}
+----
+
+=== Numbers
+
+Numbers can be integers (`42`) or floats (`3.14`).
+We scan digits, then check for a decimal point:
+
+[source,cpp]
+----
+Token lex_number(size_t start) {
+    while (pos_ < src_.size() && (std::isdigit(src_[pos_]) || src_[pos_] == '_'))
+        ++pos_;
+
+    if (pos_ < src_.size() && src_[pos_] == '.' &&
+        pos_ + 1 < src_.size() && std::isdigit(src_[pos_ + 1])) {
+        ++pos_; // skip '.'
+        while (pos_ < src_.size() && std::isdigit(src_[pos_]))
+            ++pos_;
+        return {TokenKind::Float, std::string(src_.substr(start, pos_ - start)), start};
+    }
+
+    return {TokenKind::Integer, std::string(src_.substr(start, pos_ - start)), start};
+}
+----
+
+=== Strings
+
+Strings are delimited by single or double quotes, with escape sequences:
+
+[source,cpp]
+----
+Token lex_string(size_t start) {
+    char quote = advance(); // consume opening quote
+    std::string value;
+
+    while (pos_ < src_.size() && src_[pos_] != quote) {
+        if (src_[pos_] == '\\') {
+            ++pos_;
+            if (pos_ < src_.size()) {
+                switch (src_[pos_]) {
+                    case 'n':  value += '\n'; break;
+                    case 't':  value += '\t'; break;
+                    case '\\': value += '\\'; break;
+                    case '\'': value += '\''; break;
+                    case '"':  value += '"';  break;
+                    default:   value += src_[pos_]; break;
+                }
+                ++pos_;
+            }
+        } else {
+            value += src_[pos_++];
+        }
+    }
+
+    if (pos_ < src_.size()) ++pos_; // consume closing quote
+    return {TokenKind::String, std::move(value), start};
+}
+----
+
+=== Operators
+
+Operators can be 1 or 2 characters.
+We peek ahead to disambiguate `=` vs `==`, `*` vs `**`, etc.:
+
+[source,cpp]
+----
+Token lex_operator(size_t start) {
+    char ch = advance();
+
+    // Two-character operators
+    if (pos_ < src_.size()) {
+        char next = src_[pos_];
+        if (ch == '=' && next == '=') { ++pos_; return {TokenKind::Eq, "==", start}; }
+        if (ch == '!' && next == '=') { ++pos_; return {TokenKind::NotEq, "!=", start}; }
+        if (ch == '<' && next == '=') { ++pos_; return {TokenKind::LtEq, "<=", start}; }
+        if (ch == '>' && next == '=') { ++pos_; return {TokenKind::GtEq, ">=", start}; }
+        if (ch == '*' && next == '*') { ++pos_; return {TokenKind::DoubleStar, "**", start}; }
+        if (ch == '/' && next == '/') { ++pos_; return {TokenKind::DoubleSlash, "//", start}; }
+    }
+
+    // Single-character operators
+    switch (ch) {
+        case '+': return {TokenKind::Plus, "+", start};
+        case '-': return {TokenKind::Minus, "-", start};
+        case '*': return {TokenKind::Star, "*", start};
+        case '/': return {TokenKind::Slash, "/", start};
+        case '%': return {TokenKind::Percent, "%", start};
+        case '~': return {TokenKind::Tilde, "~", start};
+        case '<': return {TokenKind::Lt, "<", start};
+        case '>': return {TokenKind::Gt, ">", start};
+        case '=': return {TokenKind::Assign, "=", start};
+        case '(': return {TokenKind::LParen, "(", start};
+        case ')': return {TokenKind::RParen, ")", start};
+        case '[': return {TokenKind::LBracket, "[", start};
+        case ']': return {TokenKind::RBracket, "]", start};
+        case '{': return {TokenKind::LBrace, "{", start};
+        case '}': return {TokenKind::RBrace, "}", start};
+        case '.': return {TokenKind::Dot, ".", start};
+        case ',': return {TokenKind::Comma, ",", start};
+        case ':': return {TokenKind::Colon, ":", start};
+        case '|': return {TokenKind::Pipe, "|", start};
+        default:
+            throw std::runtime_error("Unexpected character: " + std::string(1, ch));
+    }
+}
+----
+
+=== Testing the Lexer
+
+[source,cpp]
+----
+// "message['role'] == 'user'"
+auto tokens = ExprLexer("message['role'] == 'user'").lex_all();
+// → [Ident("message"), LBracket, String("role"), RBracket, Eq, String("user"), Eof]
+
+// "loop.index0 % 2 == 0"
+auto tokens2 = ExprLexer("loop.index0 % 2 == 0").lex_all();
+// → [Ident("loop"), Dot, Ident("index0"), Percent, Integer("2"), Eq, Integer("0"), Eof]
+----
+
+=== Why Lex First?
+
+Compare parsing `message['role']` character-by-character vs. with tokens:
+
+**Character-by-character** (painful):
+[source,cpp]
+----
+skip_ws();
+std::string ident;
+while (std::isalnum(peek()) || peek() == '_') ident += advance();
+skip_ws();
+if (peek() == '[') { advance(); skip_ws(); ... }
+----
+
+**Token-based** (clean):
+[source,cpp]
+----
+Token ident = expect(TokenKind::Ident);   // "message"
+expect(TokenKind::LBracket);             // [
+Token key = expect(TokenKind::String);    // "role"
+expect(TokenKind::RBracket);            // ]
+----
+
+The token-based version is shorter, clearer, and handles edge cases.
+The lexer already dealt with whitespace, string escapes, and multi-character operators.
+
+
+== Phase 2: The Parser
+
+The lexer gave us a flat list of tokens.
+But expressions have _structure_ -- `1 + 2 * 3` means `1 + (2 * 3)`, not `(1 + 2) * 3`.
+The parser's job is to figure out this structure and represent it as a tree.
+
+=== Abstract Syntax Trees (AST)
+
+An **Abstract Syntax Tree** is a tree where leaves are values and internal nodes are operations.
+
+`1 + 2 * 3` becomes:
+
+[source]
+----
+      [+]
+      / \
+    [1]  [*]
+         / \
+       [2] [3]
+----
+
+And `message['role'] == 'user'` becomes:
+
+[source]
+----
+        [==]
+        /   \
+   [GetItem]  ['user']
+    /     \
+ [message] ['role']
+----
+
+=== AST Node Types
+
+We use separate structs for each kind of expression, unified with `std::variant`:
+
+[source,cpp]
+----
+struct LiteralExpr  { json value; };                           // 42, "hello", true
+struct IdentExpr    { std::string name; };                     // variable_name
+struct UnaryExpr    { std::string op; ExprPtr operand; };      // not x, -x
+struct BinaryExpr   { std::string op; ExprPtr left, right; };  // a + b
+struct GetAttrExpr  { ExprPtr object; std::string attr; };     // obj.attr
+struct GetItemExpr  { ExprPtr object; ExprPtr key; };          // obj[key]
+struct SliceExpr    { ExprPtr object; ExprPtr start, end; };   // list[1:3]
+struct CallExpr     { ExprPtr callee;
+                      std::vector<Arg> args; };                // func(a, b=c)
+struct FilterExpr   { ExprPtr value; std::string name;
+                      std::vector<ExprPtr> args; };            // x | filter(a)
+struct TestExpr     { ExprPtr value; std::string name;
+                      bool negated;
+                      std::vector<ExprPtr> args; };            // x is defined
+struct CondExpr     { ExprPtr true_val, condition, false_val; }; // a if b else c
+struct ListExpr     { std::vector<ExprPtr> items; };           // [1, 2, 3]
+struct DictExpr     { std::vector<std::pair<ExprPtr,ExprPtr>> items; }; // {a: b}
+
+using ExprNode = std::variant<
+    LiteralExpr, IdentExpr, UnaryExpr, BinaryExpr,
+    GetAttrExpr, GetItemExpr, SliceExpr, CallExpr,
+    FilterExpr, TestExpr, CondExpr, ListExpr, DictExpr
+>;
+using ExprPtr = std::unique_ptr<ExprNode>;
+----
+
+Why `std::variant`?
+The compiler checks that you handle every type.
+If you add a new expression type and forget to handle it, you get a compile error -- much safer than `switch(type)`.
+
+=== Recursive Descent Parsing
+
+We use **recursive descent parsing** -- the most intuitive parsing technique:
+
+[IMPORTANT]
+====
+For each rule in the grammar, write one function. +
+Each function calls other functions for sub-rules. +
+The call stack mirrors the parse tree.
+====
+
+==== Operator Precedence
+
+The trickiest part: getting `1 + 2 * 3` right.
+The trick is that **lower precedence = higher in the call chain**:
+
+[source]
+----
+parse_or()              ← lowest precedence
+  └→ parse_and()
+       └→ parse_not()
+            └→ parse_compare()
+                 └→ parse_concat()
+                      └→ parse_add()
+                           └→ parse_mul()
+                                └→ parse_pow()
+                                     └→ parse_unary()
+                                          └→ parse_postfix()
+                                               └→ parse_primary()  ← highest
+----
+
+Each level handles _its_ operator(s) and delegates everything else downward:
+
+[source,cpp]
+----
+// Grammar rule:  add_expr = mul_expr (('+' | '-') mul_expr)*
+ExprPtr parse_add() {
+    auto left = parse_mul();
+
+    while (at(TokenKind::Plus) || at(TokenKind::Minus)) {
+        std::string op = advance().text;
+        auto right = parse_mul();
+        left = make_binary(op, std::move(left), std::move(right));
+    }
+
+    return left;
+}
+----
+
+For input `1 + 2 * 3`:
+
+1. `parse_add` calls `parse_mul`, which parses `1` and returns it.
+2. We see `+`, consume it.
+3. Call `parse_mul` again. Inside, it parses `2`, sees `*`, parses `3`, and returns `(* 2 3)`.
+4. We build `(+ 1 (* 2 3))` and return it.
+
+The precedence falls out naturally from the call structure.
+
+==== The Primary Parser
+
+At the bottom of the chain, `parse_primary` handles atomic expressions:
+
+[source,cpp]
+----
+ExprPtr parse_primary() {
+    Token tok = peek();
+
+    switch (tok.kind) {
+        case TokenKind::Integer:
+            advance();
+            return make_literal(std::stoll(tok.text));
+        case TokenKind::Float:
+            advance();
+            return make_literal(std::stod(tok.text));
+        case TokenKind::String:
+            advance();
+            return make_literal(tok.text);
+        case TokenKind::KW_True:
+            advance();
+            return make_literal(true);
+        case TokenKind::KW_False:
+            advance();
+            return make_literal(false);
+        case TokenKind::KW_None:
+            advance();
+            return make_literal(nullptr);
+        case TokenKind::Ident:
+            advance();
+            return make_ident(tok.text);
+        case TokenKind::LParen: {
+            advance();
+            auto e = parse_expression();
+            expect(TokenKind::RParen);
+            return e;
+        }
+        case TokenKind::LBracket: {
+            advance();
+            std::vector<ExprPtr> items;
+            while (!at(TokenKind::RBracket)) {
+                items.push_back(parse_expression());
+                if (at(TokenKind::Comma)) advance();
+            }
+            expect(TokenKind::RBracket);
+            return make_list(std::move(items));
+        }
+        case TokenKind::LBrace: {
+            advance();
+            std::vector<std::pair<ExprPtr, ExprPtr>> items;
+            while (!at(TokenKind::RBrace)) {
+                auto key = parse_expression();
+                expect(TokenKind::Colon);
+                auto val = parse_expression();
+                items.emplace_back(std::move(key), std::move(val));
+                if (at(TokenKind::Comma)) advance();
+            }
+            expect(TokenKind::RBrace);
+            return make_dict(std::move(items));
+        }
+        default:
+            throw error("Unexpected token: " + tok.text);
+    }
+}
+----
+
+==== Postfix Operations
+
+After parsing a primary value, we check for postfix operators -- `.attr`, `[index]`, `(args)`, and `| filter`:
+
+[source,cpp]
+----
+ExprPtr parse_postfix() {
+    auto e = parse_primary();
+
+    while (true) {
+        if (at(TokenKind::Dot)) {
+            advance();
+            auto attr = expect(TokenKind::Ident).text;
+            e = make_getattr(std::move(e), attr);
+        }
+        else if (at(TokenKind::LBracket)) {
+            advance();
+            if (at(TokenKind::Colon)) {
+                advance();
+                auto end = at(TokenKind::RBracket) ? nullptr : parse_expression();
+                expect(TokenKind::RBracket);
+                e = make_slice(std::move(e), nullptr, std::move(end));
+            } else {
+                auto index = parse_expression();
+                if (at(TokenKind::Colon)) {
+                    advance();
+                    auto end = at(TokenKind::RBracket) ? nullptr : parse_expression();
+                    expect(TokenKind::RBracket);
+                    e = make_slice(std::move(e), std::move(index), std::move(end));
+                } else {
+                    expect(TokenKind::RBracket);
+                    e = make_getitem(std::move(e), std::move(index));
+                }
+            }
+        }
+        else if (at(TokenKind::LParen)) {
+            advance();
+            auto args = parse_arg_list();
+            expect(TokenKind::RParen);
+            e = make_call(std::move(e), std::move(args));
+        }
+        else {
+            break;
+        }
+    }
+    return e;
+}
+----
+
+==== Filter Chains
+
+Filters use the pipe `|` operator -- a special form of function call:
+
+[source,cpp]
+----
+// "items | selectattr('role', 'equalto', 'user') | list"
+//   →  Filter(Filter(items, "selectattr", [...]), "list", [])
+
+ExprPtr parse_filter_chain() {
+    auto e = parse_postfix();
+
+    while (at(TokenKind::Pipe)) {
+        advance();
+        auto name = expect(TokenKind::Ident).text;
+        std::vector<ExprPtr> args;
+        if (at(TokenKind::LParen)) {
+            advance();
+            while (!at(TokenKind::RParen)) {
+                args.push_back(parse_expression());
+                if (at(TokenKind::Comma)) advance();
+            }
+            expect(TokenKind::RParen);
+        }
+        e = make_filter(std::move(e), name, std::move(args));
+    }
+
+    return e;
+}
+----
+
+=== Parsing Statements
+
+Statements live inside `{% ... %}` blocks.
+The parser consumes template tokens and dispatches on the keyword:
+
+[source,cpp]
+----
+std::vector<StmtPtr> parse_body(until_keywords) {
+    std::vector<StmtPtr> body;
+
+    while (has_more_tokens()) {
+        auto tmpl_tok = peek_template_token();
+
+        if (tmpl_tok.type == Text) {
+            body.push_back(make_text(tmpl_tok.value));
+            advance_template();
+        }
+        else if (tmpl_tok.type == VarExpr) {
+            auto expr = parse_expression(tmpl_tok.value);
+            body.push_back(make_output(std::move(expr)));
+            advance_template();
+        }
+        else if (tmpl_tok.type == BlockExpr) {
+            auto keyword = first_word(tmpl_tok.value);
+
+            if (until_keywords.contains(keyword))
+                break;
+
+            if (keyword == "for")       body.push_back(parse_for());
+            else if (keyword == "if")   body.push_back(parse_if());
+            else if (keyword == "set")  body.push_back(parse_set());
+            else throw error("Unknown statement: " + keyword);
+        }
+    }
+    return body;
+}
+----
+
+==== For Loops
+
+[source,cpp]
+----
+// {% for item in items %}...{% endfor %}
+// {% for key, value in dict.items() %}...{% endfor %}
+
+StmtPtr parse_for() {
+    advance_template();  // consume the {% for ... %} token
+    auto tokens = lex(block_content);
+    skip_keyword("for");
+    auto var_name = expect(Ident).text;
+    std::optional<std::string> var_name2;
+    if (at(Comma)) { advance(); var_name2 = expect(Ident).text; }
+    expect(KW_In);
+    auto iterable = parse_expression();
+
+    auto body = parse_body({"endfor", "else"});
+
+    std::optional<std::vector<StmtPtr>> else_body;
+    if (current_keyword() == "else") {
+        advance_template();
+        else_body = parse_body({"endfor"});
+    }
+
+    advance_template();  // consume {% endfor %}
+    return make_for(var_name, var_name2, iterable, body, else_body);
+}
+----
+
+==== If Statements
+
+[source,cpp]
+----
+// {% if cond %}...{% elif cond %}...{% else %}...{% endif %}
+
+StmtPtr parse_if() {
+    std::vector<Branch> branches;
+
+    auto condition = parse_expression(block_content_after("if"));
+    auto body = parse_body({"elif", "else", "endif"});
+    branches.push_back({std::move(condition), std::move(body)});
+
+    while (current_keyword() == "elif") {
+        auto cond = parse_expression(block_content_after("elif"));
+        auto elif_body = parse_body({"elif", "else", "endif"});
+        branches.push_back({std::move(cond), std::move(elif_body)});
+    }
+
+    if (current_keyword() == "else") {
+        advance_template();
+        auto else_body = parse_body({"endif"});
+        branches.push_back({nullptr, std::move(else_body)});
+    }
+
+    advance_template();  // consume {% endif %}
+    return make_if(std::move(branches));
+}
+----
+
+=== Error Handling
+
+Good error messages are the difference between "I can debug this" and pulling your hair out:
+
+[source,cpp]
+----
+Token expect(TokenKind kind) {
+    auto tok = peek();
+    if (tok.kind != kind) {
+        throw ParseError(
+            "Expected " + kind_name(kind) + " but found " +
+            kind_name(tok.kind) + " '" + tok.text + "'" +
+            " at position " + std::to_string(tok.offset)
+        );
+    }
+    return advance();
+}
+----
+
+
+== Phase 3: The Evaluator
+
+We have a tree.
+Now we walk it and produce output.
+
+=== The Environment
+
+The evaluator needs a **context** -- a mapping of variable names to values.
+We use `nlohmann::json` as our universal value type:
+
+[cols="1,1"]
+|===
+| Jinja Type | JSON Type
+
+| string | `json::string`
+| integer | `json::number_integer`
+| float | `json::number_float`
+| boolean | `json::boolean`
+| none/null | `json::null`
+| list | `json::array`
+| dict | `json::object`
+|===
+
+[source,cpp]
+----
+struct Environment {
+    json variables;
+    std::string output;
+
+    json lookup(const std::string& name) const {
+        if (variables.contains(name))
+            return variables[name];
+        return json();  // undefined → null
+    }
+
+    void set(const std::string& name, json value) {
+        variables[name] = std::move(value);
+    }
+
+    void emit(const std::string& text) {
+        output += text;
+    }
+};
+----
+
+=== Scoping
+
+Jinja2 has scoping rules: variables set inside a `for` loop don't leak out.
+We handle this by saving and restoring scope:
+
+[source,cpp]
+----
+void execute_for(const ForStmt& stmt, Environment& env) {
+    json iterable = evaluate(stmt.iterable, env);
+    json saved_scope = env.variables;  // save current scope
+
+    for (size_t i = 0; i < iterable.size(); ++i) {
+        env.set(stmt.var_name, iterable[i]);
+
+        // Set loop metadata
+        json loop_var = {
+            {"index",     i + 1},
+            {"index0",    i},
+            {"first",     i == 0},
+            {"last",      i == iterable.size() - 1},
+            {"length",    iterable.size()},
+            {"revindex",  iterable.size() - i},
+            {"revindex0", iterable.size() - i - 1},
+        };
+        env.set("loop", loop_var);
+
+        execute_body(stmt.body, env);
+    }
+
+    env.variables = saved_scope;  // restore (loop variables disappear)
+}
+----
+
+=== Evaluating Expressions
+
+Expression evaluation is a recursive walk over the AST.
+Each node type has its own rule:
+
+[source,cpp]
+----
+json evaluate(const ExprNode& node, Environment& env) {
+    return std::visit(overloaded{
+        [&](const LiteralExpr& e) -> json { return e.value; },
+
+        [&](const IdentExpr& e) -> json { return env.lookup(e.name); },
+
+        [&](const BinaryExpr& e) -> json {
+            auto left = evaluate(*e.left, env);
+            auto right = evaluate(*e.right, env);
+            return apply_binary_op(e.op, left, right);
+        },
+
+        [&](const UnaryExpr& e) -> json {
+            auto operand = evaluate(*e.operand, env);
+            if (e.op == "not") return !is_truthy(operand);
+            if (e.op == "-")   return -operand.get<double>();
+            throw error("Unknown unary op: " + e.op);
+        },
+
+        [&](const GetAttrExpr& e) -> json {
+            auto obj = evaluate(*e.object, env);
+            if (obj.is_object() && obj.contains(e.attr))
+                return obj[e.attr];
+            return json();
+        },
+
+        [&](const GetItemExpr& e) -> json {
+            auto obj = evaluate(*e.object, env);
+            auto key = evaluate(*e.key, env);
+            if (obj.is_array() && key.is_number_integer()) {
+                int idx = key.get<int>();
+                if (idx < 0) idx += obj.size();  // negative indexing
+                return obj.at(idx);
+            }
+            if (obj.is_object() && key.is_string())
+                return obj[key.get<std::string>()];
+            return json();
+        },
+
+        [&](const FilterExpr& e) -> json {
+            auto value = evaluate(*e.value, env);
+            return apply_filter(e.name, value, e.args, env);
+        },
+
+        // ... other types follow the same pattern
+    }, node);
+}
+----
+
+=== Binary Operators
+
+[source,cpp]
+----
+json apply_binary_op(const std::string& op, const json& left, const json& right) {
+    // String concatenation
+    if (op == "+" && left.is_string() && right.is_string())
+        return left.get<std::string>() + right.get<std::string>();
+    if (op == "~")  // tilde always string-concatenates
+        return to_string(left) + to_string(right);
+
+    // Arithmetic
+    if (op == "+") return to_number(left) + to_number(right);
+    if (op == "-") return to_number(left) - to_number(right);
+    if (op == "*") return to_number(left) * to_number(right);
+    if (op == "/") return to_number(left) / to_number(right);
+    if (op == "%") return (int)to_number(left) % (int)to_number(right);
+
+    // Comparison
+    if (op == "==") return left == right;
+    if (op == "!=") return left != right;
+    if (op == "<")  return left < right;
+    if (op == ">")  return left > right;
+
+    // Membership
+    if (op == "in") return contains(right, left);
+
+    throw error("Unknown operator: " + op);
+}
+----
+
+=== Truthiness
+
+In Jinja2, these values are "falsy": `false`, `null`/`none`, `0`, empty string `""`, empty list `[]`, empty dict `{}`.
+Everything else is "truthy":
+
+[source,cpp]
+----
+bool is_truthy(const json& val) {
+    if (val.is_null()) return false;
+    if (val.is_boolean()) return val.get<bool>();
+    if (val.is_number_integer()) return val.get<int64_t>() != 0;
+    if (val.is_number_float()) return val.get<double>() != 0.0;
+    if (val.is_string()) return !val.get_ref<const std::string&>().empty();
+    if (val.is_array()) return !val.empty();
+    if (val.is_object()) return !val.empty();
+    return true;
+}
+----
+
+=== Table-Driven Filters
+
+Instead of a giant if-else chain, use a lookup table.
+Adding a new filter is one table entry:
+
+[source,cpp]
+----
+using FilterFn = std::function<json(const json& value,
+                                     const std::vector<json>& args)>;
+
+static const std::unordered_map<std::string, FilterFn> FILTERS = {
+    {"length", [](const json& v, auto&) -> json {
+        if (v.is_string()) return v.get_ref<const std::string&>().size();
+        if (v.is_array() || v.is_object()) return v.size();
+        return 0;
+    }},
+    {"trim", [](const json& v, auto&) -> json {
+        auto s = v.get<std::string>();
+        auto start = s.find_first_not_of(" \t\n\r");
+        auto end = s.find_last_not_of(" \t\n\r");
+        return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
+    }},
+    {"upper", [](const json& v, auto&) -> json {
+        auto s = v.get<std::string>();
+        std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+        return s;
+    }},
+    {"lower", [](const json& v, auto&) -> json {
+        auto s = v.get<std::string>();
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        return s;
+    }},
+    {"default", [](const json& v, const std::vector<json>& args) -> json {
+        if (v.is_null() && !args.empty()) return args[0];
+        return v;
+    }},
+    {"join", [](const json& v, const std::vector<json>& args) -> json {
+        std::string sep = args.empty() ? "" : args[0].get<std::string>();
+        std::string result;
+        for (size_t i = 0; i < v.size(); ++i) {
+            if (i > 0) result += sep;
+            result += to_string(v[i]);
+        }
+        return result;
+    }},
+    // ... more filters follow the same pattern
+};
+----
+
+Same pattern works for `is` tests:
+
+[source,cpp]
+----
+static const std::unordered_map<std::string, TestFn> TESTS = {
+    {"defined",   [](const json& v, auto&) { return !v.is_null(); }},
+    {"undefined", [](const json& v, auto&) { return v.is_null(); }},
+    {"none",      [](const json& v, auto&) { return v.is_null(); }},
+    {"string",    [](const json& v, auto&) { return v.is_string(); }},
+    {"number",    [](const json& v, auto&) { return v.is_number(); }},
+    {"mapping",   [](const json& v, auto&) { return v.is_object(); }},
+    {"iterable",  [](const json& v, auto&) { return v.is_array() || v.is_string(); }},
+    // ...
+};
+----
+
+=== The Namespace Trick
+
+The trickiest part of Jinja2 scoping: variables set inside a `for` loop are lost when the loop ends.
+The workaround is `namespace()`:
+
+[source,django]
+----
+{% set ns = namespace(count=0) %}
+{% for item in items %}
+    {% set ns.count = ns.count + 1 %}
+{% endfor %}
+Total: {{ ns.count }}
+----
+
+In the evaluator, `set ns.attr = val` modifies the object in-place, surviving scope restoration:
+
+[source,cpp]
+----
+if (s.attr.has_value()) {
+    // Modifies the object in-place -- survives scope restore
+    env.variables[s.var_name][*s.attr] = val;
+}
+----
+
+
+== End-to-End: A Real Chat Template
+
+Let's trace through a real HuggingFace chat template.
+
+=== The Template (Qwen2 style)
+
+[source,django]
+----
+{% for message in messages %}{% if loop.first and messages[0]['role'] != 'system' %}{{ '<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n' }}{% endif %}{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}
+----
+
+=== The Input
+
+[source,json]
+----
+{
+  "messages": [{"role": "user", "content": "Hello!"}],
+  "add_generation_prompt": true
+}
+----
+
+=== Phase by Phase
+
+**Template Tokenization** splits into:
+[source]
+----
+BlockTag("for message in messages")
+BlockTag("if loop.first and messages[0]['role'] != 'system'")
+VarTag("'<|im_start|>system\\nYou are a helpful assistant.<|im_end|>\\n'")
+BlockTag("endif")
+VarTag("'<|im_start|>' + message['role'] + '\\n' + ...")
+BlockTag("endfor")
+BlockTag("if add_generation_prompt")
+VarTag("'<|im_start|>assistant\\n'")
+BlockTag("endif")
+----
+
+**Expression Lexing** tokenizes each tag:
+[source]
+----
+"for message in messages"
+→ [KW_For, Ident("message"), KW_In, Ident("messages"), Eof]
+
+"loop.first and messages[0]['role'] != 'system'"
+→ [Ident("loop"), Dot, Ident("first"), KW_And, Ident("messages"),
+   LBracket, Integer("0"), RBracket, LBracket, String("role"), RBracket,
+   NotEq, String("system"), Eof]
+----
+
+**Parsing** builds the AST, and **evaluation** walks it:
+
+[source]
+----
+1. Enter For: message = {"role": "user", "content": "Hello!"}
+   loop = {index: 1, first: true, last: true, length: 1}
+
+2. If: loop.first (true) and messages[0]['role'] != 'system' (true) → true
+
+3. Output: "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n"
+
+4. Output: "<|im_start|>user\nHello!<|im_end|>\n"
+
+5. End For
+
+6. If: add_generation_prompt → true
+
+7. Output: "<|im_start|>assistant\n"
+----
+
+=== Final Output
+
+[source]
+----
+<|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+Hello!<|im_end|>
+<|im_start|>assistant
+----
+
+This is exactly what the LLM expects as input.
+
+== Architecture Summary
+
+[source]
+----
+┌──────────────────────────────────────────────────────┐
+│  Template String (from tokenizer_config.json)        │
+│  "{% for message in messages %}..."                  │
+└──────────────────────┬───────────────────────────────┘
+                       │
+              ┌────────▼────────┐
+              │  Template Lexer │  Split on {{ }}, {% %}, {# #}
+              └────────┬────────┘
+                       │  TemplateTokens
+              ┌────────▼────────┐
+              │ Expression Lexer│  Tokenize each tag's content
+              └────────┬────────┘
+                       │  Tokens per expression
+              ┌────────▼────────┐
+              │     Parser      │  Recursive descent → AST
+              └────────┬────────┘
+                       │  AST
+              ┌────────▼────────┐
+              │   Evaluator     │  Walk tree with context → string
+              └────────┬────────┘
+                       │  Rendered string
+              ┌────────▼────────┐
+              │   Tokenizer     │  Encode string → token IDs
+              └────────┬────────┘
+                       │
+                  Token IDs → LLM
+----
+
+== Lessons Learned
+
+1. **Lex first, parse tokens -- not characters.** Every parse method becomes 5x shorter.
+
+2. **Separate concerns cleanly.** Lexer handles whitespace and escapes. Parser handles precedence and nesting. Evaluator handles semantics.
+
+3. **Use `std::variant` for AST nodes.** The compiler catches missing cases. No more "forgot to handle new node type."
+
+4. **Table-drive extensible parts.** Filters and tests are entries in a map. Adding a new filter is one line.
+
+5. **Test with real templates early.** Don't build the whole engine before testing. Start with `{{ variable }}`, then add `{% if %}`, then `{% for %}`, testing at each step.
+
+6. **Error messages matter.** "Expected ')' at position 42" is infinitely better than "parse error."
+
+== What We Didn't Build (and Why)
+
+Some Jinja2 features aren't needed for chat templates:
+
+- **Template inheritance** (`extends`, `block`) -- chat templates are standalone
+- **Macros** -- never used in chat templates
+- **Import/include** -- no multi-file templates
+- **HTML escaping** -- we're generating plain text, not HTML
+- **Custom delimiters** -- all chat templates use the default `{{ }}` / `{% %}`
+
+By omitting these, the implementation is ~1,500 lines instead of ~10,000.
+The right amount of complexity for the job.
+
+== Further Reading
+
+- https://jinja.palletsprojects.com/en/stable/templates/[Jinja2 template documentation^]
+- _Crafting Interpreters_ by Robert Nystrom -- excellent book on building parsers
+- _Engineering a Compiler_ by Cooper & Torczon -- for the theory behind it all
