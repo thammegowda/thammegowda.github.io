@@ -12,7 +12,6 @@ ShowToc: true
 TocOpen: false
 ---
 
-toc::[]
 
 == Why Jinja2 in C++?
 
