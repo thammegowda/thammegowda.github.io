@@ -1,0 +1,257 @@
+---
+title: "From O(N) to O(log N): A Faster BPE Training Algorithm, Buried and Rediscovered"
+date: 2026-03-30
+draft: false
+tags: ["nlp", "tokenizers", "bpe", "c++", "algorithms"]
+---
+:stem: latexmath
+:icons: font
+
+== TL;DR
+
+I wrote a fast BPE training algorithm in 2020 as part of https://github.com/isi-nlp/nlcodec[nlcodec], buried it in a Python codebase, and forgot about it for five years.
+This week I unearthed it, rewrote it in C++, and benchmarked it against SentencePiece.
+The result: *7.6× faster BPE vocabulary training* on 1M multilingual sentences -- without changing the output quality.
+The algorithm is now available as a drop-in `--nlcodec_bpe` flag for SentencePiece.
+
+== Background: Why BPE Training Speed Matters
+
+In practice, BPE vocabulary training is slow enough that most practitioners *sub-sample* their data before learning a vocabulary.
+A common recipe is to randomly sample ~1M sentences, train BPE on that, and apply the learned vocabulary to the full dataset.
+For monolingual models this is usually fine -- a million sentences captures most frequent patterns.
+
+But for *massively multilingual* models, sub-sampling is a serious compromise.
+In 2020, I was building a https://rtg.isi.edu/many-eng/data-v1.html[many-to-English translation system covering 500+ languages].
+The full training corpus had roughly *half a billion sentences* across hundreds of languages.
+Many of these languages had only a few thousand sentences each.
+Sub-sampling to 1M sentences meant that low-resource languages would be drastically underrepresented in the vocabulary -- their unique character sequences and morphological patterns would be treated as rare noise rather than learned as proper subword units.
+
+I needed to train BPE on the full dataset, or at least a very large fraction of it.
+SentencePiece -- the standard tool -- was too slow even on a 100M sentence sample (it would take hours).
+So I wrote a faster BPE learner. It worked, shipped as part of https://github.com/isi-nlp/nlcodec[nlcodec], and I moved on.
+Five years later, I rediscovered it and realized the algorithmic trick deserved a proper write-up.
+
+=== How BPE Training Works
+
+Byte Pair Encoding (BPE) footnote:[Sennrich et al., _Neural Machine Translation of Rare Words with Subword Units_, ACL 2016.] learns a subword vocabulary by iteratively merging the most frequent adjacent token pair.
+Starting from a character-level vocabulary, each iteration:
+
+. Counts the frequency of every adjacent pair stem:[(a, b)] across the corpus.
+. Selects the pair stem:[(a^*, b^*) = \arg\max_{(a,b)} f(a,b)].
+. Replaces all occurrences of stem:[(a^*, b^*)] with a new token stem:[r = a^* \| b^*].
+. Repeats until stem:[V] merge operations have been performed.
+
+The critical question is: _how efficiently can we find the maximum-frequency pair and update counts after each merge?_
+
+== Why SentencePiece Is Slow
+
+SentencePiece's BPE trainer uses a *symbol graph* with lazy frequency recomputation:
+
+* *Finding the best pair*: maintains an "active set" of the top 5% most frequent bigrams. Every 100 iterations, it re-scans _all_ bigrams, recomputes their frequencies (by iterating all of each bigram's occurrence positions), and partial-sorts to find the top 5%.
+
+* *Frequency updates*: after a merge, neighbor pairs have their frequency set to zero, triggering a full recomputation on next access. Each recomputation iterates the positions list, validates each position against the current symbol array, and erases stale entries.
+
+The cost per merge is dominated by:
+
+[stem]
+++++
+T_{\text{SP}} = O(|\mathcal{A}| \cdot \bar{P}) \quad \text{every 100 iters: } O(|\mathcal{S}| \cdot \bar{P})
+++++
+
+where stem:[|\mathcal{A}|] is the active set size (~5% of all bigrams), stem:[|\mathcal{S}|] is the total symbol cache size, and stem:[\bar{P}] is the average number of positions per symbol.
+The periodic full rescan makes the total cost superlinear in practice.
+
+== The nlcodec Algorithm
+
+The nlcodec algorithm, originally implemented in Python in 2020 as part of the MTData/nlcodec toolchain footnote:[Gowda et al., _Many-to-English Machine Translation Tools, Data, and Pretrained Models_, ACL 2021.], uses three data structures to achieve stem:[O(\log N)] per merge:
+
+=== Data Structure 1: Max-Heap
+
+A standard max-priority queue (binary heap) keyed by bigram frequency.
+Finding the best pair is stem:[O(1)] peek, stem:[O(\log N)] pop -- not stem:[O(|\mathcal{A}|)] linear scan.
+
+=== Data Structure 2: Doubly-Linked Lists
+
+Each word's token sequence is stored as a doubly-linked list of `LnNode` objects, arena-allocated for cache efficiency.
+Merging adjacent tokens stem:[(a, b) \to r] is stem:[O(1)]:
+
+[source]
+----
+Before:  ... ⇄ x ⇄ a ⇄ b ⇄ y ⇄ ...
+After:   ... ⇄ x ⇄ r ⇄ y ⇄ ...    (b deleted, a reused as r)
+----
+
+No array shifting. Node identity is preserved (hash by pointer address), so existing index entries remain valid.
+
+=== Data Structure 3: Lazy Deletion via "Dirty Map"
+
+After a merge, four neighbor pairs change frequency: stem:[(x, a)] and stem:[(b, y)] lose occurrences; stem:[(x, r)] and stem:[(r, y)] gain occurrences.
+Instead of locating and updating entries deep inside the heap (stem:[O(N)]):
+
+* *Increments* (new pairs involving stem:[r]): pushed directly to the heap.
+* *Decrements* (old pairs losing occurrences): accumulated in a hash map `HeapDirty[pair] += delta`.
+* *On pop*: if the popped pair exists in `HeapDirty`, apply the correction. If the corrected frequency is still positive, re-push; otherwise discard.
+
+This maintains heap correctness without stem:[O(N)] search:
+
+[stem]
+++++
+T_{\text{nlcodec}} = O(K_i \cdot \log N)
+++++
+
+where stem:[K_i] is the number of positions of the merged pair (the inherent work). Total over all stem:[V] merges:
+
+[stem]
+++++
+T_{\text{total}} = O(M \log N)
+++++
+
+where stem:[M] is the total corpus token count -- the same work as a single scan, amortized across all merges.
+
+=== The Merge Loop (Pseudocode)
+
+[source,python]
+----
+heap ← MaxHeap(bigram_frequencies)
+dirty ← {}
+
+for i in 1..V:
+    (pair, freq) ← heap.pop()
+
+    while pair in dirty:               # apply lazy corrections
+        freq += dirty.pop(pair)
+        if freq > 0: heap.push(pair, freq)
+        (pair, freq) ← heap.pop()
+
+    if freq < threshold: break          # early stop
+
+    r ← new_token(pair.left + pair.right)
+
+    for each node where pair occurs:    # O(K_i)
+        delete right_node              # O(1) linked-list op
+        reuse left_node as r           # O(1)
+        update neighbor deltas         # O(1) hash map ops
+
+    push new pair frequencies to heap
+    accumulate decrements in dirty
+----
+
+=== Comparison
+
+[cols="1,2,2", options="header"]
+|===
+| Operation | SentencePiece | nlcodec
+| Find best pair | stem:[O(\|\mathcal{A}\|)] linear scan + lazy freq | stem:[O(\log N)] heap pop
+| Update frequencies | Set to 0, recompute on access | Direct delta ± stem:[O(1)]
+| Position tracking | `btree_set<uint64>`, validate on every access | `unordered_set<LnNode*>`, pointer-stable
+| Periodic rescan | Every 100 iterations: stem:[O(\|\mathcal{S}\| \cdot \bar{P})] | Never
+| Merge operation | Array-based (scan for next/prev) | Doubly-linked list stem:[O(1)]
+|===
+
+== Benchmark
+
+=== Setup
+
+* *Data*: 1M multilingual sentences from CC-100 (en, de, zh-Hans, ar, hi), 200k lines per language, shuffled.
+* *Vocab*: 32,000 BPE types.
+* *Hardware*: 48-core server, single-threaded (BPE merge loop is inherently sequential).
+* *Tools*: SentencePiece (Marian fork), nlcodec C++ with pybind11.
+
+=== Results: 1M Sentences, 32k Vocabulary
+
+[cols="2,1,1,1", options="header"]
+|===
+| Tool | Language | Time | Speedup
+| SentencePiece (default) | C++ | 9m 53s | 1.0×
+| https://github.com/glample/fastBPE[fastBPE] | C++ | 4m 52s | 2.0×
+| nlcodec (original) | Python | 3m 17s | 3.0×
+| nlcodec C++ (standalone) | C++ | 1m 32s | 6.4×
+| SentencePiece + `--nlcodec_bpe` | C++ | 1m 18s | *7.6×*
+|===
+
+=== Results: 200k Sentences, 32k Vocabulary
+
+[cols="2,1,1,1", options="header"]
+|===
+| Tool | Language | Time | Speedup
+| SentencePiece (default) | C++ | 2m 28s | 1.0×
+| https://github.com/glample/fastBPE[fastBPE] | C++ | 1m 09s | 2.1×
+| nlcodec (original) | Python | 55s | 2.7×
+| nlcodec C++ (standalone) | C++ | 18.8s | 7.9×
+| SentencePiece + `--nlcodec_bpe` | C++ | 18.2s | *8.1×*
+|===
+
+Note: the original Python nlcodec already beats SentencePiece's C{plus}{plus} implementation by 2.7-3×.
+This is a pure algorithmic win -- Python's hash maps and object overhead are slower than C{plus}{plus}, yet the better algorithm more than compensates.
+Rewriting in C{plus}{plus} adds another 2.8× on top, for a combined 7.6-8.1× improvement.
+
+The trained models produce comparable tokenizations.
+Encoding "hello world" with both models:
+
+----
+default:  ▁hell o ▁world
+nlcodec_bpe: ▁h ell o ▁world
+----
+
+Different merge orderings (expected -- BPE is greedy and tie-breaking differs), but both are valid BPE segmentations.
+
+== Usage
+
+For SentencePiece (with our patch):
+
+[source,bash]
+----
+spm_train --input=data.txt --model_prefix=model \
+          --vocab_size=32000 --model_type=bpe \
+          --nlcodec_bpe
+----
+
+For nlcodec standalone (pip install):
+
+[source,python]
+----
+import nlcodec
+tok = nlcodec.train_bpe("data.txt", vocab_size=32000)
+tok.save("model.json.gz")
+----
+
+== History
+
+This algorithm was written in Python in late 2020 as part of the nlcodec library, a companion tool for the https://github.com/thammegowda/mtdata[MTData] project.
+The original Python implementation already outperformed SentencePiece's C++ BPE trainer by ~3× due to the algorithmic advantage.
+The source code contained this comment:
+
+[source,python]
+----
+# TODO: write this in c++ or rust and bind it here
+----
+
+That TODO remained unaddressed for five years.
+In March 2026, I finally rewrote it in C++ (~200 lines for the core algorithm), added pybind11 bindings, and integrated it into SentencePiece as a drop-in replacement.
+
+The C++ rewrite turned a 3× Python advantage into a 7.6× advantage -- Python's hash map and object allocation overhead was the remaining bottleneck.\nThe memory usage also dropped from 7.5 GB (Python, 1M lines) to under 2 GB (C++).
+
+== Code
+
+* Original nlcodec (Python): https://github.com/isi-nlp/nlcodec[github.com/isi-nlp/nlcodec]
+* nlcodec C++ rewrite: https://github.com/thammegowda/nlcodec/tree/tg/cpp[github.com/thammegowda/nlcodec] (`tg/cpp` branch, `csrc/` directory)
+* SentencePiece integration: https://github.com/marian-nmt/sentencepiece/pull/21[`--nlcodec_bpe` flag] (PR against Marian fork)
+* tokenizerpp integration: `tokenizers::trainers::train_bpe()` API
+
+== Citation
+
+If you use this work, please cite:
+
+[source,bibtex]
+----
+@inproceedings{gowda-etal-2021-many,
+    title = "Many-to-{E}nglish Machine Translation Tools, Data, and Pretrained Models",
+    author = "Gowda, Thamme  and
+      Zhang, Zhao  and
+      Mattmann, Chris  and
+      May, Jonathan",
+    booktitle = "Proceedings of ACL-IJCNLP 2021: System Demonstrations",
+    year = "2021",
+    url = "https://aclanthology.org/2021.acl-demo.37",
+}
+----
