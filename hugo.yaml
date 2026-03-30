@@ -19,6 +19,7 @@ markup:
     attributes:
       icons: font
       source-highlighter: rouge
+      stem: latexmath
     safeMode: unsafe
     trace: false
   highlight:
