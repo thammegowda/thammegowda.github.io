@@ -1,30 +1,28 @@
 ---
 title: "From O(N) to O(log N): A Faster BPE Training Algorithm, Buried and Rediscovered"
-date: 2026-03-30
-draft: false
-tags: ["nlp", "tokenizers", "bpe", "c++", "algorithms"]
+date: 2026-03-30T20:30:00
+author: "TG Gowda"
+description: "I wrote a fast BPE training algorithm in 2020, buried it in a Python codebase, and forgot about it. Five years later, I rewrote it in C++ and benchmarked it: up to 11× faster than SentencePiece. The trick? A max-heap with lazy deletion instead of periodic linear scans."
+url: "/posts/2026/03/faster-bpe-learn/"
+tags: ["NLP", "tokenizers", "BPE", "C++", "algorithms"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
 ---
 :stem: latexmath
 :icons: font
 
-== TL;DR
-
-I wrote a fast BPE training algorithm in 2020 as part of https://github.com/isi-nlp/nlcodec[nlcodec], buried it in a Python codebase, and forgot about it for five years.
-This week I unearthed it, rewrote it in C++, and benchmarked it against SentencePiece.
-The result: *7.6× faster BPE vocabulary training* on 1M multilingual sentences -- without changing the output quality.
-The algorithm is now available as a drop-in `--nlcodec_bpe` flag for SentencePiece.
-
 == Background: Why BPE Training Speed Matters
 
 In practice, BPE vocabulary training is slow enough that most practitioners *sub-sample* their data before learning a vocabulary.
-A common recipe is to randomly sample ~1M sentences, train BPE on that, and apply the learned vocabulary to the full dataset.
-For monolingual models this is usually fine -- a million sentences captures most frequent patterns.
+A common recipe is to randomly sample a few million sentences, train BPE on that, and apply the learned vocabulary to the full dataset.
+For dataset with less diversity or a single language, this is usually fine -- a million sentences captures most frequent patterns. 
 
 But for *massively multilingual* models, sub-sampling is a serious compromise.
-In 2020, I was building a https://rtg.isi.edu/many-eng/data-v1.html[many-to-English translation system covering 500+ languages].
+In 2020, I was building a https://rtg.isi.edu/many-eng/data-v1.html[many-to-English translation system covering 500+ languages] (see link:/posts/2021/04/mtdata-nlcodec-rtg-many-english/[our ACL 2021 paper write-up]).
 The full training corpus had roughly *half a billion sentences* across hundreds of languages.
 Many of these languages had only a few thousand sentences each.
-Sub-sampling to 1M sentences meant that low-resource languages would be drastically underrepresented in the vocabulary -- their unique character sequences and morphological patterns would be treated as rare noise rather than learned as proper subword units.
+Sub-sampling a few million sentences meant that low-resource languages would be drastically underrepresented in the vocabulary -- their unique character sequences and morphological patterns would be treated as rare noise rather than learned as proper subword units.
 
 I needed to train BPE on the full dataset, or at least a very large fraction of it.
 SentencePiece -- the standard tool -- was too slow even on a 100M sentence sample (it would take hours).
@@ -75,11 +73,10 @@ Finding the best pair is stem:[O(1)] peek, stem:[O(\log N)] pop -- not stem:[O(|
 Each word's token sequence is stored as a doubly-linked list of `LnNode` objects, arena-allocated for cache efficiency.
 Merging adjacent tokens stem:[(a, b) \to r] is stem:[O(1)]:
 
-[source]
-----
-Before:  ... ⇄ x ⇄ a ⇄ b ⇄ y ⇄ ...
-After:   ... ⇄ x ⇄ r ⇄ y ⇄ ...    (b deleted, a reused as r)
-----
+....
+Before: ... ⇄ x ⇄ a ⇄ b ⇄ y ⇄ ...
+After:  ... ⇄ x ⇄ r ⇄ y ⇄ ...   (b deleted, a reused as r)
+....
 
 No array shifting. Node identity is preserved (hash by pointer address), so existing index entries remain valid.
 
@@ -110,8 +107,9 @@ where stem:[M] is the total corpus token count -- the same work as a single scan
 
 === The Merge Loop (Pseudocode)
 
-[source,python]
+[source]
 ----
+
 heap ← MaxHeap(bigram_frequencies)
 dirty ← {}
 
@@ -162,11 +160,11 @@ for i in 1..V:
 [cols="2,1,1,1", options="header"]
 |===
 | Tool | Language | Time | Speedup
-| SentencePiece (default) | C++ | 9m 53s | 1.0×
-| https://github.com/glample/fastBPE[fastBPE] | C++ | 4m 52s | 2.0×
-| nlcodec (original) | Python | 3m 17s | 3.0×
-| nlcodec C++ (standalone) | C++ | 1m 32s | 6.4×
-| SentencePiece + `--nlcodec_bpe` | C++ | 1m 18s | *7.6×*
+| SentencePiece (default) | C++ | 9m 08s | 1.0×
+| https://github.com/glample/fastBPE[fastBPE] | C++ | 4m 52s | 1.9×
+| nlcodec (original) | Python | 3m 17s | 2.8×
+| nlcodec C++ (standalone) | C++ | 1m 32s | 6.0×
+| SentencePiece + `--nlcodec_bpe` | C++ | 1m 03s | *8.7×*
 |===
 
 === Results: 200k Sentences, 32k Vocabulary
@@ -174,26 +172,32 @@ for i in 1..V:
 [cols="2,1,1,1", options="header"]
 |===
 | Tool | Language | Time | Speedup
-| SentencePiece (default) | C++ | 2m 28s | 1.0×
-| https://github.com/glample/fastBPE[fastBPE] | C++ | 1m 09s | 2.1×
-| nlcodec (original) | Python | 55s | 2.7×
-| nlcodec C++ (standalone) | C++ | 18.8s | 7.9×
-| SentencePiece + `--nlcodec_bpe` | C++ | 18.2s | *8.1×*
+| SentencePiece (default) | C++ | 2m 34s | 1.0×
+| https://github.com/glample/fastBPE[fastBPE] | C++ | 1m 09s | 2.2×
+| nlcodec (original) | Python | 55s | 2.8×
+| nlcodec C++ (standalone) | C++ | 18.8s | 8.2×
+| SentencePiece + `--nlcodec_bpe` | C++ | 14.1s | *10.9×*
 |===
 
-Note: the original Python nlcodec already beats SentencePiece's C{plus}{plus} implementation by 2.7-3×.
+Note: the original Python nlcodec already beats SentencePiece's C{plus}{plus} implementation by 2.8×.
 This is a pure algorithmic win -- Python's hash maps and object overhead are slower than C{plus}{plus}, yet the better algorithm more than compensates.
-Rewriting in C{plus}{plus} adds another 2.8× on top, for a combined 7.6-8.1× improvement.
+Rewriting in C{plus}{plus} adds another 2.9-3.9× on top, for a combined 8.7-10.9× improvement.
 
-The trained models produce comparable tokenizations.
-Encoding "hello world" with both models:
+The trained models produce nearly identical vocabularies (99.3% overlap at 200k sentences, 99.8% at 1M) and equivalent compression.
+Encoding the full training data with each model:
 
-----
-default:  ▁hell o ▁world
-nlcodec_bpe: ▁h ell o ▁world
-----
+[cols="1,1,1,1", options="header"]
+|===
+| Dataset | Model | Total tokens | Mean sent length
+| 200k | Default | 8,480,496 | 44.60
+| 200k | Nlcodec | 8,480,629 | 44.60
+| 1M | Default | 42,547,569 | 44.75
+| 1M | Nlcodec | 42,548,265 | 44.75
+|===
 
-Different merge orderings (expected -- BPE is greedy and tie-breaking differs), but both are valid BPE segmentations.
+The tiny vocabulary differences come from tie-breaking in pair frequency ordering; the resulting tokenizations are effectively identical.
+
+The `--nlcodec_bpe` flag replaces only the merge loop internals; everything else (sentence loading, normalization, whitespace handling, model serialization) uses SentencePiece's native code paths.
 
 == Usage
 
@@ -217,7 +221,7 @@ tok.save("model.json.gz")
 
 == History
 
-This algorithm was written in Python in late 2020 as part of the nlcodec library, a companion tool for the https://github.com/thammegowda/mtdata[MTData] project.
+This algorithm was written in Python in late 2020 as part of the nlcodec library, a companion tool for the https://github.com/thammegowda/mtdata[MTData] project (link:/posts/2021/04/mtdata-nlcodec-rtg-many-english/[described in our ACL 2021 system demo]).
 The original Python implementation already outperformed SentencePiece's C++ BPE trainer by ~3× due to the algorithmic advantage.
 The source code contained this comment:
 
@@ -229,7 +233,8 @@ The source code contained this comment:
 That TODO remained unaddressed for five years.
 In March 2026, I finally rewrote it in C++ (~200 lines for the core algorithm), added pybind11 bindings, and integrated it into SentencePiece as a drop-in replacement.
 
-The C++ rewrite turned a 3× Python advantage into a 7.6× advantage -- Python's hash map and object allocation overhead was the remaining bottleneck.\nThe memory usage also dropped from 7.5 GB (Python, 1M lines) to under 2 GB (C++).
+The C++ rewrite turned a 3× Python advantage into an 8.7–10.9× advantage -- Python's hash map and object allocation overhead was the remaining bottleneck.
+The memory usage also dropped from 7.5 GB (Python, 1M lines) to under 2 GB (C++).
 
 == Code
 
