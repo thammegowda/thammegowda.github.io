@@ -1,0 +1,142 @@
+---
+title: "A Field Guide for Sanity-Checking Your Training Pipeline"
+date: 2026-06-27T20:00:00
+author: "Thamme Gowda"
+summary: "A practical guide to debugging new ML setups before wasting GPU-hours: make a realistic small set memorize, measure real generation, and keep dropout on."
+description: "A practical guide to the overfit sanity check for ML researchers: use a realistic small set, measure the inference-mode metric, and keep dropout on even when deliberately overfitting."
+slug: "dropout-overfit-sanity-check"
+url: "/posts/2026/06/dropout-overfit-sanity-check/"
+tags: ["Machine Learning", "Deep Learning", "Training", "Dropout", "Debugging"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+---
+
+New training runs fail in boring ways long before they fail in interesting ways.
+The labels may be shifted by one token.
+The mask may point in the wrong direction.
+The tokenizer may be eating the target.
+The learning rate may be so low that nothing moves, or so high that nothing sticks.
+From the outside, all of these can look like the same vague symptom: the model is not learning.
+
+Real training is expensive -- GPU-hours, wall-clock time, and your attention -- and once a run is large enough, a mistake this dumb can hide for a day before it surfaces. So before I trust a new model, task, or data pipeline, I want a cheap way to tell "the idea is hard" apart from "the plumbing is broken." The test I reach for is simple: take a small but realistic slice of data -- ~1,000 examples -- and make the model memorize it. Not because memorization is the goal, but because a model that can't memorize a thousand examples has no business being launched into a 200,000-step run.
+
+This is the overfit sanity check: the unit test of deep learning. Like any unit test, it's only useful if you write it well -- a sloppy one hands you false confidence. So this post is the short, reusable checklist I wish I'd had: how to run the check so it actually catches problems, plus one counterintuitive lesson that cost me (and more than one AI coding agent) real time -- *don't reflexively turn dropout off just because you're overfitting on purpose.* Run it yourself, or hand it to the coding agent you've delegated your setup to, before either of you burns a day on a full run.
+
+[NOTE]
+====
+*None of this is new.* The overfit sanity check is old wisdom. Andrej Karpathy put _"you didn't try to overfit a single batch first"_ at the very top of his https://twitter.com/karpathy/status/1013244313327681536[most common neural net mistakes] list back in 2018, and expanded it in https://karpathy.github.io/2019/04/25/recipe/[A Recipe for Training Neural Networks] (2019), where he names the two qualities that actually predict success: *"patience and attention to detail."* I'm writing it down again, in 2026, for a new reason: so I have one link to hand an AI coding agent at the start of every new exploration -- because the agents skip this step at least as eagerly as we do. The lesson on dropout further down is the one part I haven't seen spelled out elsewhere.
+====
+
+== What this adds to the basics
+
+Treat Karpathy's thread and recipe as the *basics* -- they're correct and you should internalize them. This post is the *details and nuances* that the modern autoregressive-generation setting (LLMs, seq2seq, multimodal decoders) layers on top, along three axes:
+
+[cols="1,2,3", options="header"]
+|===
+| Axis | Classic Recipe (Basics) | This post
+
+| *Overfit set size*
+| Overfit a single batch -- as few as ~2 examples -- and drive the loss to zero.
+| Use a *realistic ~1,000-example* slice. A tiny batch is a _different distribution_: it won't exercise your length range, batching/padding, or tokenizer corners, and it can be solved by shortcuts that collapse the moment real diversity shows up.
+
+| *Metric to track*
+| Reach the lowest achievable loss; also watch a human-interpretable metric (e.g. accuracy).
+| Teacher-forced loss -- and validation cross-entropy -- is *not* the inference metric for a model that generates. Score *free-running generation* end to end, the way you'll actually ship it.
+
+| *Training budget*
+| Drive training loss toward zero; "leave it training," and early-stop the _real_ run on validation loss.
+| Give the *sanity check* a bounded budget scaled to your real run (~5-10k updates), and don't early-stop it on the loss -- the generation metric keeps climbing for thousands of steps after the loss flatlines.
+|===
+
+And one departure from the basics, not just a refinement: the classic move is _"turn regularization off so the model can memorize freely."_ For autoregressive generation that can backfire -- so we keep a little *dropout on (~0.1)* even while deliberately overfitting. That's the lesson the rest of the post is about.
+
+== Why overfit first
+
+An overfit run is not a miniature research result. It is a deliberately easy test of the whole training loop: examples move from storage into preprocessing, become tensors, pass through the model, produce a loss, update weights, and finally show up in the metric you care about.
+
+Passing this test does not prove the model will generalize. It only proves that the setup is capable of moving information from inputs to outputs. But failing it is extremely informative: if a model cannot learn a thousand examples it sees over and over, there is no reason to expect it to learn the real distribution by sheer scale.
+
+That asymmetry is the value:
+
+* Passing buys you permission to scale up.
+* Failing tells you to stay local and debug.
+
+== Do the overfit check right
+
+The check is only as good as how you set it up. Four guidelines.
+
+=== 1. Give it a bounded budget and demand near-perfect
+
+Pick a step budget that's small relative to your real run -- say *5,000-10,000 updates* -- and require the model to reach a near-perfect score within it. The point isn't just "loss goes down"; it's "loss goes essentially to zero, quickly." If memorizing 1,000 examples takes 10,000 steps, then learning the real task over 100,000-200,000 steps is plausible. If it's still struggling at 10,000 steps on data it's allowed to memorize, something is wrong with the setup, not the data.
+
+=== 2. Use a realistic-sized small set (~1,000), not a toy one (~100)
+
+This one bites people. It's tempting to overfit 10 or 100 examples because it's instant. But a too-small set is a _different distribution_ -- it hides exactly the failure modes you're trying to surface:
+
+* It won't exercise your length distribution (long sequences, edge-case shapes).
+* It won't trigger batching/padding interactions or tokenizer corner cases.
+* It can be solved by degenerate shortcuts that fall apart the moment real diversity shows up.
+
+Use enough data to be representative but small enough to memorize -- *~1,000 examples* is my default. It's still tiny, but it's diverse enough that "it overfit" actually means something.
+
+=== 3. Measure the real inference metric, not just the training loss
+
+This is the crux, and it's where most setups quietly go wrong. Here's the subtle mistake almost everyone makes: they compute cross-entropy on a held-out split, call it the "validation metric," and track _that_. But validation cross-entropy is still measured in *training mode* -- teacher-forced, every step conditioned on the _ground-truth_ prefix. It is the exact objective you're already optimizing, just on different data. It is *not* how the model runs when you actually use it.
+
+For any model that generates autoregressively -- one token conditioned on its own previous outputs -- that gap matters enormously. Teacher-forced cross-entropy can look perfect while free-running generation is mediocre, because at inference the model has to live with its own occasionally-wrong outputs and the errors compound. A validation-loss curve that drops beautifully tells you almost nothing about whether the model can do the task.
+
+So wire in the *real, inference-mode metric from day one of the sanity check*: run the model the way it will actually be used -- greedy or sampled decoding, free-running generation -- and score _that_, end to end. Do it early, on the cheap overfit set, precisely because that is when it flushes out the maximum number of plumbing bugs while they're still trivial to fix: decoding config, stop tokens, detokenization, prompt/chat formatting, the scorer itself. Skip it, and you set yourself up for the most demoralizing outcome in applied ML -- *"the model got better on validation, but the end-to-end evaluation didn't move"* -- discovered weeks and thousands of GPU-hours later, when you finally realize that "validation" was a training metric all along.
+
+[NOTE]
+====
+Won't this be slow? Autoregressive generation _is_ costlier than reading a loss number -- you decode one token at a time. But the 2026 inference stack makes it cheap (KV caching, paged attention, CUDA graphs, continuous batching), and you'll need a fast sampling path for post-training -- RLHF, GRPO, rejection sampling -- anyway. So build it now and validate it against your overfit set: it's the cheapest place to get it right, and it's not throwaway work. One caveat: batched generation should be score-invariant to batch size, so if your number moves when the batch changes, that's a batching bug, not a free speedup.
+====
+
+=== 4. Don't early-stop on the loss -- stop when the inference metric is near-perfect
+
+Early stopping is for production runs, not sanity checks. And if you do early-stop a sanity check, gate it on the right signal: the *inference-mode quality metric* -- the free-running generation score computed in your validation phase -- reaching *near-perfect, say 99% or higher*. Do _not_ stop on the training loss or cross-entropy. Those training-time losses flatline early and lie: the generation metric often keeps climbing for thousands of steps after the loss looks done. In one of my runs, the generation score gained several points purely by training longer after the loss had plateaued. For a sanity check, let it run until the metric you actually ship is essentially perfect on this sanity check setup.
+
+And take a plateau _below_ that threshold seriously: a sub-perfect ceiling on data the model has seen thousands of times is not "good enough" -- it is a real defect, and an *upper bound* on whatever your full-scale run can ever reach. If the model can't perfectly reproduce examples it has effectively memorized, the problem is broken plumbing, not a hard task. So zoom in on the specific examples that fall short and find the mechanism. Are the outputs being *truncated* -- a max-length cap, an early or missing EOS, a too-small generation budget? Is the *inference pipeline drifting from the training pipeline* -- different tokenization, prompt/chat formatting, padding or attention masking, image preprocessing, batching effects, or special-token handling between the two paths? A sub-perfect plateau on memorized data is almost always one of these mismatches -- and whatever caps the score here will silently cap your real run too.
+
+== The trap: with dropout off, the loss lies
+
+Here's the counterintuitive part. The standard advice for overfitting is "turn off regularization so the model can memorize freely." Dropout off, weight decay low. And it works -- the loss drops beautifully to near-zero.
+
+But that near-zero loss can be *deceptive*. A model trained with zero dropout may find a brittle solution: it memorizes the teacher-forced mapping perfectly, yet that solution does not transfer cleanly to free-running generation. You get a gorgeous loss curve and a model that still falls short on the task.
+
+I've now watched this pattern on two different problems. They looked nothing alike on the surface, but they had the same shape. Both required *autoregressive generation* -- the model emits its output one token at a time, each step conditioned on its own previous tokens. In both, the training loss went essentially to zero (a perfect teacher-forced fit), yet the real, free-running generation quality stalled noticeably short of perfect. And in both, the move that set the trap was the same textbook overfit instinct -- mine, and that of the AI coding agents pairing with me: *turn dropout off so the model memorizes as fast as possible.*
+
+That instinct is exactly what manufactures the deceptive loss curve. The gap between "zero dropout drives the loss to ~0" and "zero dropout still doesn't generate cleanly" is the part that's easy to misread -- and, as we'll see next, easy to blame on the wrong cause. In both cases the cure turned out to be the same, and it's the rest of this post: keep a modest amount of dropout on (~0.1). That recovered most of the missing generation quality while reaching an _even lower_ training loss -- the model both fit better and generated better.
+
+== The misdiagnosis that wastes your week
+
+When you see near-zero training loss but imperfect generation, there's a tempting explanation ready to hand: *"it's exposure bias"* -- the mismatch between teacher forcing during training (always fed the ground truth) and autoregression at inference (fed its own outputs). It sounds right. It is a real phenomenon. But it is not always the first thing to fix.
+
+If you jump to that diagnosis too early, it sends you straight down a rabbit hole. The "fixes" for exposure bias are expensive and invasive: scheduled sampling, training on the model's own samples, sequence-level / RL-style objectives, custom decoding schemes. I've burned time building training-time sampling to "close the gap." AI coding agents are _especially_ prone to this -- hand one this symptom and it will confidently diagnose exposure bias and start re-architecting your training loop. It is a plausible-sounding wrong turn.
+
+Before any of that, try the cheap thing: *turn dropout on.* In both of my cases it recovered most of the gap I was tempted to blame on exposure bias. The teacher-forcing/autoregression mismatch was still real, but it was not the first-order problem. The first-order problem was *under-regularization producing a brittle solution.*
+
+== Why dropout helps generation (the mechanism)
+
+It feels paradoxical -- dropout is regularization, and you're _trying_ to overfit. Why does adding it improve the thing you care about? A few reasons that hold across both cases:
+
+* *It removes brittle shortcuts.* Zero-dropout training rewards whatever drives the loss down fastest, even if that's fragile memorization or a single overused path. Dropout makes those shortcuts unreliable during training, so the model is pushed toward a solution that's robust to perturbation -- which is exactly what free-running generation is: a long chain of slightly perturbed steps.
+* *It improves calibration and robustness to its own outputs.* At inference the model conditions on its own occasionally imperfect predictions. A model trained to tolerate noise (dropout) degrades gracefully under that self-conditioning instead of compounding errors.
+* *It lets you train longer.* Without dropout the loss saturates almost immediately and there's little left to learn from. Dropout keeps a useful gradient signal alive for far longer, and -- per guideline #4 -- that extra training is where a lot of the generation-quality gains show up.
+
+== Checklist
+
+When you bring up a new model, task, or training setup:
+
+. *Overfit first.* Prove the setup _can_ learn before scaling up.
+. *Size it realistically* -- ~1,000 examples, not ~100. Big enough to be representative, small enough to memorize.
+. *Demand near-perfect within a bounded budget* (~5-10k updates is a useful starting point). If it can't memorize a small set quickly, fix the setup, not the data.
+. *Track the real inference metric -- from the very first sanity check.* Validation cross-entropy is still a training-mode (teacher-forced) metric. Score free-running generation end to end, or you'll ship "validation improved" while the actual evaluation never moves.
+. *Keep dropout on (~0.1)* -- even here. Zero-dropout can give a deceptively perfect loss and a brittle model.
+. *Don't reach for scheduled sampling / sequence-level tricks first.* If teacher-forced loss is ~0 but generation lags, try dropout before you blame exposure bias.
+. *Stop on the inference metric, not the loss.* If you early-stop a sanity check, stop when the free-running generation score is near-perfect (~98%+), not when the loss flatlines -- the generation metric often keeps climbing long after.
+
+The overfit check is the cheapest, highest-leverage habit in applied ML. Just remember that "make it overfit" doesn't mean "strip out all regularization." A little dropout is the difference between a model that aces the training loss and a model that can actually do the job.
+
+I hope this saves you a few GPU-hours and a wasted week. And the next time you ask a coding agent to sanity-check your training setup, point it at this post first -- because I know I will.
