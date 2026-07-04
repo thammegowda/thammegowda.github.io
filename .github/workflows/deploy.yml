@@ -25,6 +25,10 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
@@ -51,7 +55,7 @@ jobs:
         run: python scripts/parse_bib.py
 
       - name: Build Hugo site
-        run: hugo --gc --minify --baseURL "https://gowda.ai/"
+        run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
