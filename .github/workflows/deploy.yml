@@ -20,14 +20,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
           fetch-depth: 0
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
+
+      - name: Verify Pages configuration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          status=$(curl -sS -o pages.json -w "%{http_code}" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")
+          if [[ "$status" != "200" ]]; then
+            cat pages.json
+            echo "GitHub Pages is not configured for this repository. In Settings > Pages, set Build and deployment > Source to GitHub Actions, then rerun this workflow." >&2
+            exit 1
+          fi
+          build_type=$(python3 - <<'PY'
+          import json
+          with open('pages.json', encoding='utf-8') as handle:
+              print(json.load(handle).get('build_type') or '')
+          PY
+          )
+          if [[ "$build_type" != "workflow" ]]; then
+            cat pages.json
+            echo "GitHub Pages is configured with build_type='$build_type'. In Settings > Pages, set Build and deployment > Source to GitHub Actions, then rerun this workflow." >&2
+            exit 1
+          fi
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
@@ -44,7 +70,7 @@ jobs:
         run: gem install asciidoctor rouge
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -58,7 +84,7 @@ jobs:
         run: hugo --gc --minify --baseURL "${{ steps.pages.outputs.base_url }}"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
