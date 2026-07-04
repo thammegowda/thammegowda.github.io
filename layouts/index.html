@@ -1,36 +1,61 @@
 {{ define "main" }}
 <div class="post-content">
-  <section id="home" style="margin-bottom: 2rem;">
-    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-start;">
-      <div style="text-align: center; flex: 0 0 auto;">
-        <img src="/images/tg-202005-min.jpeg" alt="Thamme Gowda"
-             style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;" />
-        <h2 style="margin-top: 0.5rem; margin-bottom: 0.25rem;">Thamme Gowda</h2>
-        <p style="color: var(--secondary); font-size: 0.9rem;">
-          Email: <code>tgowdan [at] gmail [dot] com</code><br/>
-          <a href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">Curriculum Vitae</a>
-        </p>
-      </div>
-      <div style="flex: 1; min-width: 280px;">
-        <p>Thamme Gowda is a Research Scientist at <a href="https://translator.microsoft.com/" target="_blank" rel="noopener">Microsoft Translator</a>.
-          He obtained his Ph.D. (2022) and MS (2017) from <a href="https://viterbischool.usc.edu/" target="_blank" rel="noopener">USC</a>, both majoring in Computer Science.
-          Previously, he worked as a Research Engineer at <a href="https://isi.edu" target="_blank" rel="noopener">USC ISI</a> (2017–22; for <a href="https://www.linkedin.com/posts/thammegowda_usc-fighton-gratitude-activity-6968419016268804096-_Ry0/" target="_blank" rel="noopener">five years!</a>),
-          a Data Scientist intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener">NASA JPL</a> (2016–17),
-          a Committer and PMC member at <a href="https://people.apache.org/phonebook.html?uid=thammegowda" target="_blank" rel="noopener">the Apache Software Foundation</a>,
-          a full-stack software developer at a startup (2012–14),
-          and co-founder at <a href="https://datoin.com/home/aboutus/#teamlink" target="_blank" rel="noopener">Datoin.com</a> (2014–15).</p>
-        <p>His recent focus is on neural machine translation and rare phenomena learning problem
-          (<a href="/files/2022-TG-diss-1space.pdf" target="_blank" rel="noopener">dissertation</a>,
-           <a href="/files/2022-TG-diss-defense.pdf" target="_blank" rel="noopener">slides</a>).</p>
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
-          {{ range .Site.Params.socialIcons }}
-          <a href="{{ .url }}" target="_blank" rel="noopener noreferrer me" title="{{ .name }}" style="font-size: 1.5rem;">
-            {{ partial "svg.html" . }}
-          </a>
-          {{ end }}
-        </div>
-      </div>
+  <section id="home" style="margin-bottom: 0;">
+    <h1 style="margin-bottom: 0.25rem;">Thamme &ldquo;TG&rdquo; Gowda</h1>
+    <p style="color: var(--secondary); font-size: 1.05rem; margin-top: 0;">
+      AI Research Scientist &bull; LLMs &bull; Multilingual &amp; Multimodal AI &bull; High-Performance ML Systems
+    </p>
+    <p style="color: var(--secondary); font-size: 0.9rem; margin-top: 0.25rem;">
+      Email: <code>tgowdan [at] gmail [dot] com</code>
+      &nbsp;&middot;&nbsp;
+      <a href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">Curriculum Vitae</a>
+    </p>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0.75rem 0 1.25rem;">
+      {{ range .Site.Params.socialIcons }}
+      <a href="{{ .url }}" target="_blank" rel="noopener noreferrer me" title="{{ .name }}" style="font-size: 1.5rem;">
+        {{ partial "svg.html" . }}
+      </a>
+      {{ end }}
     </div>
+
+    <p>Thamme &ldquo;TG&rdquo; Gowda is a Senior Research Scientist at <a href="https://www.microsoft.com/" target="_blank" rel="noopener">Microsoft</a>,
+      where he works on large language models, multilingual and multimodal AI, and high-performance ML systems.
+      He earned his Ph.D. (2022) and M.S. (2017) in Computer Science from <a href="https://viterbischool.usc.edu/" target="_blank" rel="noopener">USC</a>.
+      Previously, he was a Research Engineer at <a href="https://isi.edu" target="_blank" rel="noopener">USC ISI</a> (2017–22; for <a href="https://www.linkedin.com/posts/thammegowda_usc-fighton-gratitude-activity-6968419016268804096-_Ry0/" target="_blank" rel="noopener">five years!</a>),
+      a Data Scientist intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener">NASA JPL</a> (2016–17),
+      a Committer and PMC member at <a href="https://people.apache.org/phonebook.html?uid=thammegowda" target="_blank" rel="noopener">the Apache Software Foundation</a>,
+      a full-stack software developer at a startup (2012–14),
+      and co-founder at <a href="https://datoin.com/home/aboutus/#teamlink" target="_blank" rel="noopener">Datoin.com</a> (2014–15).</p>
+    <p>His work spans the full model lifecycle — data pipelines, large-scale pretraining, post-training alignment (SFT, RL),
+      evaluation, distributed training, quantization, and low-latency inference — bridging ML research and hardware-aware systems engineering.
+      Selected highlights:</p>
+    <ul>
+      <li>Quantized and integrated translation models for <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener"><strong>offline translation in Microsoft Edge</strong></a>.</li>
+      <li>Building <strong>multimodal LLMs</strong> for production applications.</li>
+      <li>Enhanced training-data quality to improve production model quality across <strong>hundreds of languages</strong>.</li>
+      <li>Built a <strong>500+ language</strong> many-to-English translation model.</li>
+      <li>Tinkering with Tahoma, a personal <strong>C++23</strong> playground for learning GPU systems (custom CUDA/ROCm kernels) and experimenting with my ideas for AI.</li>
+    </ul>
+    <p>Earlier, his Ph.D. research addressed the rare phenomena learning problem in neural machine translation
+      (<a href="/files/2022-TG-diss-1space.pdf" target="_blank" rel="noopener">dissertation</a>,
+       <a href="/files/2022-TG-diss-defense.pdf" target="_blank" rel="noopener">slides</a>).</p>
+  </section>
+
+  <section id="news" style="margin-bottom: 2rem;">
+    <h2>News</h2>
+    {{ $news := slice
+      (dict "date" "2026-07" "html" `Co-organizing the <a href="https://www2.statmt.org/wmt26/model-compression.html" target="_blank" rel="noopener">WMT26 Model Compression</a> and <a href="https://www2.statmt.org/wmt26/translation-task.html" target="_blank" rel="noopener">General Machine Translation</a> shared tasks (@ EMNLP 2026, Budapest).`)
+      (dict "date" "2026-06" "html" `On-device, offline translation shipped in Microsoft Edge (145+ languages) via the built-in <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener">Translator API</a> — see the <a href="https://blogs.windows.com/msedgedev/2026/06/02/expanding-on-device-ai-in-microsoft-edge-new-models-and-apis-for-the-web/" target="_blank" rel="noopener">Edge announcement</a>.`)
+      (dict "date" "2026-06" "html" `New post: <a href="https://gowda.ai/posts/2026/06/dropout-overfit-sanity-check/" target="_blank" rel="noopener">A Field Guide for Sanity-Checking Your Training Pipeline</a>.`)
+      (dict "date" "2026-04" "html" `Fast BPE learning merged into <a href="https://github.com/google/sentencepiece/pull/1208" target="_blank" rel="noopener">Google SentencePiece</a>: O(N)&rarr;O(log N) per merge, with 10x&ndash;20x+ speedups in large settings (<a href="https://x.com/thammegowda/status/2047005368665223666" target="_blank" rel="noopener">note on X</a>).`)
+      (dict "date" "2026-03" "html" `New post: <a href="https://gowda.ai/posts/2026/03/faster-bpe-learn/" target="_blank" rel="noopener">From O(N) to O(log N): A Faster BPE Training Algorithm</a>.`)
+      (dict "date" "2026-03" "html" `New post: <a href="https://gowda.ai/posts/2026/03/pigzpp-with-agents/" target="_blank" rel="noopener">I Let Two AI Agents Race to Modernize pigz</a>.`)
+    }}
+    <ul style="line-height: 1.7;">
+      {{ range $news }}
+      <li><strong>{{ .date }}</strong> — {{ .html | safeHTML }}</li>
+      {{ end }}
+    </ul>
   </section>
 
   <section id="education" style="margin-bottom: 2rem;">

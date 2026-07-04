@@ -43,12 +43,14 @@ services:
 params:
   env: production
   author: Thamme Gowda
-  description: "Thamme Gowda - Research Scientist at Microsoft Translator"
+  description: "Thamme Gowda - AI Research Scientist at Microsoft: LLMs, multilingual & multimodal AI, and high-performance ML systems"
   keywords:
-    - NLP
+    - AI Research Scientist
+    - Large Language Models
     - Machine Translation
-    - Research
-    - Computer Science
+    - Multimodal AI
+    - Machine Learning
+    - GPU Systems
 
   defaultTheme: auto
   ShowReadingTime: true
@@ -70,8 +72,8 @@ params:
       url: "https://github.com/thammegowda"
     - name: linkedin
       url: "https://www.linkedin.com/in/thammegowda/"
-    - name: twitter
-      url: "https://twitter.com/thammegowda"
+    - name: x
+      url: "https://x.com/thammegowda"
     - name: stackoverflow
       url: "https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts"
     - name: instagram
