@@ -49,21 +49,21 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 700;
 }
 
-/* Links: Cardinal red */
+/* Links: calm blue-teal for readability; Cardinal remains for brand/nav accents */
 a {
-    color: #990000;
+    color: #0b6f88;
 }
 
 a:hover {
-    color: #FFCC00;
+    color: #990000;
 }
 
 .dark a {
-    color: #e0a0a0;
+    color: #6ec7dc;
 }
 
 .dark a:hover {
-    color: #FFCC00;
+    color: #ffcc66;
 }
 
 /* Navbar: subtle Cardinal accent */

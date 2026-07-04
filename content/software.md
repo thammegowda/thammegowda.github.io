@@ -6,12 +6,10 @@ url: "/software/"
 ShowToc: false
 ---
 
-Solving problems using math and computers is my favourite job to do.
-In early days of my career, I aspired to be a good software engineer, and I passionately pursued it until I slowly transitioned towards a research career.
-While I write less code as a researcher than what I'm used to doing as a software engineer, I emphasize on good software engineering practices, and open sourcing of tools with a permissible license.
-In the beginning (2012-2016) I wrote much of my code in Java/Groovy/Scala, but in the recent years (2016-Now), Python has become my go to choice. I have released a bunch of tools to [PyPi](https://pypi.org/user/Thamme.Gowda/). More recently, I have been building high-performance systems in modern C++ (C++23) with custom CUDA/ROCm GPU kernels.
-
-[![StackOverflow Flair](https://stackexchange.com/users/flair/1632148.png)](https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts)
+Solving problems with math and computers is still my favourite kind of work.
+I started as a software engineer, moved into research, and now find myself writing more code again — partly because AI coding agents make it practical to explore harder, wider engineering problems in parallel.
+That has pulled me toward high-performance systems in modern C++ (C++23), CUDA/ROCm kernels, model runtimes, and tooling that turns research ideas into something concrete.
+I still care about the older virtues: readable code, tests, documentation, open-source tools, and permissive licenses.
 
 I sometimes participate in [StackOverflow QA threads](https://stackoverflow.com/users/1506477/thamme-gowda).
 
@@ -20,7 +18,7 @@ Here are some of my selected projects:
 ---
 
 ## Tahoma: A C++ Playground for Learning
-My personal playground for learning modern GPU systems and experimenting with my own ideas. It's a C++23 project (built on libTorch) where I tinker with training and inference for NMT, LLM, classification, and multimodal models — trying out things like custom CUDA/ROCm kernels, paged attention, continuous batching, and low-bit quantization. Very much a work in progress and a learning exercise, not a polished product.
+My personal playground for learning modern GPU systems and experimenting with my own ideas for AI. It's a C++23 project (built on libTorch) where I tinker with training and inference for NMT, LLM, classification, and multimodal models. Current experiments include fused CUDA/ROCm kernels, faster GEMMs, memory-transfer optimizations, CUDA graphs, paged attention, continuous batching, multi-GPU synchronization over NCCL/RCCL rings, faster rollouts for RL training, and low-bit quantization.
 
 - Docs: [docs.gowda.ai/tahoma](https://docs.gowda.ai/tahoma/)
 
