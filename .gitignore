@@ -3,6 +3,6 @@ resources/
 .hugo_build.lock
 __pycache__/
 *.pyc
-.history/
+.history
 .vscode/
 data/publications.yaml

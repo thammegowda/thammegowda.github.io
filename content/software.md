@@ -9,13 +9,36 @@ ShowToc: false
 Solving problems using math and computers is my favourite job to do.
 In early days of my career, I aspired to be a good software engineer, and I passionately pursued it until I slowly transitioned towards a research career.
 While I write less code as a researcher than what I'm used to doing as a software engineer, I emphasize on good software engineering practices, and open sourcing of tools with a permissible license.
-In the beginning (2012-2016) I wrote much of my code in Java/Groovy/Scala, but in the recent years (2016-Now), Python has become my go to choice. I have released a bunch of tools to [PyPi](https://pypi.org/user/Thamme.Gowda/).
+In the beginning (2012-2016) I wrote much of my code in Java/Groovy/Scala, but in the recent years (2016-Now), Python has become my go to choice. I have released a bunch of tools to [PyPi](https://pypi.org/user/Thamme.Gowda/). More recently, I have been building high-performance systems in modern C++ (C++23) with custom CUDA/ROCm GPU kernels.
 
 [![StackOverflow Flair](https://stackexchange.com/users/flair/1632148.png)](https://stackexchange.com/users/1632148/thamme-gowda?tab=accounts)
 
 I sometimes participate in [StackOverflow QA threads](https://stackoverflow.com/users/1506477/thamme-gowda).
 
 Here are some of my selected projects:
+
+---
+
+## Tahoma: A C++ Playground for Learning
+My personal playground for learning modern GPU systems and experimenting with my own ideas. It's a C++23 project (built on libTorch) where I tinker with training and inference for NMT, LLM, classification, and multimodal models — trying out things like custom CUDA/ROCm kernels, paged attention, continuous batching, and low-bit quantization. Very much a work in progress and a learning exercise, not a polished product.
+
+- Docs: [docs.gowda.ai/tahoma](https://docs.gowda.ai/tahoma/)
+
+---
+
+## PyMarian: Fast NMT & Evaluation in Python
+Python bindings to [Marian NMT](https://marian-nmt.github.io/) (C++) with Intel MKL and NVIDIA CUDA backends; up to 9.5x speedups and ~50% memory reduction versus PyTorch.
+
+- Code: [github.com/marian-nmt/marian-dev](https://github.com/marian-nmt/marian-dev)
+- Installer: `pip install pymarian`
+
+---
+
+## SotaStream: Streaming MT Training
+A streaming approach to machine translation training for extremely large datasets, with flexible on-the-fly sampling and augmentation.
+
+- Code: [github.com/marian-nmt/sotastream](https://github.com/marian-nmt/sotastream)
+- Installer: `pip install sotastream`
 
 ---
 
