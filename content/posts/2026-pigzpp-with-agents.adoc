@@ -313,5 +313,7 @@ If I couldn't objectively measure whether the output was correct and fast, I wou
 
 '''
 
+NOTE: *Update (July 2026):* pigzpp has since grown well beyond a faster CLI + Python bindings. It's now a multi-language compression stack -- Python, Go, Rust, and WebAssembly bindings over one accelerated core, plus a native ZIP container and a PNG codec. The new benchmarks range from an 80× Python bytes-path result to a projected ~12× reduction in BuildKit's layer-compression stage after integration. I wrote up the expanded project in link:/posts/2026/07/fast-compression/[Making Compression Faster^].
+
 _pigzpp is open source: https://github.com/thammegowda/pigzpp[github.com/thammegowda/pigzpp^]_
 

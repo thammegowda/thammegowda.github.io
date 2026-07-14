@@ -7,6 +7,9 @@ Personal website built with [Hugo](https://gohugo.io/) and [PaperMod](https://gi
 ```bash
 git clone --recurse-submodules git@github.com:thammegowda/thammegowda.github.io.git
 cd thammegowda.github.io
+
+# if cloned with submodules
+git submodule update --init --recursive
 ```
 
 Requires: Hugo ≥0.146.0 (extended), asciidoctor, Python 3 + PyYAML.
