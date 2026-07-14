@@ -44,12 +44,13 @@
   <section id="news" style="margin-bottom: 2rem;">
     <h2>News</h2>
     {{ $news := slice
+      (dict "date" "2026-07" "html" `New post: <a href="/posts/2026/07/fast-compression/">Making Compression Faster</a> (pigzpp now has Python, Go, Rust &amp; WebAssembly bindings, plus ZIP and PNG).`)
       (dict "date" "2026-07" "html" `Co-organizing the <a href="https://www2.statmt.org/wmt26/model-compression.html" target="_blank" rel="noopener">WMT26 Model Compression</a> and <a href="https://www2.statmt.org/wmt26/translation-task.html" target="_blank" rel="noopener">General Machine Translation</a> shared tasks (@ EMNLP 2026, Budapest).`)
       (dict "date" "2026-06" "html" `On-device, offline translation shipped in Microsoft Edge (145+ languages) via the built-in <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener">Translator API</a> — see the <a href="https://blogs.windows.com/msedgedev/2026/06/02/expanding-on-device-ai-in-microsoft-edge-new-models-and-apis-for-the-web/" target="_blank" rel="noopener">Edge announcement</a>.`)
-      (dict "date" "2026-06" "html" `New post: <a href="https://gowda.ai/posts/2026/06/dropout-overfit-sanity-check/" target="_blank" rel="noopener">A Field Guide for Sanity-Checking Your Training Pipeline</a>.`)
+      (dict "date" "2026-06" "html" `New post: <a href="/posts/2026/06/dropout-overfit-sanity-check/">A Field Guide for Sanity-Checking Your Training Pipeline</a>.`)
       (dict "date" "2026-04" "html" `Fast BPE learning merged into <a href="https://github.com/google/sentencepiece/pull/1208" target="_blank" rel="noopener">Google SentencePiece</a>: O(N)&rarr;O(log N) per merge, with 10x&ndash;20x+ speedups in large settings (<a href="https://x.com/thammegowda/status/2047005368665223666" target="_blank" rel="noopener">note on X</a>).`)
-      (dict "date" "2026-03" "html" `New post: <a href="https://gowda.ai/posts/2026/03/faster-bpe-learn/" target="_blank" rel="noopener">From O(N) to O(log N): A Faster BPE Training Algorithm</a>.`)
-      (dict "date" "2026-03" "html" `New post: <a href="https://gowda.ai/posts/2026/03/pigzpp-with-agents/" target="_blank" rel="noopener">I Let Two AI Agents Race to Modernize pigz</a>.`)
+      (dict "date" "2026-03" "html" `New post: <a href="/posts/2026/03/faster-bpe-learn/">From O(N) to O(log N): A Faster BPE Training Algorithm</a>.`)
+      (dict "date" "2026-03" "html" `New post: <a href="/posts/2026/03/pigzpp-with-agents/">I Let Two AI Agents Race to Modernize pigz</a>.`)
     }}
     <ul style="line-height: 1.7;">
       {{ range $news }}

@@ -1,0 +1,272 @@
+---
+title: "Making Compression Faster"
+date: 2026-07-13T10:00:00
+author: "Thamme Gowda"
+summary: "Continuing my exploration of pair programming with AI agents, I grew pigzpp from a C++ gzip rewrite into a compression library for Python data prep, PNG, Docker layers, ZIP documents, Rust, and WebAssembly — then measured it against the tools people actually use."
+description: "A continued AI pair-programming experiment: how pigzpp grew into a multi-language compression library powered by zlib-ng and Intel ISA-L, with measured speedups, interoperability tests, and clear caveats."
+slug: "fast-compression"
+url: "/posts/2026/07/fast-compression/"
+tags: ["Compression", "Machine Learning", "Systems", "Python", "Go", "Rust", "WebAssembly", "Docker", "PNG", "ZIP"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+---
+
+Compression is infrastructure I tend to notice only when it gets slow.
+Training corpora arrive as `.gz` files, Docker images are stacks of compressed layers, PNG and ZIP commonly rely on DEFLATE, and browser applications often need to unpack data before they can display anything.
+When those paths are fast, storage and bandwidth feel almost free; when they are not, the waiting is a hidden compression tax on the whole pipeline.
+
+I'm an AI researcher, not a systems programmer by title.
+But the deeper I get into building and shipping models, the more often I find myself standing at a compression bottleneck:
+
+* Training and evaluation *datasets* often live compressed -- terabytes of text and images that have to be read fast.
+* *Multimodal datasets* include plenty of PNGs -- masks, screenshots, diagrams, renders -- and every PNG is a DEFLATE stream under the hood.
+* Our training *infrastructure runs in Docker*, and building those images is slow -- a surprising amount of that time is just gzip.
+* The *documents* we mine for data -- `.docx`, `.pptx`, `.xlsx`, `.epub` -- are secretly ZIP archives.
+* And when I build a *browser demo* for a model, I suddenly need compression on the client side too.
+
+Not all of this is DEFLATE: JPEG, WebP, zstd, and model-specific formats have their own codecs.
+But gzip, zlib, PNG, and ZIP form a surprisingly large common family.
+This post is about making that part of the substrate fast -- in the languages and environments where I actually encounter it.
+
+NOTE: This is a sequel and a continuation of my exploration of pair programming with AI agents. In the link:/posts/2026/03/pigzpp-with-agents/[previous post^] I described how I let two coding agents race to rewrite Mark Adler's https://zlib.net/pigz/[pigz^] into a modern, thread-safe C++23 library called https://github.com/thammegowda/pigzpp[*pigzpp*^]. The winning agent didn't just match pigz -- it beat it. This post is what happened when I kept working with an agent to take that library into the other places where I encounter compression.
+
+== One library, two compression engines
+
+The idea that carried the whole project was to keep the orchestration in one library, then expose it through thin bindings so every language gets the same implementation and behavior.
+
+pigzpp does not implement the low-level DEFLATE machinery by itself. Under the hood, it can select between two excellent open-source compression engines:
+
+* https://github.com/zlib-ng/zlib-ng[*zlib-ng*^] is a modern, community-maintained zlib implementation with extensive SIMD optimizations. It provides pigzpp's higher-ratio, zlib-compatible path.
+* https://github.com/intel/isa-l[*Intel ISA-L*^] (Intelligent Storage Acceleration Library) provides highly optimized assembly routines for storage workloads, including DEFLATE. It supplies the speed-first path, at a somewhat lower compression ratio.
+
+You choose with a single `engine` argument (`auto`, `zlib`, or `isal`) from the CLI or API.
+The WebAssembly build uses zlib-ng because ISA-L is x86-specific.
+pigzpp's contribution is the thread-safe parallel pipeline around those engines: dividing input into blocks, scheduling work, combining checksums, producing compatible gzip/zlib/ZIP/PNG framing, and exposing the result through C++, Python, Go, Rust, and WebAssembly APIs.
+The speed belongs to the complete stack -- pigzpp's parallel orchestration plus the substantial optimization work already done by the zlib-ng and ISA-L contributors.
+
+Everything below uses that same stack, benchmarked on a modest 5-core / 10-thread workstation (Intel Xeon W-2235) -- deliberately not a 48-core server, to show these gains land on everyday hardware too.
+
+Unless a section says otherwise, the numbers are best-of-three runs on a 128 MB English+Chinese Wikipedia corpus, level 6, with 8 threads.
+Throughput is measured over uncompressed input; `ratio` means input size divided by output size, so higher is smaller.
+These are results from one machine and corpus, not universal constants.
+
+Here's the whole story in one table; the rest of the post is the "why" behind each row.
+
+[cols="2,3,2",options="header"]
+|===
+| Where I hit compression | Baseline (what people use today) | pigzpp
+
+| Command line | `gzip` / `pigz` | *up to 45× / 7× faster*
+| Python | stdlib `gzip` | *up to 80× faster*
+| PNG images | Pillow, OpenCV | *8.6× Pillow; 1.2× OpenCV*
+| Docker layer gzip | BuildKit's Go codec | *~12× at comparable ratio* (integration needs a patch)
+| Rust | `gzp`, `flate2`, `libdeflater` | *1.3× `gzp` at comparable ratio*
+| ZIP documents | Python `zipfile` | *13× at comparable ratio; up to 31×*
+| WebAssembly (Node 22) | `CompressionStream`, JSZip, fflate | *~1.4–3× faster*
+|===
+
+Let me walk through each, because each one is a place where systems work and AI work cross paths.
+
+== The command line: the drop-in that started it all
+
+The original motivation was boring and universal: I compress a lot of data, and `gzip` is single-threaded.
+`pigz` fixed that years ago, and pigzpp goes further by swapping in modern DEFLATE backends.
+
+On a 128 MB multilingual-text corpus at level 6:
+
+[cols="2,1,1",options="header"]
+|===
+| Tool | MB/s | Ratio
+
+| `gzip` | 16 | 2.83
+| `pigz -p8` | 103 | 2.83
+| pigzpp `--engine zlib` | 244 | 2.81
+| pigzpp `--engine isal` | *721* | 2.58
+|===
+
+At a _comparable_ ratio to pigz (2.81 vs 2.83), pigzpp's zlib-ng backend is *2.4× faster*; the ISA-L backend is *7× faster than pigz and 45× faster than plain gzip*, trading ~9% ratio for the speed.
+It's still a byte-compatible, drop-in `gzip`/`pigz` replacement, so nothing downstream has to change.
+
+== Python: the language of data prep
+
+Almost all of my data-orchestration and augmentation code is Python -- tools like https://github.com/thammegowda/mtdata[mtdata^] (dataset acquisition) and data-augmentation pipelines like https://github.com/marian-nmt/sotastream[sotastream^].
+These stream and re-compress huge corpora, and Python's stdlib `gzip` is famously slow at that scale.
+
+pigzpp's pybind11 bindings call the C++ core in-process (no `subprocess pigz` fork tricks), and fire up all cores for large in-memory buffers:
+
+[cols="2,1,1",options="header"]
+|===
+| Library | MB/s | vs stdlib
+
+| stdlib `gzip` | 12 | 1.0×
+| pigzpp `zlib` | 279 | 23×
+| pigzpp `isal` | *959* | *80×*
+|===
+
+That is up to *80× faster than stdlib `gzip`* on this bytes API benchmark, fully interoperable (`pigzpp.compress()` ↔ `gzip.decompress()`).
+The exact gain depends heavily on input size and compressibility, but this is the path that matters in data-preparation jobs that repeatedly transform large in-memory batches.
+
+== PNG: images that ride on DEFLATE
+
+Not every image is a compression job for pigzpp -- plenty of datasets are JPEG, which is its own lossy codec and has nothing to do with gzip.
+But a good slice of multimodal work leans on *PNG*: segmentation masks, screenshots and UI captures, charts and diagrams, synthetic renders, and anywhere you specifically want exact pixels.
+And a PNG is, at its heart, a DEFLATE stream wrapped in some framing -- the exact thing pigzpp is good at.
+
+So pigzpp ships a small PNG encoder/decoder on the same core. Benchmarked on the 24-image https://r0k.us/graphics/kodak/[Kodak^] set:
+
+[cols="2,1,1",options="header"]
+|===
+| Encoder | Images/s | vs Pillow
+
+| pigzpp `fast` | *62* | *8.6×*
+| OpenCV (`cv2`) | 51 | 7.2×
+| Pillow (default) | 7.2 | 1.0×
+|===
+
+pigzpp encodes PNGs *8.6× faster than Pillow* and is about *1.2× faster than OpenCV* on this RGB set, at a comparable file size.
+OpenCV is already one of the fastest mainstream C++ image libraries available from Python, so that was the comparison I cared about most.
+When you're writing millions of augmented image tiles or caching rendered eval samples, that adds up fast.
+
+== Go and Docker: our AI infra is slow to build
+
+This one is pure infrastructure pain.
+Our model training runs in *Docker*, and anyone who builds images knows the loop: change one line, rebuild, wait.
+A chunk of that wait is compression -- Docker's default builder, *BuildKit*, uses Go's single-threaded `compress/gzip` on its default gzip layer path.
+
+Could pigzpp help? It needed Go bindings, so I added them (cgo over a small C ABI).
+Then I measured two things on the same 512 MB layer: a real `docker buildx build` with gzip and uncompressed exports, to estimate BuildKit's compression cost; and pigzpp compressing the identical layer bytes outside BuildKit.
+
+[cols="3,1,1",options="header"]
+|===
+| Step (512 MB layer) | Time | Ratio
+
+| BuildKit OCI gzip export (total) | ~31 s | 2.84
+| BuildKit uncompressed export | ~5 s | —
+| BuildKit gzip portion (difference) | ~26 s | 2.84
+| pigzpp `zlib` on the same bytes | *2.0 s* | 2.81
+| pigzpp `isal` on the same bytes | *0.5 s* | 2.58
+|===
+
+The codec comparison suggests *~12× less time in layer compression at a comparable ratio*, or ~50× with ISA-L.
+This is _not_ a claim that stock `docker build` is already 12× faster: BuildKit has no runtime hook to swap its gzip codec, so realizing that gain inside a build needs a small BuildKit patch (and the total build speedup depends on how much time the build spends compressing).
+Because pigzpp emits standard gzip, the resulting layers remain compatible with registries and `docker pull`.
+On a real `python:3.12` image layer (637 MB), pigzpp's parallel zlib-ng backend beats even `klauspost/pgzip`, the best pure-Go parallel gzip, at a better ratio.
+
+== Rust: is the grass faster on the other side?
+
+This one I'll admit was mostly for fun.
+Lots of systems people are migrating from C++ to Rust, and I wanted to know: has the Rust ecosystem produced a compression library that's actually _faster_ than what we have?
+So I added Rust FFI bindings and benchmarked pigzpp against the popular crates (128 MB text, 8 threads):
+
+[cols="2,1,1",options="header"]
+|===
+| Library | MB/s | Ratio
+
+| pigzpp `isal` | *745* | 2.58
+| pigzpp `zlib` | 261 | 2.81
+| `gzp` (parallel) | 194 | 2.81
+| `libdeflater` | 57 | 2.84
+| `flate2` | 45 | 2.81
+|===
+
+This is not really a verdict on C++ versus Rust.
+In this benchmark, the DEFLATE backend and parallelization strategy mattered more than the host language: pigzpp's zlib-ng path was about 1.3× faster than `gzp` at a comparable ratio, while the speed-first ISA-L path was farther ahead at a lower ratio.
+The Rust binding simply lets Rust code use that same engine.
+
+== ZIP: your documents are secretly archives
+
+A lot of the documents we scrape for training data -- `.docx`, `.pptx`, `.xlsx`, and `.epub` -- are ZIP containers, often full of XML, HTML, and media assets.
+The same container format also appears in software packages such as `.jar`, `.apk`, and Python `.whl` files.
+"Open a document" is really "unzip an archive and read its members."
+ZIP is quietly one of the most useful container formats there is.
+
+So pigzpp grew a native, multi-entry ZIP implementation with a Python API modeled on a useful subset of the standard library's `zipfile`, with parallel per-member compression:
+
+[cols="2,1,1",options="header"]
+|===
+| Writer | MB/s | vs `zipfile`
+
+| stdlib `zipfile` | 17 | 1.0×
+| pigzpp `zlib` | 220 | 13×
+| pigzpp `isal` | *554* | *31×*
+|===
+
+That is *13× faster at a comparable ratio* and up to 31× on the speed-first path.
+The archives interoperate with `zipfile`, `unzip`, and other standard ZIP readers, with Zip64 for large files.
+
+== WebAssembly: compression in the browser, for AI demos
+
+Finally, the newest corner. When I build a *browser demo* for a model -- an in-page tokenizer, a client-side data viewer, an offline-capable app -- I keep needing to compress or decompress right there in the browser.
+The usual options are the native `CompressionStream` or pure-JS libraries like fflate and JSZip.
+
+pigzpp compiles to WebAssembly (zlib-ng + 128-bit SIMD).
+For repeatability, I ran the numbers below under Node 22 -- a WASM runtime that also exposes the browser-style `CompressionStream` API -- rather than claiming one number for every browser:
+
+[cols="2,1,1",options="header"]
+|===
+| Engine (16 MB text) | MB/s | Ratio
+
+| pigzpp-wasm | *45* | 2.81
+| node `zlib` | 33 | 2.84
+| `CompressionStream` (native) | 27 | 2.84
+| fflate (JS) | 15 | 2.75
+| pako (JS) | 9 | 2.83
+|===
+
+The threaded WASM build (Web Workers + `SharedArrayBuffer`) scales further -- ~4.7× at 8 threads in Node; browsers require cross-origin isolation to enable that path.
+On the document use case above -- reading a real 6 MB `.docx` (19 MB of XML) in the same Node benchmark -- pigzpp-wasm unzips at *253 MB/s vs 111 for fflate and 87 for JSZip*.
+Browser performance will vary by engine, but the module and API are the same ones a web application loads.
+
+== What these numbers do -- and do not -- say
+
+I like large speedup numbers, but I trust them more when the boundaries are visible:
+
+* The results come from one x86 workstation and a few representative corpora. Different CPUs, file sizes, and data distributions will move them.
+* ISA-L is the speed-first option; its smaller elapsed time comes with a lower compression ratio. The zlib-ng rows are the fair comparison when output size matters.
+* The Docker result isolates the layer-compression stage. A BuildKit integration still needs a patch, and it cannot accelerate unrelated build steps such as compilation or package installation.
+* The WASM numbers were collected under Node 22, not across a browser matrix. The browser claim is portability of the module; the reported throughput is the Node measurement.
+* JPEG, WebP, zstd, and other codecs are outside pigzpp's scope. This project is fast where the format is built on DEFLATE.
+
+== Credit where it is due
+
+pigzpp stands on several mature projects.
+https://zlib.net/[zlib^], created by Jean-loup Gailly and Mark Adler, defined the API and format ecosystem that much of this software still speaks.
+Mark Adler's https://zlib.net/pigz/[pigz^] demonstrated the parallel block-compression design and was the reference for compatibility and behavior.
+The https://github.com/zlib-ng/zlib-ng[zlib-ng contributors^] built and maintain the SIMD-accelerated zlib implementation used by pigzpp's higher-ratio path.
+The https://github.com/intel/isa-l[Intel ISA-L contributors^] built the hand-optimized routines behind the speed-first path.
+The benchmark numbers in this post would not exist without their years of low-level optimization work.
+
+What I built around them is the integration: a modern thread-safe C++ pipeline, backend selection, language bindings, ZIP and PNG APIs, interoperability tests, and benchmarks that make the trade-offs visible.
+
+== Continuing the AI pair-programming experiment
+
+This expansion was also a continuation of the experiment from my previous post: how far can I take a real systems project by pair programming with AI agents?
+I used the agent for codebase exploration, implementation, bindings, tests, benchmark harnesses, and repeated cleanup.
+My role was not simply to ask for "make it faster" and accept the output.
+I chose the use cases, made the scope and architecture decisions, challenged suspicious benchmark results, supplied realistic datasets, caught incorrect assumptions (including an ISA-L level-mapping bug), insisted on interoperability tests, and reviewed the code before merging it.
+
+That division of work felt much closer to pair programming than autonomous software generation: I provided direction and judgment; the agent provided unusually fast implementation and iteration.
+Each feature had to survive tests and reproducible benchmarks before I trusted it.
+
+The result, on top of the original agent-built rewrite:
+
+* A native C++ library plus Python, Go, Rust, and WebAssembly bindings over one shared integration layer.
+* A native ZIP container and a PNG codec, both reusing the parallel DEFLATE pipeline.
+* Selectable backends (`auto`/`zlib`/`isal`) exposed everywhere.
+* GoogleTest + pytest suites, a Node smoke test, and a GitHub Actions CI that builds and tests all of it.
+
+I find it genuinely remarkable that a widely-used C utility, first rewritten by an agent in ~70 minutes, has grown into a small multi-language compression stack -- and that the same "clear requirements, inspect the result, verify with tests and benchmarks" recipe kept working at each step.
+(If you enjoy the "rewrite it in a fast language and measure" genre, I did the same thing to BPE training in link:/posts/2026/03/faster-bpe-learn/[From O(N) to O(log N)^].)
+
+== Takeaways
+
+* *Compression is infrastructure for AI work,* not a niche systems topic -- it shows up in datasets, images, containers, documents, and demos.
+* *One integration layer, many thin bindings* beats re-implementing compression per language. The low-level speed comes from zlib-ng and ISA-L; pigzpp adds parallel orchestration and gives every language a consistent way to use it.
+* *The wins are large and practical:* up to 80× in the Python bytes benchmark, a projected ~12× reduction in BuildKit's layer-gzip stage after integration, 8.6× versus Pillow (1.2× versus OpenCV) on PNG encoding, and a WASM implementation that beats the JS baselines under Node -- all on a modest 5-core machine.
+* *Byte-compatibility is a superpower.* Because everything emits standard gzip/zip/PNG, you can drop pigzpp in without changing a single downstream reader.
+* *AI pair programming is most useful when the feedback loop is objective.* Compression gave me unusually strong checks: the bytes must round-trip, other tools must read them, and the benchmark must improve without hiding a ratio trade-off.
+
+'''
+
+_pigzpp is open source: https://github.com/thammegowda/pigzpp[github.com/thammegowda/pigzpp^]. If it saves you a few hours of waiting on compression, that's a good day._

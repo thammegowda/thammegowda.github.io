@@ -24,6 +24,14 @@ My personal playground for learning modern GPU systems and experimenting with my
 
 ---
 
+## pigzpp: Fast Parallel Compression, Everywhere
+A clean-room C++23 rewrite of [pigz](https://zlib.net/pigz/) (parallel gzip) that grew into a multi-language compression library — Python, Go, Rust, and WebAssembly bindings over one accelerated core (zlib-ng / Intel ISA-L), plus a native ZIP container and a fast PNG codec. Highlights include up to 80× over Python's stdlib `gzip`, a projected ~12× reduction in BuildKit's layer-gzip stage after integration, and PNG encoding measured at 8.6× Pillow and 1.2× OpenCV — all using standard `gzip`/ZIP/PNG formats.
+
+- Code: [github.com/thammegowda/pigzpp](https://github.com/thammegowda/pigzpp)
+- Posts: [Making Compression Faster](/posts/2026/07/fast-compression/) · [Built with AI agents](/posts/2026/03/pigzpp-with-agents/)
+
+---
+
 ## PyMarian: Fast NMT & Evaluation in Python
 Python bindings to [Marian NMT](https://marian-nmt.github.io/) (C++) with Intel MKL and NVIDIA CUDA backends; up to 9.5x speedups and ~50% memory reduction versus PyTorch.
 
