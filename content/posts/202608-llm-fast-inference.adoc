@@ -10,6 +10,11 @@ tags: ["Machine Learning", "LLM Inference", "Quantization", "Systems", "CUDA"]
 categories: ["Note"]
 ShowToc: true
 TocOpen: false
+cover:
+  image: "/images/llm-fast-inference/w4a8-pipeline.png"
+  alt: "W4A8 pipeline: asymmetric 4-bit weights and dynamic rowwise FP8 activations enter a Hopper mixed-input GEMM"
+  caption: "W4A8 keeps weights at 4 bits in memory and uses FP8 tensor-core compute."
+  relative: false
 ---
 :stem: latexmath
 
@@ -37,8 +42,6 @@ Two results came out of that work:
 On Gemma-3-12B translation, that W4A8 path reached *5,131 generated tokens/s* on one H100, compared with *3,190 tokens/s* for the vLLM NF4 operating point in the same study.
 That is a 1.61x throughput difference.
 Tahoma FP8 and vLLM FP8 were effectively tied at 6,094 versus 5,934 tokens/s.
-A secondary observation was lower startup time in our one-shot local-checkpoint test: 24--30 seconds for Tahoma FP8 and 34 seconds for Tahoma W4A8, versus 55--168 seconds for vLLM FP8 and 92 seconds for vLLM NF4.
-Those values are sensitive to engine version, compile-cache state, and initialization policy, so I do not treat them as a general engine ranking.
 
 But is the 4-bit model truly lossless?
 No blanket claim survives careful measurement.
@@ -165,6 +168,10 @@ for clip_fraction in (0.95, 0.90, 0.85, 0.80, 0.75,
 		best = candidate
 ----
 
+[.wide-figure]
+.How asymmetry and clipping place the 16 reconstruction levels. This is an illustrative synthetic block; select the image to inspect it at full resolution.
+image::/images/llm-fast-inference/int4-quantizer-comparison.png[alt="Comparison of naive symmetric int4, asymmetric full-range int4, and asymmetric int4 with MSE clipping",link="/images/llm-fast-inference/int4-quantizer-comparison.png"]
+
 The winner is selected independently for every block.
 Importantly, the error includes the clipped outliers themselves.
 A contracted range wins only when the finer resolution on the bulk compensates for the added tail error.
@@ -245,27 +252,12 @@ CometKiwi-XXL is higher-is-better and MetricX-24-XXL is lower-is-better.
 The raw scores alone do not justify calling two systems equivalent.
 We therefore run paired bootstrap resampling for every metric and precision change, then qualify those local results against the WMT24 human meta-evaluation of the metrics themselves.
 
-The table reports `S_M`, the percentage of paired bootstrap samples in which BF16 receives the better score.
+The figure reports `S_M`, the percentage of paired bootstrap samples in which BF16 receives the better score.
 Values below 5% favor the variant, values above 95% favor BF16, and values in between leave the ordering unresolved.
 
-.Paired-bootstrap support for BF16 over each precision variant (`S_M`)
-[cols="2,1,1,1,1,1,1",options="header"]
-|===
-| Metric | FP32 | INT8/BF16 | FP8/FP8 | INT4/BF16 | INT4/FP8 | vLLM NF4
-
-| CometKiwi22 | 45.3% | 22.7% | 23.1% | 73.0% | 10.7% | 81.7%
-| Cometoid | 41.0% | 74.7% | 30.0% | 41.4% | 6.6% | 44.8%
-| BLEURT20 | *2.8%* | 12.6% | 49.0% | 60.2% | 39.8% | *4.9%*
-| COMET22 | 93.3% | 60.9% | 58.6% | 58.7% | 89.0% | 48.1%
-| XCOMET-XL | 6.8% | 13.2% | *4.2%* | 35.3% | 53.2% | 10.1%
-| CometKiwi-XXL | 65.4% | 55.4% | 21.0% | *98.2%* | 56.0% | *99.4%*
-| MetricX-24-XXL-ref | 70.1% | 70.8% | 67.8% | *100.0%* | *100.0%* | *100.0%*
-| MetricX-24-XXL-QE | 79.0% | 36.7% | 65.7% | *100.0%* | *100.0%* | *99.9%*
-| ChrF2 (mean segment) | 62.2% | 67.4% | *98.8%* | *100.0%* | *100.0%* | *100.0%*
-| ChrF2 (corpus) | 57.1% | 81.8% | *98.2%* | *100.0%* | *100.0%* | *100.0%*
-|===
-
-Bold cells cross the 95% support threshold in either direction.
+[.wide-figure]
+.Paired-bootstrap support for BF16 over each precision variant. Only resolved cells are colored; select the image for the full-resolution view.
+image::/images/llm-fast-inference/bootstrap-support.png[alt="Heatmap of paired-bootstrap support that BF16 receives a better metric score than each precision variant",link="/images/llm-fast-inference/bootstrap-support.png"]
 
 The conclusion is deliberately narrower than "lossless":
 
@@ -304,27 +296,17 @@ vLLM remains the mature, inference-focused system and an important source of ide
 
 For the WMT26 model-compression study, we compared Tahoma and vLLM on the text path of `google/gemma-3-12b-it`, using one H100 80 GB and the same translation workload.
 The multimodal vision tower was removed because the task never supplied images.
-The table reports hot steady-state, greedy single-candidate generation throughput; model startup is excluded.
+The figure reports hot steady-state, greedy single-candidate generation throughput; model startup is excluded.
 
-[cols="3,2,1,1",options="header"]
-|===
-| Engine and mode | Weight / activation | Disk GB | Generated tok/s
+[.wide-figure]
+.Hot throughput and checkpoint footprint for the study operating points. Quality uncertainty is kept in the bootstrap figure rather than compressed into a rescaled radar axis. The 4-bit pair uses different quantizers and activation formats; this is not a general project ranking.
+image::/images/llm-fast-inference/tahoma-vllm-operating-points.png[alt="Bar charts comparing Tahoma and vLLM throughput and checkpoint size for BF16, FP8, and 4-bit operating points",link="/images/llm-fast-inference/tahoma-vllm-operating-points.png"]
 
-| Tahoma BF16 | BF16 / BF16 | 23.5 | 4,486
-| vLLM BF16 | BF16 / BF16 | 23.5 | *4,917*
-
-| Tahoma FP8 | FP8 / FP8 | 11.5 | *6,094*
-| vLLM FP8 | FP8 / FP8 | 15.3 | 5,934
-
-| Tahoma W4A8 | INT4 / FP8 | 6.7 | *5,131*
-| vLLM NF4 | NF4 / BF16 | 8.4 | 3,190
-|===
-
-There are three different stories in this table.
+There are three different stories in this figure.
 
 === BF16: vLLM wins
 
-At BF16, vLLM is about 9.6% faster than Tahoma: 4,917 versus 4,486 tokens/s.
+At BF16, vLLM is about 9.6% faster than Tahoma.
 That is important to say plainly.
 Tahoma is not universally faster, and a result that hid this row would not be useful.
 
@@ -337,7 +319,7 @@ This context explains the engineering trade-off, but it does not change the meas
 
 === FP8: essentially tied
 
-Tahoma FP8 is 2.7% ahead of vLLM FP8: 6,094 versus 5,934 tokens/s.
+The FP8 rows are within 2.7% of each other.
 I treat that as matching the mature engine, not as a meaningful victory.
 The useful result is that the native C++ path reaches the same performance band while using a smaller static checkpoint in this setup.
 
@@ -428,11 +410,6 @@ The details that mattered most were:
 . *Measure startup and steady state separately.* They answer different deployment questions.
 . *Treat quality as a constraint, not a rounding error.* Training gains are expensive; deployment optimization should not silently spend them.
 . *Do not call it lossless because one score rounded to the same value.* Use multiple qualified metrics and paired uncertainty estimates.
-
-There is a broader systems lesson here too.
-For me, implementing an idea is a way of learning it deeply.
-Tahoma's paged caches, continuous batching, CUDA graph replay, and mixed-input kernels are not inventions developed in isolation; they reflect a long line of work in vLLM, CUTLASS, Machete, and the wider inference community.
-This benchmark is a checkpoint in my attempt to understand that work well enough to reproduce, adapt, and extend it in a toolkit that also supports training.
 
 Four-bit quantization is not free.
 But with asymmetric blocks, MSE clipping, dynamic activations, a tuned mixed-input kernel, and a runtime designed around it, four bits can be a very productive engineering trade.
