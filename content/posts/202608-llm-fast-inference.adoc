@@ -1,0 +1,417 @@
+---
+title: "Is 4-Bit Quantization Truly Lossless?"
+date: 2026-08-13T10:00:00
+author: "Thamme Gowda"
+summary: "Four bits are a storage budget, not a quality guarantee. Here is how asymmetric weights, MSE clipping, dynamic FP8 activations, and a purpose-built runtime make Tahoma's W4A8 path both careful and fast."
+description: "A practical look at high-quality W4A8 inference: why naive symmetric int4 wastes a code, how Tahoma combines asymmetric weights and MSE clipping with dynamic FP8 activations, and how the resulting runtime compares with vLLM on one H100."
+slug: "llm-fast-inference"
+url: "/posts/2026/08/llm-fast-inference/"
+tags: ["Machine Learning", "LLM Inference", "Quantization", "Systems", "CUDA"]
+categories: ["Note"]
+ShowToc: true
+TocOpen: false
+cover:
+  image: "/images/llm-fast-inference/w4a8-pipeline.png"
+  alt: "W4A8 pipeline: asymmetric 4-bit weights and dynamic rowwise FP8 activations enter a Hopper mixed-input GEMM"
+  caption: "W4A8 keeps weights at 4 bits in memory and uses FP8 tensor-core compute."
+  relative: false
+---
+:stem: latexmath
+
+Four-bit inference is often described with a wonderfully tempting phrase:
+_four times smaller, with no quality loss_.
+
+The first half is mostly arithmetic.
+A 4-bit code takes one quarter of the storage of a 16-bit value, before metadata and the parts of the model that stay at higher precision.
+The second half -- _no quality loss_ -- is an empirical claim, and a much harder one.
+
+That distinction matters because model quality is expensive.
+During training we spend enormous effort on better data, objectives, architectures, optimization, and GPU time to move the quality frontier, often by fractions of a point.
+It makes little sense to casually give those gains back at deployment just to save bits.
+Compression should preserve the capability we worked to create; a smaller or faster model is a win only after its quality has been accounted for.
+
+I ran into this distinction while building low-bit inference in *Tahoma*, our C++ runtime for language models and machine translation.
+Getting a tensor down to four bits was easy.
+Getting a complete model to remain useful, fit cleanly in memory, reach the intended GPU kernel, and run faster than a mature serving engine was the real work.
+
+Two results came out of that work:
+
+* The details of the quantizer matter enormously. Tahoma's W4 path uses *blockwise asymmetric quantization* and a *data-free MSE clipping search* instead of naive symmetric max-absolute quantization.
+* Four-bit storage does not imply four-bit arithmetic. Tahoma's fastest 4-bit path dynamically quantizes each activation row to FP8 E4M3, expands the 4-bit weights to E4M3 inside the GEMM, and computes on Hopper FP8 tensor cores.
+
+On Gemma-3-12B translation, that W4A8 path reached *5,131 generated tokens/s* on one H100, compared with *3,190 tokens/s* for the vLLM NF4 operating point in the same study.
+That is a 1.61x throughput difference.
+Tahoma FP8 and vLLM FP8 were effectively tied at 6,094 versus 5,934 tokens/s.
+
+But is the 4-bit model truly lossless?
+No blanket claim survives careful measurement.
+The corrected experiments find small but resolvable W4 residuals on some learned translation metrics.
+The interesting result is not that four bits are magically free; it is how much of the damage can be controlled, and how much useful systems performance can be recovered from the representation.
+
+This post explains both sides.
+
+[NOTE]
+====
+This work was submitted as a non-anonymized system paper to the https://www2.statmt.org/wmt26/model-compression.html[WMT26 Model Compression Shared Task^]: _Quantize, Qualify, Rerank: A Recipe for Compressing LLMs Without Losing Quality_. I will add the arXiv link here when it becomes publicly available.
+====
+
+== Four bits do not define a quantizer
+
+Calling a model "int4" leaves out most of the decisions that determine its behavior:
+
+* Is the range symmetric or asymmetric around zero?
+* Is there one scale per tensor, per output channel, or per small block?
+* Are outliers preserved, clipped, or handled separately?
+* Are all 16 code values usable?
+* What precision are the activations?
+* Does the kernel compute in integer, BF16, or FP8 arithmetic?
+* Is the checkpoint representation the same as the runtime layout?
+
+Two systems can both say "4-bit" while implementing materially different numerical operations.
+
+=== The naive symmetric baseline
+
+For a block of weights, the simplest symmetric quantizer starts from the largest absolute value:
+
+[stem]
+++++
+\begin{aligned}
+a &= \max_i |w_i| \\
+s &= \max\left(\frac{a}{7}, 10^{-8}\right) \\
+q_i &= \operatorname{clip}\left(\operatorname{round}(w_i/s), -8, 7\right) \\
+\hat{w}_i &= q_i s
+\end{aligned}
+++++
+
+This representation is compact and easy to implement.
+It is also subtly wasteful.
+
+The signed 4-bit domain contains 16 codes, from `-8` through `7`.
+But scaling by `a / 7` maps in-range values to `[-7, 7]`.
+The `-8` code is normally unreachable.
+We pay for 16 patterns and effectively use 15 reconstruction levels.
+
+Symmetry creates a second problem.
+Suppose a block spans `[-0.2, 1.0]`.
+The scale is set by `1.0`, and the representable range is forced to be equally large on the negative side even though the weights do not use it.
+Several code values are spent describing empty space.
+
+With only four bits, wasting one code and part of the range is expensive.
+
+== Achievement 1: asymmetric W4 that uses the code space
+
+Tahoma's deployable W4 representation uses unsigned codes `0..15` with a scale and an integer zero point for each block along the input dimension.
+For a linear weight with shape `[N, K]`, the production W4A8 configuration divides each output row into groups of 128 weights.
+
+For one block, let `w_min` and `w_max` be its observed extrema.
+The full-range affine quantizer is:
+
+[stem]
+++++
+\begin{aligned}
+s &= \max\left(\frac{w_{\max}-w_{\min}}{15}, 10^{-8}\right) \\
+z &= \operatorname{clip}\left(\operatorname{round}(-w_{\min}/s), 0, 15\right) \\
+q_i &= \operatorname{clip}\left(\operatorname{round}(w_i/s+z), 0, 15\right) \\
+\hat{w}_i &= (q_i-z)s
+\end{aligned}
+++++
+
+There are two gains here.
+
+First, all 16 reconstruction slots are available; no code is structurally excluded by the scaling rule.
+Second, the zero point shifts the reconstruction lattice toward the values in the block instead of forcing it to be centered on zero.
+
+For the earlier `[-0.2, 1.0]` example, the naive symmetric step is approximately `1 / 7 = 0.143`.
+The affine full-range step is `1.2 / 15 = 0.08` before zero-point rounding.
+The same four bits describe the occupied interval much more finely.
+
+This is still blockwise quantization, not one affine transform for the entire tensor.
+Smaller blocks track local distributions better but require more metadata.
+At group size 128, Tahoma stores:
+
+* 4 bits for each weight code;
+* one 16-bit scale per 128 weights; and
+* one 16-bit zero term per 128 weights.
+
+That is approximately `4 + (16 + 16) / 128 = 4.25` bits per quantized linear weight.
+The complete checkpoint is larger because embeddings, norms, biases, and unsupported tensors have their own representations.
+
+=== MSE clipping: do not let one outlier price the whole block
+
+Plain min/max quantization lets one extreme value set the step size for all 128 weights in its group.
+If 127 weights are concentrated near zero and one is far away, preserving that outlier exactly can make the other 127 unnecessarily coarse.
+
+Tahoma performs a small, data-free search for each block.
+Starting from the observed midpoint, it evaluates 11 symmetrically contracted ranges:
+
+[stem]
+++++
+f \in \{1.00, 0.95, 0.90, \ldots, 0.55, 0.50\}
+++++
+
+For each candidate it quantizes, reconstructs, and computes the block mean-squared error:
+
+[stem]
+++++
+\operatorname{MSE}(f)=\frac{1}{G}\sum_{i=1}^{G}\left(w_i-\hat{w}_i(f)\right)^2
+++++
+
+Conceptually, the per-block search is:
+
+[source,python]
+----
+best = quantize(block, clip_fraction=1.00)
+for clip_fraction in (0.95, 0.90, 0.85, 0.80, 0.75,
+					  0.70, 0.65, 0.60, 0.55, 0.50):
+	candidate = quantize(block, clip_fraction)
+	if candidate.mse < best.mse:
+		best = candidate
+----
+
+[.wide-figure]
+.How asymmetry and clipping place the 16 reconstruction levels. This is an illustrative synthetic block; select the image to inspect it at full resolution.
+image::/images/llm-fast-inference/int4-quantizer-comparison.png[alt="Comparison of naive symmetric int4, asymmetric full-range int4, and asymmetric int4 with MSE clipping",link="/images/llm-fast-inference/int4-quantizer-comparison.png"]
+
+The winner is selected independently for every block.
+Importantly, the error includes the clipped outliers themselves.
+A contracted range wins only when the finer resolution on the bulk compensates for the added tail error.
+
+This is not GPTQ, AWQ calibration, a Hessian-weighted objective, or an NF4 codebook.
+It consumes no calibration sentences and sees no activations.
+It is simply a bounded search over the weight reconstruction objective.
+
+That simplicity is useful operationally: a dense checkpoint can be quantized on load, or exported once into a portable representation containing packed codes, scales, and zero terms.
+At runtime, Tahoma rearranges those same values into a GPU-specific layout without dequantizing and requantizing them.
+
+== Achievement 2: 8-bit activations without a calibration set
+
+Weights are static; activations are not.
+Their ranges change by request, layer, token, and decoding step.
+A single activation scale for a whole tensor makes unrelated rows compete for FP8 range.
+
+Tahoma's A8 path receives BF16 activations and dynamically quantizes every row -- normally one token -- to FP8 E4M3.
+Since E4M3FN has maximum finite magnitude 448, row `m` uses:
+
+[stem]
+++++
+\begin{aligned}
+\alpha_m &= \max\left(\frac{\max_k |x_{mk}|}{448}, 10^{-8}\right) \\
+x^{(8)}_{mk} &= \operatorname{E4M3}\left(\operatorname{clip}(x_{mk}/\alpha_m, -448, 448)\right)
+\end{aligned}
+++++
+
+The scale is recomputed on every forward pass.
+One token with a large outlier therefore does not reduce the resolution available to another token with ordinary values.
+An all-zero row remains exactly zero, and the `1e-8` floor avoids division by zero.
+
+This is the `A8` in W4A8, but the name can be misleading.
+Tahoma's optimized path is not an int4-by-int8 integer matrix multiplication:
+
+. The packed 4-bit weights are read from HBM.
+. Their block scale and zero term are applied while they are expanded to E4M3 in registers.
+. The activation and expanded weight enter an FP8 tensor-core MMA.
+. Accumulation is FP32.
+. The per-token activation scale is applied in the epilogue.
+. The result is written as BF16.
+
+The result combines *4-bit weight storage and bandwidth* with *FP8 tensor-core compute*.
+
+=== Machete, with credit where it is due
+
+The mixed-input GEMM is based on https://developers.redhat.com/articles/2024/10/14/introducing-machete-mixed-input-gemm-kernel[Machete^], originally developed by Lucas Wilkinson and the vLLM contributors on top of NVIDIA CUTLASS.
+Machete pre-shuffles low-bit weights for the register layout required by Hopper tensor cores, uses Hopper `wgmma`, TMA, and warp specialization, and overlaps weight conversion with compute and data movement.
+
+Tahoma vendors the subset of Machete needed by its runtime and supplies its own ATen-facing launcher and dispatch layer.
+We parameterized the prepack and kernel templates with explicit K-tile and prepack-atom sizes so W4A8 can use group sizes 32, 64, and 128, then integrated the asymmetric scale/zero convention and dynamic rowwise FP8 activation path described above.
+
+This provenance matters.
+The speed belongs to a stack: CUTLASS, Machete, the vLLM contributors, and Tahoma's quantizer, integration, scheduling, and model-specific fused paths.
+
+== So, is it lossless?
+
+Not as a universal statement.
+
+=== What the WMT26 paper finds
+
+Our submitted WMT26 study evaluates `google/gemma-3-12b-it` on three translation directions.
+WMT25 provides the 1,121-segment development set; WMT26 is the post-submission blind test set.
+CometKiwi-XXL is higher-is-better and MetricX-24-XXL is lower-is-better.
+
+[cols="3,1,1,1,1",options="header"]
+|===
+| System | WMT25 KiwiXXL | WMT25 MetricX-ref | WMT26 KiwiXXL | WMT26 MetricX-QE
+
+| BF16 | 65.33 | 5.493 | 68.69 | 4.108
+| INT8/BF16 (i8a16) | 65.27 | 5.522 | 68.77 | 4.128
+| FP8/FP8 (f8a8) | 65.21 | 5.491 | 68.78 | 4.136
+| INT4/BF16 (i4a16) | 64.64 | 5.715 | 68.43 | 4.196
+| INT4/FP8 (i4a8) | 65.40 | 5.570 | 68.78 | 4.128
+| vLLM NF4/BF16 | 64.47 | 5.636 | 67.99 | 4.228
+|===
+
+The raw scores alone do not justify calling two systems equivalent.
+We therefore run paired bootstrap resampling for every metric and precision change, then qualify those local results against the WMT24 human meta-evaluation of the metrics themselves.
+
+The figure reports `S_M`, the percentage of paired bootstrap samples in which BF16 receives the better score.
+Values below 5% favor the variant, values above 95% favor BF16, and values in between leave the ordering unresolved.
+
+[.wide-figure]
+.Paired-bootstrap support for BF16 over each precision variant. Only resolved cells are colored; select the image for the full-resolution view.
+image::/images/llm-fast-inference/bootstrap-support.png[alt="Heatmap of paired-bootstrap support that BF16 receives a better metric score than each precision variant",link="/images/llm-fast-inference/bootstrap-support.png"]
+
+The conclusion is deliberately narrower than "lossless":
+
+* Under the qualified learned metrics, INT8/BF16 and FP8/FP8 show no resolved loss against BF16.
+* MetricX strongly favors BF16 over both Tahoma int4 variants on WMT25.
+* CometKiwi-XXL favors BF16 over i4a16, while the i4a8 ordering remains unresolved.
+* Surface-form chrF also favors BF16, but other learned metrics disagree on the size and even the ordering of these small effects.
+* On the WMT26 blind set, both 8-bit systems remain near BF16; the int4 systems retain small metric residuals. These are metric findings, not direct evidence of human-perceptible loss.
+
+The block-size study makes the trade-off visible too.
+For W4A8, block 128 gave the best learned-metric quality among the deployable block sizes tested in the paper; block 256 was slightly smaller and faster but worse, so the submission used 128.
+
+A single convenient metric can therefore make quantization look lossless while a better-qualified metric resolves a difference.
+The right conclusion is not that one metric is infallible, but that small precision effects require multiple metrics, paired uncertainty estimates, and an external reason to trust the metric used for the final claim.
+
+We have observed the same qualitative pattern on internal models with different architectures: 8-bit paths are generally easier to preserve, while 4-bit weight reconstruction is the first place subtle residuals appear.
+I leave those internal results out here; the numbers in this post come from the submitted WMT26 paper.
+
+So my answer to the title is:
+
+* *Four-bit quantization is not intrinsically lossless.*
+* *A careful quantizer can make it substantially better than naive int4.*
+* *Whether the remaining difference matters depends on the model, data, metric, and operating point.*
+
+== Tahoma versus vLLM: the systems result
+
+Numerical quality is only half of inference engineering.
+A small checkpoint that falls back to a dense GEMM, spends a minute compiling kernels, or leaves the GPU underfilled has not delivered the intended system.
+
+Before the numbers, I want to be explicit about the framing.
+This is not a claim that Tahoma is a better inference engine than vLLM.
+Much of what I know about modern LLM serving came from studying vLLM: paged attention, continuous batching, scheduler design, CUDA graph replay, and the Machete kernels all shaped Tahoma's implementation.
+I learn systems by tinkering -- reading an idea, translating it into code, adapting it to a different toolkit, and measuring whether I understood it correctly.
+Reaching the same performance band in some modes, and a faster operating point in one specific comparison, is a milestone in that learning process.
+vLLM remains the mature, inference-focused system and an important source of ideas and implementations that made this work possible.
+
+For the WMT26 model-compression study, we compared Tahoma and vLLM on the text path of `google/gemma-3-12b-it`, using one H100 80 GB and the same translation workload.
+The multimodal vision tower was removed because the task never supplied images.
+The figure reports hot steady-state, greedy single-candidate generation throughput; model startup is excluded.
+
+[.wide-figure]
+.Hot throughput and checkpoint footprint for the study operating points. Quality uncertainty is kept in the bootstrap figure rather than compressed into a rescaled radar axis. The 4-bit pair uses different quantizers and activation formats; this is not a general project ranking.
+image::/images/llm-fast-inference/tahoma-vllm-operating-points.png[alt="Bar charts comparing Tahoma and vLLM throughput and checkpoint size for BF16, FP8, and 4-bit operating points",link="/images/llm-fast-inference/tahoma-vllm-operating-points.png"]
+
+There are three different stories in this figure.
+
+=== BF16: vLLM wins
+
+At BF16, vLLM is about 9.6% faster than Tahoma.
+That is important to say plainly.
+Tahoma is not universally faster, and a result that hid this row would not be useful.
+
+The result also reflects the different scope of the two systems.
+vLLM is purpose-built for inference and serving.
+Tahoma is both a training toolkit and an inference runtime; its generic dense BF16 path remains compatible with autograd and the backward pass.
+We did not optimize that BF16 path as aggressively for inference-only execution.
+Our serving-specific work went primarily into the low-bit paths, whose fused W4A8 and FP8 kernels are explicitly inference-only.
+This context explains the engineering trade-off, but it does not change the measured result: vLLM is faster at BF16 in this benchmark.
+
+=== FP8: essentially tied
+
+The FP8 rows are within 2.7% of each other.
+I treat that as matching the mature engine, not as a meaningful victory.
+The useful result is that the native C++ path reaches the same performance band while using a smaller static checkpoint in this setup.
+
+=== Four-bit: Tahoma's operating point is 1.61x faster
+
+Tahoma W4A8 produces 5,131 tokens/s versus 3,190 for vLLM NF4, a *1.61x* difference.
+It also uses 6.7 GB on disk versus 8.4 GB.
+
+This is a comparison between deployable 4-bit operating points, not an isolated kernel shootout.
+The quantizers differ: Tahoma uses blockwise asymmetric linear int4 with MSE clipping, while NF4 uses a learned nonlinear codebook.
+The activation formats differ too: Tahoma runs FP8 activations, while this NF4 path uses BF16 activations.
+That distinction is exactly the point of the post -- saying "both are 4-bit" does not make them the same system.
+
+The measured result is operationally useful within this study: given these low-bit choices, Tahoma's W4A8 package was smaller and delivered substantially more generated tokens per second.
+I read it as evidence that the implementation reached a serious serving regime, not as a general ranking over the two projects.
+
+Best-of-4 sampling and reranking is a different operating point.
+It improved held-out translation metrics in the study but reduced Tahoma W4A8 throughput to 1,456 tokens/s, so I do not mix it into the greedy engine comparison above.
+
+== A note on startup
+
+Hot throughput is the right measure for a long-running server.
+For a one-shot evaluation job or short-lived worker, startup can still be noticeable, so we measured it separately rather than folding it into steady-state throughput.
+
+Using the same 22.7 GB local BF16 checkpoint on one H100, process startup to ready was:
+
+[cols="2,2,2",options="header"]
+|===
+| Engine and mode | Compile cache | Startup
+
+| Tahoma FP8 | not applicable | 24--30 s
+| Tahoma W4A8 | not applicable | 34 s
+| vLLM FP8 | warm | 55 s
+| vLLM FP8 | cold | 168 s
+| vLLM NF4 | cold | 92 s
+|===
+
+vLLM startup includes Python initialization, online quantization, `torch.compile`, kernel autotuning, and CUDA-graph capture.
+Its warm compile cache matters enormously, which is why both warm and cold FP8 values are shown.
+
+Tahoma loads and specializes the model in C++, calls ahead-of-time-compiled kernels, prepacks weights for the current GPU, and releases dense copies.
+It avoids a JIT compilation phase.
+
+This is a useful operational number for our benchmark workflow, not a universal speedup claim.
+The comparison includes different initialization strategies, and the gap changes substantially when vLLM's compile cache is warm.
+For a daemon that serves for hours or days, startup is amortized and steady-state throughput is the more important result.
+
+== Why the runtime matters
+
+The low-bit GEMM is only one component of Tahoma's speed.
+Several of the runtime ideas below were learned directly from vLLM's design and then reimplemented or adapted inside Tahoma:
+
+* paged KV caches to avoid retaining a dense maximum-length cache for every request;
+* continuous batching to replace finished sequences and keep decode slots occupied;
+* CUDA graph replay to reduce launch overhead during autoregressive decoding;
+* length-sorted batching for offline translation workloads;
+* lazy model construction to avoid allocating a full random FP32 model before loading the real checkpoint; and
+* direct checkpoint-to-kernel specialization, so portable int4 codes are rearranged once without a dequantize/requantize round trip.
+
+Model integration is explicit.
+Parsing `--precision int4a8` is not enough: every intended linear projection has to acquire a W4A8 quantization state, release its dense weight, and dispatch to the mixed-input kernel.
+Our tests fail strict quantized checkpoints if a projection silently remains dense.
+That guard matters because a "4-bit" checkpoint can otherwise benchmark a BF16 fallback without making the mistake obvious.
+
+== What these measurements do -- and do not -- say
+
+I trust speed numbers more when their boundary is visible:
+
+* These results come from one H100 80 GB and translation-shaped batches. They are not a universal ranking for every prompt distribution, batch size, or GPU.
+* The throughput table is hot steady state. The startup table answers a different question and reports vLLM's compile-cache state explicitly.
+* The four-bit comparison is end-to-end W4A8 versus NF4, not identical arithmetic under two launchers.
+* vLLM wins the matched BF16 row and essentially matches Tahoma at FP8.
+* The comparison is a benchmark of specific operating points, not a claim that Tahoma is generally better than vLLM.
+* The quality measurements are metric results, not direct human judgments. Resolved metric residuals should not automatically be renamed human-perceptible loss.
+
+The reproducible claim is narrower and more useful: *for this model, hardware, and workload, Tahoma's asymmetric W4A8 operating point was 1.61x faster than the vLLM NF4 operating point, while Tahoma FP8 matched vLLM FP8 at steady state.*
+
+== What I learned
+
+The phrase "4-bit model" compresses too many decisions into one label.
+The details that mattered most were:
+
+. *Use the full code space.* Symmetric `amax / 7` wastes one signed int4 code and poorly fits skewed blocks.
+. *Control outliers locally.* A small per-block MSE search can improve resolution without a calibration corpus.
+. *Treat activations separately.* Dynamic per-token E4M3 scaling adapts to each request and unlocks Hopper FP8 compute.
+. *Keep storage and compute formats distinct.* Four-bit weights can stay compressed in HBM while the tensor cores operate on FP8.
+. *Verify dispatch, not just files.* A small checkpoint is not evidence that the intended kernel ran.
+. *Measure startup and steady state separately.* They answer different deployment questions.
+. *Treat quality as a constraint, not a rounding error.* Training gains are expensive; deployment optimization should not silently spend them.
+. *Do not call it lossless because one score rounded to the same value.* Use multiple qualified metrics and paired uncertainty estimates.
+
+Four-bit quantization is not free.
+But with asymmetric blocks, MSE clipping, dynamic activations, a tuned mixed-input kernel, and a runtime designed around it, four bits can be a very productive engineering trade.
+
+That, to me, is more interesting than "lossless."

@@ -316,3 +316,58 @@ a:hover {
     margin-top: 0.5rem;
     font-style: italic;
 }
+
+/* Keep post-list covers compact; the article page still uses the full cover. */
+.post-entry:has(> .entry-cover) {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 24px;
+    align-items: center;
+}
+
+.post-entry > .entry-cover {
+    grid-column: 1;
+    grid-row: 1 / 4;
+    margin: 0;
+}
+
+.post-entry > .entry-cover img {
+    width: 100%;
+    height: 135px;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #f7f8f6;
+}
+
+.post-entry:has(> .entry-cover) > :not(.entry-cover):not(.entry-link) {
+    grid-column: 2;
+}
+
+@media (max-width: 620px) {
+    .post-entry:has(> .entry-cover) {
+        grid-template-columns: 112px minmax(0, 1fr);
+        column-gap: 14px;
+        align-items: start;
+    }
+
+    .post-entry:has(> .entry-cover) .entry-header h2 {
+        font-size: 19px;
+    }
+
+    .post-entry:has(> .entry-cover) .entry-content {
+        -webkit-line-clamp: 3;
+    }
+
+    .post-entry > .entry-cover img {
+        height: 72px;
+    }
+}
+
+/* Dense editorial figures can use more horizontal room than body copy. */
+.post-content .imageblock.wide-figure {
+    width: min(1120px, calc(100vw - 2rem));
+    max-width: none;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
