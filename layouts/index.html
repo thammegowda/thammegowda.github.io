@@ -1,139 +1,292 @@
 {{ define "main" }}
-<div class="post-content">
-  <section id="home" style="margin-bottom: 0;">
-    <h1 style="margin-bottom: 0.25rem;">Thamme &ldquo;TG&rdquo; Gowda</h1>
-    <p style="color: var(--secondary); font-size: 1.05rem; margin-top: 0;">
-      AI Research Scientist &bull; LLMs &bull; Multilingual &amp; Multimodal AI &bull; High-Performance ML Systems
+{{ $root := . }}
+<div class="home-portfolio">
+  <section class="home-hero" aria-labelledby="home-title">
+    <p class="home-kicker">Research Scientist at Microsoft &middot; ML Systems</p>
+    <h1 id="home-title">Thamme <span>&ldquo;TG&rdquo;</span> Gowda</h1>
+    <p class="home-lede">I build AI systems that survive the trip from research to production.</p>
+    <p class="home-intro">
+      My work spans multilingual and multimodal models, data and distributed training,
+      evaluation, quantization, GPU kernels, and low-latency inference.
     </p>
-    <p style="color: var(--secondary); font-size: 0.9rem; margin-top: 0.25rem;">
-      Email: <code>tgowdan [at] gmail [dot] com</code>
-      &nbsp;&middot;&nbsp;
-      <a href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">Curriculum Vitae</a>
-    </p>
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0.75rem 0 1.25rem;">
-      {{ range .Site.Params.socialIcons }}
-      <a href="{{ .url }}" target="_blank" rel="noopener noreferrer me" title="{{ .name }}" style="font-size: 1.5rem;">
-        {{ partial "svg.html" . }}
+    <div class="home-actions">
+      <a class="home-button home-button-primary" href="#featured-work">Selected work</a>
+      <a class="home-button" href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">
+        View CV <span aria-hidden="true">&nearr;</span>
       </a>
-      {{ end }}
     </div>
 
-    <p>Thamme &ldquo;TG&rdquo; Gowda is a Senior Research Scientist at <a href="https://www.microsoft.com/" target="_blank" rel="noopener">Microsoft</a>,
-      where he works on large language models, multilingual and multimodal AI, and high-performance ML systems.
-      He earned his Ph.D. (2022) and M.S. (2017) in Computer Science from <a href="https://viterbischool.usc.edu/" target="_blank" rel="noopener">USC</a>.
-      Previously, he was a Research Engineer at <a href="https://isi.edu" target="_blank" rel="noopener">USC ISI</a> (2017–22; for <a href="https://www.linkedin.com/posts/thammegowda_usc-fighton-gratitude-activity-6968419016268804096-_Ry0/" target="_blank" rel="noopener">five years!</a>),
-      a Data Scientist intern at <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener">NASA JPL</a> (2016–17),
-      a Committer and PMC member at <a href="https://people.apache.org/phonebook.html?uid=thammegowda" target="_blank" rel="noopener">the Apache Software Foundation</a>,
-      a full-stack software developer at a startup (2012–14),
-      and co-founder at <a href="https://datoin.com/home/aboutus/#teamlink" target="_blank" rel="noopener">Datoin.com</a> (2014–15).</p>
-    <p>His work spans the full model lifecycle — data pipelines, large-scale pretraining, post-training alignment (SFT, RL),
-      evaluation, distributed training, quantization, and low-latency inference — bridging ML research and hardware-aware systems engineering.
-      Selected highlights:</p>
-    <ul>
-      <li>Quantized and integrated translation models for <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener"><strong>offline translation in Microsoft Edge</strong></a>.</li>
-      <li>Building <strong>multimodal LLMs</strong> for production applications.</li>
-      <li>Enhanced training-data quality to improve production model quality across <strong>hundreds of languages</strong>.</li>
-      <li>Built a <strong>500+ language</strong> many-to-English translation model.</li>
-      <li>Tinkering with Tahoma, a personal <strong>C++23</strong> playground for learning GPU systems (custom CUDA/ROCm kernels) and experimenting with my ideas for AI.</li>
-    </ul>
-    <p>Earlier, his Ph.D. research addressed the rare phenomena learning problem in neural machine translation
-      (<a href="/files/2022-TG-diss-1space.pdf" target="_blank" rel="noopener">dissertation</a>,
-       <a href="/files/2022-TG-diss-defense.pdf" target="_blank" rel="noopener">slides</a>).</p>
-  </section>
-
-  <section id="news" style="margin-bottom: 2rem;">
-    <h2>News</h2>
-    {{ $news := slice
-      (dict "date" "2026-07" "html" `New post: <a href="/posts/2026/07/fast-compression/">Making Compression Faster</a> (pigzpp now has Python, Go, Rust &amp; WebAssembly bindings, plus ZIP and PNG).`)
-      (dict "date" "2026-07" "html" `Co-organizing the <a href="https://www2.statmt.org/wmt26/model-compression.html" target="_blank" rel="noopener">WMT26 Model Compression</a> and <a href="https://www2.statmt.org/wmt26/translation-task.html" target="_blank" rel="noopener">General Machine Translation</a> shared tasks (@ EMNLP 2026, Budapest).`)
-      (dict "date" "2026-06" "html" `On-device, offline translation shipped in Microsoft Edge (145+ languages) via the built-in <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener">Translator API</a> — see the <a href="https://blogs.windows.com/msedgedev/2026/06/02/expanding-on-device-ai-in-microsoft-edge-new-models-and-apis-for-the-web/" target="_blank" rel="noopener">Edge announcement</a>.`)
-      (dict "date" "2026-06" "html" `New post: <a href="/posts/2026/06/dropout-overfit-sanity-check/">A Field Guide for Sanity-Checking Your Training Pipeline</a>.`)
-      (dict "date" "2026-04" "html" `Fast BPE learning merged into <a href="https://github.com/google/sentencepiece/pull/1208" target="_blank" rel="noopener">Google SentencePiece</a>: O(N)&rarr;O(log N) per merge, with 10x&ndash;20x+ speedups in large settings (<a href="https://x.com/thammegowda/status/2047005368665223666" target="_blank" rel="noopener">note on X</a>).`)
-      (dict "date" "2026-03" "html" `New post: <a href="/posts/2026/03/faster-bpe-learn/">From O(N) to O(log N): A Faster BPE Training Algorithm</a>.`)
-      (dict "date" "2026-03" "html" `New post: <a href="/posts/2026/03/pigzpp-with-agents/">I Let Two AI Agents Race to Modernize pigz</a>.`)
-    }}
-    <ul style="line-height: 1.7;">
-      {{ range $news }}
-      <li><strong>{{ .date }}</strong> — {{ .html | safeHTML }}</li>
-      {{ end }}
-    </ul>
-  </section>
-
-  <section id="education" style="margin-bottom: 2rem;">
-    <h2>Education</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-      {{ $degrees := slice
-        (dict "title" "PhD in CS" "years" "2018–2022" "url" "https://viterbischool.usc.edu/" "logo" "/images/logo-viterbi.jpg")
-        (dict "title" "MS in CS" "years" "2015–2017" "url" "https://viterbischool.usc.edu/" "logo" "/images/logo-viterbi.jpg")
-        (dict "title" "BE in CS&E" "years" "2008–2012" "url" "https://vtu.ac.in/" "logo" "/images/logo-VTU.jpg")
-      }}
-      {{ range $degrees }}
-      <div style="text-align: center; padding: 0.75rem;">
-        <strong>{{ .title }}</strong>
-        <p style="color: var(--secondary); margin: 0.25rem 0;">{{ .years }}</p>
-        <a href="{{ .url }}" target="_blank" rel="noopener">
-          <img src="{{ .logo }}" alt="{{ .title }}"
-               style="max-width: 8rem; max-height: 8rem; border-radius: 8px; border: 1px solid var(--border); transition: opacity 0.2s;"
-               onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" />
+    <div class="home-contact-row">
+      <span class="home-email">Email <code>tgowdan [at] gmail [dot] com</code></span>
+      <nav class="home-profiles social-icons" aria-label="Professional profiles">
+        {{ $profiles := slice
+          (dict "name" "googlescholar" "label" "Scholar" "url" "https://scholar.google.com/citations?user=7Ed3-tMAAAAJ")
+          (dict "name" "github" "label" "GitHub" "url" "https://github.com/thammegowda")
+          (dict "name" "linkedin" "label" "LinkedIn" "url" "https://www.linkedin.com/in/thammegowda/")
+        }}
+        {{ range $profiles }}
+        <a href="{{ .url }}" target="_blank" rel="noopener noreferrer me" aria-label="{{ .label }}" title="{{ .label }}">
+          {{ partial "svg.html" . }}
+          <span>{{ .label }}</span>
         </a>
-      </div>
-      {{ end }}
+        {{ end }}
+      </nav>
     </div>
   </section>
 
-  <section id="experience" style="margin-bottom: 2rem;">
-    <h2>Professional Career</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-      {{ $jobs := slice
-        (dict "title" "Research Scientist" "years" "2022/11 – Now" "url" "https://translator.microsoft.com/" "logo" "/images/logo-Microsoft.png")
-        (dict "title" "Research Engineer" "years" "2017/07 – 2022/10" "url" "https://www.isi.edu/" "logo" "/images/logo-USCISI.jpg")
-        (dict "title" "Data Scientist (intern)" "years" "2016 – 2017" "url" "https://www.jpl.nasa.gov/" "logo" "/images/logo-NASA-JPL.jpg")
-        (dict "title" "Research Assistant" "years" "2015 – 2016" "url" "https://irds.usc.edu/" "logo" "/images/logo-viterbi.jpg")
-        (dict "title" "Technical Co-Founder" "years" "2014 – 2015" "url" "https://datoin.com/" "logo" "/images/logo-datoin.jpg")
-        (dict "title" "Software Engineer" "years" "2012 – 2014" "url" "https://in.linkedin.com/company/simplyphi-software-solutions-pvt-ltd" "logo" "/images/logo-simplyphi.jpg")
-      }}
-      {{ range $jobs }}
-      <div style="text-align: center; padding: 0.75rem;">
-        <strong>{{ .title }}</strong>
-        <p style="color: var(--secondary); margin: 0.25rem 0;">{{ .years }}</p>
-        <a href="{{ .url }}" target="_blank" rel="noopener">
-          <img src="{{ .logo }}" alt="{{ .title }}"
-               style="max-width: 8rem; max-height: 8rem; border-radius: 8px; border: 1px solid var(--border); transition: opacity 0.2s;"
-               onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" />
-        </a>
-      </div>
-      {{ end }}
+  <section id="featured-work" class="home-section home-featured">
+    <header class="home-section-heading">
+      <p class="home-kicker">Featured work</p>
+      <h2>Research that ships.</h2>
+      <p>Selected outcomes across production AI, model inference, algorithms, and systems software.</p>
+    </header>
+
+    <div class="home-work-grid">
+      <article class="home-work-card">
+        <div class="home-work-visual home-work-visual-edge" aria-hidden="true">
+          <img src="/images/logo-Microsoft.png" alt="" />
+          <p><strong>145+</strong><span>languages, on device</span></p>
+        </div>
+        <div class="home-work-body">
+          <p class="home-work-type">Production ML &middot; 2026</p>
+          <h3>Offline translation in Microsoft Edge</h3>
+          <p>Quantized and integrated translation models for private, on-device translation through the built-in Translator API.</p>
+          <div class="home-inline-links">
+            <a href="https://blogs.windows.com/msedgedev/2026/06/02/expanding-on-device-ai-in-microsoft-edge-new-models-and-apis-for-the-web/" target="_blank" rel="noopener">Announcement</a>
+            <a href="https://learn.microsoft.com/en-us/microsoft-edge/web-platform/translator-api" target="_blank" rel="noopener">API</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="home-work-card">
+        <div class="home-work-visual home-work-visual-image">
+          <img src="/images/llm-fast-inference/w4a8-pipeline.png" alt="Tahoma W4A8 inference pipeline using asymmetric 4-bit weights and dynamic FP8 activations" />
+        </div>
+        <div class="home-work-body">
+          <p class="home-work-type">Research leadership &amp; systems &middot; 2025&ndash;2026</p>
+          <h3>WMT Model Compression and TahomaMT</h3>
+          <p>I lead the WMT Model Compression shared task and built its two-year evaluation infrastructure for runnable systems, controlled H100 execution, and quality&ndash;footprint&ndash;speed trade-offs. TahomaMT tests those ideas in a custom C++/CUDA runtime.</p>
+          <div class="home-inline-links">
+            <a href="/files/gowda-etal-2026-WMT26-modelzip-findings.pdf" target="_blank" rel="noopener">Findings</a>
+            <a href="https://www2.statmt.org/wmt26/model-compression.html" target="_blank" rel="noopener">Shared task</a>
+            <a href="https://github.com/thammegowda/wmt26-model-compression" target="_blank" rel="noopener">Evaluation harness</a>
+            <a href="/files/gowda-2026-wmt26modelzip-tahomamt.pdf" target="_blank" rel="noopener">TahomaMT paper</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="home-work-card">
+        <div class="home-work-visual home-work-visual-metric" aria-hidden="true">
+          <strong>80&times;</strong>
+          <span>over Python gzip</span>
+          <code>C++ &middot; Python &middot; Go &middot; Rust &middot; WASM</code>
+        </div>
+        <div class="home-work-body">
+          <p class="home-work-type">Systems software &middot; 2026</p>
+          <h3>pigzpp: compression across the stack</h3>
+          <p>A thread-safe C++23 compression core with multi-language bindings, native ZIP, and a fast PNG codec.</p>
+          <div class="home-inline-links">
+            <a href="https://github.com/thammegowda/pigzpp" target="_blank" rel="noopener">Code</a>
+            <a href="https://arxiv.org/abs/2608.24153" target="_blank" rel="noopener">Paper</a>
+            <a href="/posts/2026/07/fast-compression/">Benchmarks</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="home-work-card">
+        <div class="home-work-visual home-work-visual-algorithm" aria-hidden="true">
+          <span>per merge</span>
+          <p><del>O(N)</del> <strong>O(log N)</strong></p>
+          <code>max-heap + lazy deletion</code>
+        </div>
+        <div class="home-work-body">
+          <p class="home-work-type">Algorithms &middot; 2026</p>
+          <h3>Faster BPE training in SentencePiece</h3>
+          <p>Replaced repeated linear scans with a heap-based update and merged the implementation upstream into Google SentencePiece.</p>
+          <div class="home-inline-links">
+            <a href="https://github.com/google/sentencepiece/pull/1208" target="_blank" rel="noopener">Upstream PR</a>
+            <a href="/posts/2026/03/faster-bpe-learn/">Write-up</a>
+          </div>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section id="more" style="margin-bottom: 2rem;">
-    <h2>More?</h2>
-    <p>I speak Kannada/ಕನ್ನಡ, Telugu/తెలుగు, and Hindi/हिन्दी (+English, of course!).
-      I was raised by a family of farmers in a southern Indian village.
-      So, beside the "professional" experience that I have displayed here, I also have
-      much more experience in agriculture that you will not hear: vineyard, silkworms,
-      dairy, sheep, poultry…!</p>
-    <p>I came to this grad school for learning the artificial intelligence, but I also
-      ended up learning a bit about myself/consciousness:</p>
+  <section class="home-section home-earlier">
+    <header class="home-section-heading">
+      <p class="home-kicker">Earlier systems</p>
+      <h2>Built to outlast the experiment.</h2>
+      <p>Research infrastructure that became useful beyond the work that started it.</p>
+    </header>
 
-    <figure style="text-align: center; margin: 1.5rem 0;">
-      <blockquote style="font-style: italic; color: var(--secondary); line-height: 1.8; border-left: 3px solid var(--tertiary); padding-left: 1rem;">
-        <p>While coding an artificial soul for machines<br/>
-          He wins his gifts, defeats his curses<br/>
-          And discovers his own soul that thinks and feels!</p>
-      </blockquote>
-      <figcaption style="color: var(--secondary); font-size: 0.9rem;">— <cite>Self'-reflection; 2020</cite></figcaption>
-    </figure>
+    <div class="home-earlier-grid">
+      <article>
+        <p class="home-work-type">Multilingual data and training</p>
+        <h3>MTData, RTG, NLCodec, and Many-to-English</h3>
+        <p>
+          I built an open toolchain for reproducible MT data, vocabularies, training, and inference,
+          then used it to train a single model spanning more than 500 source languages. As a WMT
+          General MT organizer from 2022 through 2026, I have maintained versioned MTData recipes
+          that give participants reproducible constrained-track datasets across five editions.
+        </p>
+        <div class="home-inline-links">
+          <a href="https://github.com/thammegowda/mtdata" target="_blank" rel="noopener">MTData</a>
+          <a href="https://www2.statmt.org/wmt26/mtdata/" target="_blank" rel="noopener">WMT26</a>
+          <a href="https://www2.statmt.org/wmt25/mtdata/" target="_blank" rel="noopener">WMT25</a>
+          <a href="https://www2.statmt.org/wmt24/mtdata/" target="_blank" rel="noopener">WMT24</a>
+          <a href="https://www2.statmt.org/wmt23/mtdata/" target="_blank" rel="noopener">WMT23</a>
+          <a href="https://www.statmt.org/wmt22/mtdata/index.html" target="_blank" rel="noopener">WMT22</a>
+          <a href="https://github.com/isi-nlp/rtg" target="_blank" rel="noopener">RTG</a>
+          <a href="https://github.com/isi-nlp/nlcodec" target="_blank" rel="noopener">NLCodec</a>
+          <a href="https://aclanthology.org/2021.acl-demo.37/" target="_blank" rel="noopener">Paper</a>
+        </div>
+      </article>
 
-    <figure style="text-align: center; margin: 1.5rem 0;">
-      <blockquote style="font-style: italic; color: var(--secondary); line-height: 1.8; border-left: 3px solid var(--tertiary); padding-left: 1rem;">
-        <p>Consciousness is divine [Prajnanam Brahman]<br/>
-          This self/Atma is divine [Ayam Atma Brahman]<br/>
-          You are that [Tat Vam Asi]<br/>
-          I am (part-of) it [Aham Brahmasmi]</p>
-      </blockquote>
-      <figcaption style="color: var(--secondary); font-size: 0.9rem;">— <cite>The Great Sayings of the Upanishads; BCE</cite></figcaption>
-    </figure>
+      <article>
+        <p class="home-work-type">Open model deployment</p>
+        <h3>NLLB Serve</h3>
+        <p>
+          A practical web interface, REST API, and batch decoder for deploying Meta's No Language
+          Left Behind models across 200 languages. It remains my most widely adopted personal repository.
+        </p>
+        <div class="home-inline-links">
+          <a href="https://github.com/thammegowda/nllb-serve" target="_blank" rel="noopener">Code</a>
+          <a href="https://pypi.org/project/nllb-serve/" target="_blank" rel="noopener">PyPI</a>
+        </div>
+      </article>
+
+      <article>
+        <p class="home-work-type">Distributed systems</p>
+        <h3>Sparkler</h3>
+        <p>
+          I created Sparkler at USC: an extensible web crawler built around Apache Spark, Kafka,
+          Solr/Lucene, Tika, and distributed JavaScript rendering. I later handed the project to
+          its maintainers when I shifted focus to my Ph.D.
+        </p>
+        <div class="home-inline-links">
+          <a href="https://github.com/USCDataScience/sparkler" target="_blank" rel="noopener">Code</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="home-section home-evidence">
+    <div class="home-publications">
+      <header class="home-subsection-heading">
+        <div>
+          <p class="home-kicker">Research</p>
+          <h2>Selected publications</h2>
+        </div>
+        <a href="/publications/">All publications</a>
+      </header>
+
+      <ol class="home-publication-list">
+        {{ $publicationKeys := slice
+          "gowda-etal-2026-wmt26-model-compression-findings"
+          "gowda-etal-2024-pymarian"
+          "gowda-may-2020-finding"
+          "Wagstaff2018Deepmars"
+        }}
+        {{ range $publicationKeys }}
+          {{ $publicationKey := . }}
+          {{ range where $root.Site.Data.publications "key" $publicationKey }}
+          <li>
+            <span class="home-publication-year">{{ .year }}</span>
+            <div>
+              <h3>{{ .title_formatted }}</h3>
+              <p>{{ .venue }}</p>
+              <div class="home-inline-links">
+                {{ with .url }}<a href="{{ . }}" target="_blank" rel="noopener">Paper</a>{{ end }}
+                {{ with .doi }}<a href="https://doi.org/{{ . }}" target="_blank" rel="noopener">DOI</a>{{ end }}
+                {{ range .resources }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .label }}</a>{{ end }}
+              </div>
+            </div>
+          </li>
+          {{ end }}
+        {{ end }}
+      </ol>
+    </div>
+
+    <div class="home-writing">
+      <header class="home-subsection-heading">
+        <div>
+          <p class="home-kicker">Notes</p>
+          <h2>Recent writing</h2>
+        </div>
+        <a href="/posts/">All posts</a>
+      </header>
+
+      <ol class="home-writing-list">
+        <li>
+          <time datetime="2026-08-13">Aug 2026</time>
+          <a href="/posts/2026/08/llm-fast-inference/">Is 4-Bit Quantization Truly Lossless?</a>
+          <p>Quality accounting, W4A8 kernels, and one-H100 inference results.</p>
+        </li>
+        <li>
+          <time datetime="2026-07-13">Jul 2026</time>
+          <a href="/posts/2026/07/fast-compression/">Making Compression Faster</a>
+          <p>One accelerated core across data pipelines, Docker, PNG, ZIP, and the browser.</p>
+        </li>
+        <li>
+          <time datetime="2026-03-30">Mar 2026</time>
+          <a href="/posts/2026/03/faster-bpe-learn/">From O(N) to O(log N): Faster BPE Training</a>
+          <p>The algorithm, implementation, benchmarks, and upstream journey.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="home-section home-background">
+    <header class="home-section-heading">
+      <p class="home-kicker">Background</p>
+      <h2>Research depth, engineering range.</h2>
+    </header>
+    <div class="home-background-grid">
+      <div class="home-background-copy">
+        <p>
+          At <a href="https://www.microsoft.com/" target="_blank" rel="noopener">Microsoft</a>, I work on multilingual and multimodal AI and the systems that train and serve these models.
+          I have also helped organize the WMT General MT shared task for five consecutive editions, from 2022 through 2026.
+          Previously, I spent five years as a Research Engineer at
+          <a href="https://www.isi.edu/" target="_blank" rel="noopener">USC ISI</a> and worked as a Data Scientist intern at
+          <a href="https://www.jpl.nasa.gov/" target="_blank" rel="noopener">NASA JPL</a>.
+        </p>
+        <p>
+          I earned my Ph.D. and M.S. in Computer Science from USC. My doctoral work studied rare phenomena learning in neural machine translation
+          (<a href="/files/2022-TG-diss-1space.pdf" target="_blank" rel="noopener">dissertation</a>).
+          I have also built software at startups, co-founded Datoin, and served as an Apache Software Foundation committer and PMC member.
+        </p>
+      </div>
+      <dl class="home-trajectory">
+        <div>
+          <dt>2022&ndash;Now</dt>
+          <dd><strong>Microsoft</strong><span>Senior Research Scientist</span></dd>
+        </div>
+        <div>
+          <dt>2017&ndash;2022</dt>
+          <dd><strong>USC ISI</strong><span>Research Engineer</span></dd>
+        </div>
+        <div>
+          <dt>2016&ndash;2017</dt>
+          <dd><strong>NASA JPL</strong><span>Data Scientist intern</span></dd>
+        </div>
+        <div>
+          <dt>2022</dt>
+          <dd><strong>USC</strong><span>Ph.D. in Computer Science</span></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="home-personal">
+    <div>
+      <p class="home-kicker">Beyond the work</p>
+      <p>I grew up in a farming family in southern India, where work was measured in acres and yield, not hours. That upbringing still shapes how I approach hard problems: understand the whole system, stay practical, and judge the work by what it produces.</p>
+    </div>
+    <nav aria-label="Explore more">
+      <a href="/software/">Software</a>
+      <a href="/publications/">Publications</a>
+      <a href="/posts/">Writing</a>
+    </nav>
   </section>
 </div>
 {{ end }}

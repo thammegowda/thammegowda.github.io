@@ -43,14 +43,17 @@ services:
 params:
   env: production
   author: Thamme Gowda
-  description: "Thamme Gowda - AI Research Scientist at Microsoft: LLMs, multilingual & multimodal AI, and high-performance ML systems"
+  description: "Thamme Gowda is an ML systems researcher at Microsoft building multilingual and multimodal AI from data and training to quantized, low-latency inference."
   keywords:
-    - AI Research Scientist
-    - Large Language Models
-    - Machine Translation
+    - ML Systems
+    - LLM Inference
+    - Model Quantization
+    - Multilingual AI
     - Multimodal AI
-    - Machine Learning
-    - GPU Systems
+    - CUDA
+
+  schema:
+    publisherType: Person
 
   defaultTheme: auto
   ShowReadingTime: true
@@ -80,8 +83,6 @@ params:
       url: "https://instagram.com/thammegowda/"
     - name: goodreads
       url: "https://www.goodreads.com/user/show/31845074-thamme-gowda"
-    - name: email
-      url: "mailto:tgowdan@gmail.com"
 
   assets:
     favicon: "/favicon.ico"

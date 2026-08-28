@@ -2,6 +2,19 @@
 
 % Optional resource fields rendered after the paper link: project, code, docs.
 
+@unpublished{gowda-etal-2026-wmt26-model-compression-findings,
+  title = "Findings of the {WMT} 2026 Shared Task on Model Compression: No Free Lunch at Extreme Compression",
+  author = "Gowda, Thamme  and
+    Gaido, Marco  and
+    Grundkiewicz, Roman  and
+    Negri, Matteo",
+  note = "Forthcoming at the Eleventh Conference on Machine Translation ({WMT} 2026)",
+  year = "2026",
+  url = "https://gowda.ai/files/gowda-etal-2026-WMT26-modelzip-findings.pdf",
+  project = "https://www2.statmt.org/wmt26/model-compression.html",
+  code = "https://github.com/thammegowda/wmt26-model-compression",
+}
+
 @unpublished{gowda-2026-wmt26modelzip-tahomamt,
   title = "Quantize, Qualify, Rerank: A Recipe for Compressing {LLM}s Without Losing Quality",
   author = "Gowda, Thamme",
@@ -89,6 +102,8 @@
     publisher = "Association for Computational Linguistics",
     url = "https://aclanthology.org/2025.wmt-1.25/",
     doi = "10.18653/v1/2025.wmt-1.25",
+    project = "https://www2.statmt.org/wmt25/model-compression.html",
+    code = "https://github.com/thammegowda/wmt25-model-compression",
     pages = "484--494",
     ISBN = "979-8-89176-341-8",
     abstract = "We present the results of the first edition of the Model Compression shared task, organized as part of the 10th Conference on Machine Translation (WMT25). The task challenged participants to compress Large Language Models (LLMs) toward enabling practical deployment in resource-constrained scenarios, while minimizing loss in translation performance. In this edition, participants could choose to compete in either a constrained track, which required compressing a specific model (Aya Expanse 8B) evaluated on a limited set of language pairs (Czech{\textrightarrow}German, Japanese{\textrightarrow}Chinese, and English{\textrightarrow}Arabic), or an unconstrained track, which placed no restrictions on the model and allowed submissions for any of the 15 language directions covered by the General MT task (GenMT). We received 12 submissions from three teams, all in the constrained track. They proposed different compression solutions and covered various language combinations: all targeted Czech{\textrightarrow}German, while one covered all the language pairs. Evaluation was conducted separately for each language, measuring translation quality using COMET and MetricX, model size, and inference speed on an Nvidia A100 GPU."
@@ -321,6 +336,7 @@
     doi = "10.18653/v1/2020.findings-emnlp.352",
     pages = "3955--3964",
     abstract = "We cast neural machine translation (NMT) as a classification task in an autoregressive setting and analyze the limitations of both classification and autoregression components. Classifiers are known to perform better with balanced class distributions during training. Since the Zipfian nature of languages causes imbalanced classes, we explore its effect on NMT. We analyze the effect of various vocabulary sizes on NMT performance on multiple languages with many data sizes, and reveal an explanation for why certain vocabulary sizes are better than others.",
+    code = "https://github.com/thammegowda/005-nmt-imbalance",
     ISIArea = {Natural}
 }
 
