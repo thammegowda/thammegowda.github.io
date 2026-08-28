@@ -1,11 +1,159 @@
-@misc{gowda2024pymarianfastneuralmachine,
-      title={PyMarian: Fast Neural Machine Translation and Evaluation in Python}, 
-      author={Thamme Gowda and Roman Grundkiewicz and Elijah Rippeth and Matt Post and Marcin Junczys-Dowmunt},
-      year={2024},
-      eprint={2408.11853},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2408.11853}, 
+
+
+% Optional resource fields rendered after the paper link: project, code, docs.
+
+@unpublished{gowda-2026-wmt26modelzip-tahomamt,
+  title = "Quantize, Qualify, Rerank: A Recipe for Compressing {LLM}s Without Losing Quality",
+  author = "Gowda, Thamme",
+  note = "Under review at the Eleventh Conference on Machine Translation ({WMT} 2026)",
+  year = "2026",
+  url = "https://gowda.ai/files/gowda-2026-wmt26modelzip-tahomamt.pdf",
+  docs = "https://docs.gowda.ai/tahoma/",
+}
+
+
+@misc{gowda-2026-pigzpp,
+  title = {pigzpp: Fast, Parallel, Portable Compression for the Whole Stack},
+  author = {Thamme Gowda},
+  year = {2026},
+  eprint = {2608.24153},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.DC},
+  url = {https://arxiv.org/abs/2608.24153},
+  code = {https://github.com/thammegowda/pigzpp},
+}
+
+
+@inproceedings{kocmi-etal-2025-findings,
+    title = "Findings of the {WMT}25 General Machine Translation Shared Task: Time to Stop Evaluating on Easy Test Sets",
+    author = "Kocmi, Tom  and
+      Artemova, Ekaterina  and
+      Avramidis, Eleftherios  and
+      Bawden, Rachel  and
+      Bojar, Ond{\v{r}}ej  and
+      Dranch, Konstantin  and
+      Dvorkovich, Anton  and
+      Dukanov, Sergey  and
+      Fishel, Mark  and
+      Freitag, Markus  and
+      Gowda, Thamme  and
+      Grundkiewicz, Roman  and
+      Haddow, Barry  and
+      Karpinska, Marzena  and
+      Koehn, Philipp  and
+      Lakougna, Howard  and
+      Lundin, Jessica  and
+      Monz, Christof  and
+      Murray, Kenton  and
+      Nagata, Masaaki  and
+      Perrella, Stefano  and
+      Proietti, Lorenzo  and
+      Popel, Martin  and
+      Popovi{\'c}, Maja  and
+      Riley, Parker  and
+      Shmatova, Mariya  and
+      Steingr{\'i}msson, Steinth{\'o}r  and
+      Yankovskaya, Lisa  and
+      Zouhar, Vil{\'e}m",
+    editor = "Haddow, Barry  and
+      Kocmi, Tom  and
+      Koehn, Philipp  and
+      Monz, Christof",
+    booktitle = "Proceedings of the Tenth Conference on Machine Translation",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.wmt-1.22/",
+    doi = "10.18653/v1/2025.wmt-1.22",
+    pages = "355--413",
+    ISBN = "979-8-89176-341-8",
+    abstract = "This paper presents the results of the General Machine Translation Task organized as part of the 2025 Conference on Machine Translation (WMT). Participants were invited to build systems for any of 30 language pairs. For half of these pairs, we conducted a human evaluation on test sets spanning four to five different domains.We evaluated 60 systems in total: 36 submitted by participants and 24 for which we collected translations from large language models (LLMs) and popular online translation providers.This year, we focused on creating challenging test sets by developing a difficulty sampling technique and using more complex source data. We evaluated system outputs with professional annotators using the Error Span Annotation (ESA) protocol, except for two language pairs, for which we used Multidimensional Quality Metrics (MQM) instead.We continued the trend of increasingly moving towards document-level translation, providing the source texts as whole documents containing multiple paragraphs."
+}
+
+
+@inproceedings{gaido-etal-2025-findings,
+    title = "Findings of the {WMT} 2025 Shared Task on Model Compression: Early Insights on Compressing {LLM}s for Machine Translation",
+    author = "Gaido, Marco  and
+      Grundkiewicz, Roman  and
+      Gowda, Thamme  and
+      Negri, Matteo",
+    editor = "Haddow, Barry  and
+      Kocmi, Tom  and
+      Koehn, Philipp  and
+      Monz, Christof",
+    booktitle = "Proceedings of the Tenth Conference on Machine Translation",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.wmt-1.25/",
+    doi = "10.18653/v1/2025.wmt-1.25",
+    pages = "484--494",
+    ISBN = "979-8-89176-341-8",
+    abstract = "We present the results of the first edition of the Model Compression shared task, organized as part of the 10th Conference on Machine Translation (WMT25). The task challenged participants to compress Large Language Models (LLMs) toward enabling practical deployment in resource-constrained scenarios, while minimizing loss in translation performance. In this edition, participants could choose to compete in either a constrained track, which required compressing a specific model (Aya Expanse 8B) evaluated on a limited set of language pairs (Czech{\textrightarrow}German, Japanese{\textrightarrow}Chinese, and English{\textrightarrow}Arabic), or an unconstrained track, which placed no restrictions on the model and allowed submissions for any of the 15 language directions covered by the General MT task (GenMT). We received 12 submissions from three teams, all in the constrained track. They proposed different compression solutions and covered various language combinations: all targeted Czech{\textrightarrow}German, while one covered all the language pairs. Evaluation was conducted separately for each language, measuring translation quality using COMET and MetricX, model size, and inference speed on an Nvidia A100 GPU."
+}
+
+
+@inproceedings{kocmi-etal-2024-findings,
+    title = "Findings of the {WMT}24 General Machine Translation Shared Task: The {LLM} Era Is Here but {MT} Is Not Solved Yet",
+    author = "Kocmi, Tom  and
+      Avramidis, Eleftherios  and
+      Bawden, Rachel  and
+      Bojar, Ond{\v{r}}ej  and
+      Dvorkovich, Anton  and
+      Federmann, Christian  and
+      Fishel, Mark  and
+      Freitag, Markus  and
+      Gowda, Thamme  and
+      Grundkiewicz, Roman  and
+      Haddow, Barry  and
+      Karpinska, Marzena  and
+      Koehn, Philipp  and
+      Marie, Benjamin  and
+      Monz, Christof  and
+      Murray, Kenton  and
+      Nagata, Masaaki  and
+      Popel, Martin  and
+      Popovi{\'c}, Maja  and
+      Shmatova, Mariya  and
+      Steingr{\'i}msson, Steinth{\'o}r  and
+      Zouhar, Vil{\'e}m",
+    editor = "Haddow, Barry  and
+      Kocmi, Tom  and
+      Koehn, Philipp  and
+      Monz, Christof",
+    booktitle = "Proceedings of the Ninth Conference on Machine Translation",
+    month = nov,
+    year = "2024",
+    address = "Miami, Florida, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.wmt-1.1/",
+    doi = "10.18653/v1/2024.wmt-1.1",
+    pages = "1--46",
+    abstract = "This overview paper presents the results of the General Machine Translation Task organised as part of the 2024 Conference on Machine Translation (WMT). In the general MT task, participants were asked to build machine translation systems for any of 11 language pairs, to be evaluated on test sets consisting of three to five different domains. In addition to participating systems, we collected translations from 8 different large language models (LLMs) and 4 online translation providers. We evaluate system outputs with professional human annotators using a new protocol called Error Span Annotations (ESA)."
+}
+
+
+@inproceedings{gowda-etal-2024-pymarian,
+    title = "{P}y{M}arian: Fast Neural Machine Translation and Evaluation in Python",
+    author = "Gowda, Thamme  and
+      Grundkiewicz, Roman  and
+      Rippeth, Elijah  and
+      Post, Matt  and
+      Junczys-Dowmunt, Marcin",
+    editor = "Hernandez Farias, Delia Irazu  and
+      Hope, Tom  and
+      Li, Manling",
+    booktitle = "Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing: System Demonstrations",
+    month = nov,
+    year = "2024",
+    address = "Miami, Florida, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.emnlp-demo.34/",
+    doi = "10.18653/v1/2024.emnlp-demo.34",
+    pages = "328--335",
+    project = "https://pypi.org/project/pymarian/",
 }
 
 @inproceedings{cho-etal-2024-boteval,

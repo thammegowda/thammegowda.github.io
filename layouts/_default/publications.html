@@ -20,10 +20,13 @@
         {{ with .venue }}{{ . }}.{{ end }}
         {{ with .year }}{{ . }}.{{ end }}
         {{ with .url }}
-          <a href="{{ . }}" target="_blank" rel="noopener">[Link]</a>
+          <a href="{{ . }}" target="_blank" rel="noopener">[Paper]</a>
         {{ end }}
         {{ with .doi }}
           <a href="https://doi.org/{{ . }}" target="_blank" rel="noopener">[DOI]</a>
+        {{ end }}
+        {{ range .resources }}
+          <a href="{{ .url }}" target="_blank" rel="noopener">[{{ .label }}]</a>
         {{ end }}
         {{ $bibID := printf "bib-%s" .key }}
         <a href="#" onclick="event.preventDefault(); var el=document.getElementById('{{ $bibID }}'); el.style.display = el.style.display==='none'?'block':'none';">[BibTeX]</a>
