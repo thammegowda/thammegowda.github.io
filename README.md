@@ -5,14 +5,19 @@ Personal website built with [Hugo](https://gohugo.io/) and [PaperMod](https://gi
 ## Setup
 
 ```bash
-git clone --recurse-submodules git@github.com:thammegowda/thammegowda.github.io.git
+git clone git@github.com:thammegowda/thammegowda.github.io.git
 cd thammegowda.github.io
 
-# if cloned with submodules
-git submodule update --init --recursive
+# Initialize submodules and install Hugo Extended, Asciidoctor, Python, and PyYAML
+./setup.sh
 ```
 
-Requires: Hugo ≥0.146.0 (extended), asciidoctor, Python 3 + PyYAML.
+`setup.sh` supports macOS and Ubuntu; `make setup` is an equivalent wrapper. On
+macOS, install [Homebrew](https://brew.sh/) first; Ubuntu uses `apt`. Python
+dependencies are installed in a local `.venv`.
+
+Ubuntu installs the latest Hugo Extended release by default. To select a
+specific version, run `HUGO_VERSION=0.147.9 ./setup.sh`.
 
 ## Development
 

@@ -4,130 +4,139 @@ slug: "software"
 layout: "single"
 url: "/software/"
 ShowToc: false
+hideMeta: true
 ---
 
-Solving problems with math and computers is still my favourite kind of work.
-I started as a software engineer, moved into research, and now find myself writing more code again — partly because AI coding agents make it practical to explore harder, wider engineering problems in parallel.
-That has pulled me toward high-performance systems in modern C++ (C++23), CUDA/ROCm kernels, model runtimes, and tooling that turns research ideas into something concrete.
-I still care about the older virtues: readable code, tests, documentation, open-source tools, and permissive licenses.
+I build software where research meets real systems: model runtimes, data and training
+infrastructure, performance-critical libraries, and tools that make research easier to
+reproduce and deploy.
 
-I sometimes participate in [StackOverflow QA threads](https://stackoverflow.com/users/1506477/thamme-gowda).
+> This is the part of the work I was able to open source. The known unknowns live,
+> rather appropriately, in private repositories.
 
-Here are some of my selected projects:
+## Current Systems
 
----
+### WMT Model Compression: Benchmarking Deployable Systems
 
-## Tahoma: A C++ Playground for Learning
-My personal playground for learning modern GPU systems and experimenting with my own ideas for AI. It's a C++23 project (built on libTorch) where I tinker with training and inference for NMT, LLM, classification, and multimodal models. Current experiments include fused CUDA/ROCm kernels, faster GEMMs, memory-transfer optimizations, CUDA graphs, paged attention, continuous batching, multi-GPU synchronization over NCCL/RCCL rings, faster rollouts for RL training, and low-bit quantization.
+I lead the WMT Model Compression shared task, now in its second edition, and build
+the open evaluation infrastructure behind it. The WMT25 harness standardized offline
+Docker submissions; WMT26 advances to self-contained runnable systems with common
+install and inference contracts, sanity checks, reproducibility recipes, organizer-run
+execution on controlled H100 hardware, and Pareto analysis across translation quality,
+model footprint, GPU memory, and decoding speed.
 
-- Docs: [docs.gowda.ai/tahoma](https://docs.gowda.ai/tahoma/)
+The second edition received 22 runnable-system submissions. Its forthcoming findings
+report shows that precision alone does not determine efficiency: quantization becomes
+fast only when the serving runtime is designed to exploit it, and quality must remain
+part of the comparison.
 
----
+- [WMT26 shared task](https://www2.statmt.org/wmt26/model-compression.html)
+- [WMT26 findings report](/files/gowda-etal-2026-WMT26-modelzip-findings.pdf)
+- [WMT26 evaluation harness](https://github.com/thammegowda/wmt26-model-compression)
+- [WMT25 evaluation harness](https://github.com/thammegowda/wmt25-model-compression)
 
-## pigzpp: Fast Parallel Compression, Everywhere
-A clean-room C++23 rewrite of [pigz](https://zlib.net/pigz/) (parallel gzip) that grew into a multi-language compression library — Python, Go, Rust, and WebAssembly bindings over one accelerated core (zlib-ng / Intel ISA-L), plus a native ZIP container and a fast PNG codec. Highlights include up to 80× over Python's stdlib `gzip`, a projected ~12× reduction in BuildKit's layer-gzip stage after integration, and PNG encoding measured at 8.6× Pillow and 1.2× OpenCV — all using standard `gzip`/ZIP/PNG formats.
+### Tahoma: Low-Bit AI Systems in C++
 
-- Code: [github.com/thammegowda/pigzpp](https://github.com/thammegowda/pigzpp)
-- Posts: [Making Compression Faster](/posts/2026/07/fast-compression/) · [Built with AI agents](/posts/2026/03/pigzpp-with-agents/)
+Tahoma is a C++23 runtime and research platform for training and inference across language,
+multimodal, and classification models. Current work includes low-bit quantization,
+custom CUDA and ROCm kernels, paged attention, continuous batching, CUDA graphs,
+multi-GPU execution over NCCL/RCCL, and faster rollouts for reinforcement learning.
+The WMT26 evaluation tests TahomaMT's FP8 and INT4 paths against diverse participant
+systems, grounding kernel and runtime work in translation quality rather than throughput alone.
 
----
+- [Documentation](https://docs.gowda.ai/tahoma/)
+- [WMT26 system paper](/files/gowda-2026-wmt26modelzip-tahomamt.pdf)
+- [Technical write-up](/posts/2026/08/llm-fast-inference/)
 
-## PyMarian: Fast NMT & Evaluation in Python
-Python bindings to [Marian NMT](https://marian-nmt.github.io/) (C++) with Intel MKL and NVIDIA CUDA backends; up to 9.5x speedups and ~50% memory reduction versus PyTorch.
+### pigzpp: Fast Compression Across the Stack
 
-- Code: [github.com/marian-nmt/marian-dev](https://github.com/marian-nmt/marian-dev)
-- Installer: `pip install pymarian`
+A clean-room C++23 rewrite of [pigz](https://zlib.net/pigz/) that became a reusable
+compression core for C++, Python, Go, Rust, and WebAssembly. It supports standard
+gzip/zlib streams, native ZIP containers, and fast PNG encoding over zlib-ng and
+Intel ISA-L backends.
 
----
+- [Code](https://github.com/thammegowda/pigzpp)
+- [Paper](https://arxiv.org/abs/2608.24153)
+- [Benchmarks and design](/posts/2026/07/fast-compression/)
 
-## SotaStream: Streaming MT Training
-A streaming approach to machine translation training for extremely large datasets, with flexible on-the-fly sampling and augmentation.
+### PyMarian: Marian Inference and Evaluation from Python
 
-- Code: [github.com/marian-nmt/sotastream](https://github.com/marian-nmt/sotastream)
-- Installer: `pip install sotastream`
+Python bindings to [Marian NMT](https://marian-nmt.github.io/), connecting its optimized
+C++ engine and CPU/CUDA backends to Python workflows. PyMarian supports translation,
+COMET-style evaluation, notebooks, and prebuilt model applications while retaining
+the performance and memory advantages of Marian.
 
----
+- [Code](https://github.com/marian-nmt/marian-dev/tree/master/src/python)
+- [PyPI](https://pypi.org/project/pymarian/)
+- [EMNLP 2024 paper](https://aclanthology.org/2024.emnlp-demo.34/)
 
-## RTG: Reader Translator Generator
-Neural Machine Translation Toolkit.
+## Multilingual AI Infrastructure
 
-- Code: [github.com/isi-nlp/rtg-xt](https://github.com/isi-nlp/rtg-xt)
-- Docs: [isi-nlp.github.io/rtg/](https://isi-nlp.github.io/rtg/)
-- Installer: [pypi.org/project/rtg/](https://pypi.org/project/rtg/)
+### MTData: Reproducible Machine Translation Data
 
----
+MTData automates locating, downloading, parsing, caching, and citing parallel corpora.
+Its versioned recipes make datasets reproducible across experiments.
 
-## MTData: Machine Translation Data
-A tool that locates, downloads, and prepares parallel data for machine translation from many data sources.
+As a WMT General MT organizer from 2022 through 2026, I have maintained the official
+MTData setup for five
+consecutive editions: version-pinned recipe files and command-line workflows that let
+participants reconstruct the constrained-track training data. The published coverage grew
+from 11 WMT22 recipe IDs to 21 WMT26 recipes; later editions added parallel caching,
+compressed materialization, corpus statistics, and quality-estimation workflows.
 
-- Code: [github.com/thammegowda/mtdata](https://github.com/thammegowda/mtdata)
-- Installer+Docs: [pypi.org/project/mtdata/](https://pypi.org/project/mtdata/)
+- [Code](https://github.com/thammegowda/mtdata)
+- [PyPI](https://pypi.org/project/mtdata/)
+- [Documentation and dataset search](https://thammegowda.github.io/mtdata/)
+- WMT recipes: [2026](https://www2.statmt.org/wmt26/mtdata/) · [2025](https://www2.statmt.org/wmt25/mtdata/) · [2024](https://www2.statmt.org/wmt24/mtdata/) · [2023](https://www2.statmt.org/wmt23/mtdata/) · [2022](https://www.statmt.org/wmt22/mtdata/index.html)
 
----
+### NLLB Serve: Multilingual Translation as a Service
 
-## NLCodec: Natural Language CoDec
-A library to do coding-decoding such as Word, Character, and Byte-Pair-Encoding of natural language text.
+A web interface, REST API, and batch decoder for deploying Meta's No Language Left
+Behind models across 200 languages. It packages model loading, language handling,
+GPU execution, and interactive or programmatic translation behind a small interface.
 
-- Code: [github.com/isi-nlp/nlcodec/](https://github.com/isi-nlp/nlcodec/)
-- Installer+Docs: [pypi.org/project/nlcodec/](https://pypi.org/project/nlcodec/)
+- [Code](https://github.com/thammegowda/nllb-serve)
+- [PyPI](https://pypi.org/project/nllb-serve/)
 
----
+### RTG and NLCodec: Training, Inference, and Vocabularies
 
-## awkg: Python `awk`
-`awk` like line-processing tool with python as scripting language.
+[RTG](https://github.com/isi-nlp/rtg) is a PyTorch-based neural machine translation
+toolkit, and [NLCodec](https://github.com/isi-nlp/nlcodec) provides inspectable word,
+character, class, and BPE codecs with Python, CLI, and PySpark interfaces. Together
+with MTData, they formed the toolchain behind a many-to-English model spanning more
+than 500 source languages.
 
-- Code: [github.com/thammegowda/awkg](https://github.com/thammegowda/awkg)
-- Installer+Docs: [pypi.org/project/awkg/](https://pypi.org/project/awkg/)
+- [RTG documentation](https://isi-nlp.github.io/rtg/)
+- [NLCodec documentation](https://isi-nlp.github.io/nlcodec/)
+- [ACL 2021 paper](https://aclanthology.org/2021.acl-demo.37/)
 
----
+### SotaStream: Streaming Training Data
 
-## VirtChar: Virtual Characters
-Dialog systems that imitate characters from the popular TV show named F.R.I.E.N.D.S.
+A streaming data pipeline for large-scale machine translation training. SotaStream
+builds composable generator graphs for on-the-fly mixing, sampling, filtering, and
+augmentation, avoiding rigid preprocessing pipelines and unnecessary materialization
+of every experiment variant.
 
-- Code: [github.com/thammegowda/virtchar](https://github.com/thammegowda/virtchar)
-- Dataset: [github.com/thammegowda/dialog-data](https://github.com/thammegowda/dialog-data)
-- [Report](https://drive.google.com/file/d/1wfC3xS6MvT2_rvUoJG1DWfyOT2s9Ww_U/view?usp=sharing) and [Presentation](https://drive.google.com/file/d/1C5Vkb0VTj0WZDDWEemDJKJSaVNdMD7TT/view?usp=sharing)
+- [Code](https://github.com/marian-nmt/sotastream)
+- [Documentation](https://sotastream.readthedocs.io/)
+- [NLP-OSS 2023 paper](https://aclanthology.org/2023.nlposs-1.13/)
 
----
+## Earlier Foundations
 
-## JunkDetect: Junk Detector
-A tool to detect junk or not-junk text with support for 100 languages.
+### Sparkler: Distributed Web Crawling and Content Analysis
 
-- Code: [github.com/thammegowda/junkdetect](https://github.com/thammegowda/junkdetect)
-- Installer+Docs: [pypi.org/project/junkdetect/](https://pypi.org/project/junkdetect/)
+I created Sparkler at USC and designed its core architecture: an extensible web crawler
+built around Apache Spark, Kafka, Solr/Lucene, Apache Tika, and distributed JavaScript
+rendering. It combined scalable crawling, fault tolerance, near-real-time indexing,
+content analysis, and a plugin system. I later handed maintenance to the project team
+when I shifted focus to my Ph.D.
 
----
+- [Code](https://github.com/USCDataScience/sparkler)
 
-## Sparkler: Spark Crawler
-A large scale web crawler on Apache Spark, with Apache Solr backend for crawler database.
+## More on GitHub
 
-- Code: [github.com/uscdatascience/sparkler](https://github.com/uscdatascience/sparkler)
-- Docs: [github.com/USCDataScience/sparkler/wiki/sparkler-0.1](https://github.com/USCDataScience/sparkler/wiki/sparkler-0.1)
+These are selected projects, not an exhaustive catalog. Smaller experiments, research
+artifacts, teaching material, and earlier systems are available in my
+[complete list of public GitHub repositories](https://github.com/thammegowda?tab=repositories).
 
----
-
-## Auto Extractor
-HTML web page clustering tool based on DOM structure and CSS style similarity.
-
-- Code: [github.com/USCDataScience/autoextractor](https://github.com/USCDataScience/autoextractor)
-- Docs: [github.com/USCDataScience/autoextractor/wiki](https://github.com/USCDataScience/autoextractor/wiki)
-- Paper: [ieeexplore.ieee.org/abstract/document/7785739](https://ieeexplore.ieee.org/abstract/document/7785739)
-
----
-
-## Supervising UI
-A simple web UI for labelling images to be used for image recognition.
-
-- Code: [github.com/USCDataScience/supervising-ui](https://github.com/USCDataScience/supervising-ui)
-
----
-
-## More Tools
-- CoreNLP + Apache Tika: [github.com/thammegowda/tika-ner-corenlp](https://github.com/thammegowda/tika-ner-corenlp)
-  - Contributed to Apache Tika: [TikaAndNER](https://cwiki.apache.org/confluence/display/TIKA/TikaAndNER)
-- Keras models deployment on JVM using Deeplearning4J: [github.com/USCDataScience/dl4j-kerasimport-examples](https://github.com/USCDataScience/dl4j-kerasimport-examples)
-  - Contributed to Apache Tika: [PR #125](https://github.com/apache/tika/pull/125)
-- Tensorflow model deployment on JVM using GRPC: [github.com/thammegowda/tensorflow-grpc-java](https://github.com/thammegowda/tensorflow-grpc-java)
-- Image Recognition at large scale using Apache Spark: [github.com/thammegowda/tika-dl4j-spark-imgrec](https://github.com/thammegowda/tika-dl4j-spark-imgrec)
-- Document Similarity using Apache Spark and Solr: [github.com/thammegowda/solr-similarity](https://github.com/thammegowda/solr-similarity)
-- Keyboard layout map of OSX for Kannada (my native language): [github.com/thammegowda/kannada-osx-keylayout](https://github.com/thammegowda/kannada-osx-keylayout)
+I also participate in [Stack Overflow Q&A](https://stackoverflow.com/users/1506477/thamme-gowda).

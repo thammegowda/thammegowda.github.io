@@ -9,6 +9,11 @@ SCRIPT_DIR = Path(__file__).parent
 ROOT = SCRIPT_DIR.parent
 BIB_FILE = ROOT / "static" / "files" / "pubs.bib"
 OUT_FILE = ROOT / "data" / "publications.yaml"
+RESOURCE_FIELDS = (
+    ('project', 'Project'),
+    ('code', 'Code'),
+    ('docs', 'Docs'),
+)
 
 
 def parse_bib(text: str) -> list[dict]:
@@ -77,7 +82,7 @@ def parse_bib(text: str) -> list[dict]:
         authors = entry.get('author', '')
         title = entry.get('title', '')
         year = entry.get('year', '')
-        venue = entry.get('booktitle', entry.get('journal', ''))
+        venue = entry.get('booktitle', entry.get('journal', entry.get('note', '')))
         url = entry.get('url', '')
         doi = entry.get('doi', '')
 
@@ -86,6 +91,11 @@ def parse_bib(text: str) -> list[dict]:
         entry['venue'] = venue
         entry['url'] = url
         entry['doi'] = doi
+        entry['resources'] = [
+            {'label': label, 'url': entry[field]}
+            for field, label in RESOURCE_FIELDS
+            if entry.get(field)
+        ]
 
         # Reconstruct BibTeX for display (use original body text)
         entry['bibtex'] = f'@{entry_type}{{{key},\n{body.strip()}\n}}'
