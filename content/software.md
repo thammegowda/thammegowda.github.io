@@ -25,7 +25,7 @@ install and inference contracts, sanity checks, reproducibility recipes, organiz
 execution on controlled H100 hardware, and Pareto analysis across translation quality,
 model footprint, GPU memory, and decoding speed.
 
-The second edition received 22 runnable-system submissions. Its forthcoming findings
+The second edition received 41 participant-submitted variants from 13 teams. Its forthcoming findings
 report shows that precision alone does not determine efficiency: quantization becomes
 fast only when the serving runtime is designed to exploit it, and quality must remain
 part of the comparison.
