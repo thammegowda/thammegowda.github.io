@@ -6,6 +6,13 @@ pagination:
   pagerSize: 15
 defaultContentLanguage: en
 
+module:
+  mounts:
+    - source: static
+      target: static
+    - source: apps/refresh/dist
+      target: static/app/refresh
+
 # Security: allow asciidoctor
 security:
   exec:
@@ -114,3 +121,7 @@ menu:
       name: Notes
       url: /notes/
       weight: 5
+    - identifier: refresh
+      name: refresh
+      url: /app/refresh/
+      weight: 6

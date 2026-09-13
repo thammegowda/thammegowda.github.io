@@ -1,0 +1,12 @@
+= Linear Algebra
+
+== Keep in mind
+
+=== Columns describe the map
+For a two-by-two matrix A, the first column is where the unit vector (1, 0) lands; the second column is where (0, 1) lands. Together they determine the transformation of every vector.
+
+=== Determinant measures signed area
+For A = [[a, b], [c, d]], det(A) = ad - bc. Its absolute value is the area scale factor. A negative determinant reverses orientation; a zero determinant collapses the plane to a line or point.
+
+=== Linearity preserves combinations
+A(u + v) = Au + Av, and A(kv) = kAv. Rotations, shears, scalings, and reflections about lines through the origin are linear transformations. Translation is not.
