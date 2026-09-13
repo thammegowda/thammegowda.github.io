@@ -1,4 +1,4 @@
-.PHONY: help setup build serve clean publish data
+.PHONY: help setup build serve clean publish data apps
 
 # Hugo Extended is required by the PaperMod theme (SCSS asset pipeline).
 # Ubuntu setup auto-detects the latest Hugo; override with e.g.
@@ -18,13 +18,16 @@ data: ## Parse pubs.bib into Hugo data file
 	@PYTHON="$(PYTHON)" VENV="$(VENV)" ./setup.sh --python-deps
 	"$(VENV)/bin/python" scripts/parse_bib.py
 
-build: data ## Build the site for production
+apps: ## Build self-contained browser apps (requires Node.js and Asciidoctor)
+	cd apps/refresh && npm ci && npm test && npm run build
+
+build: data apps ## Build the site for production
 	hugo --gc --minify --baseURL "https://gowda.ai/"
 
-serve: data ## Start development server with live reload
+serve: data apps ## Start development server with live reload
 	hugo server --buildDrafts --buildFuture --bind 0.0.0.0
 
-publish: data ## Build for production (same as build)
+publish: data apps ## Build for production (same as build)
 	hugo --gc --minify --baseURL "https://gowda.ai/"
 
 clean: ## Remove generated files

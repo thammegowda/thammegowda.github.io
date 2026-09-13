@@ -43,6 +43,10 @@ chapters/
   content.adoc           Prose and the Vue mount container
   index.js               Vue mount and chapter stylesheet import
   Calculus.vue           Reactive controls, computed values, D3 lifecycle
+  DerivativeComposition.vue  Addition, product, and chain-rule lab
+  composition.js         Composite values, slopes, and rule contributions
+  composition-plot.js    Linked local plots and tangent lines
+  composition.test.mjs   Rule checks against finite differences
   presentation.js        Numeric formatting and activation line styles
    plot.js                D3 renderer with explicit inputs
    math.js                Function families, derivatives, integrals, sampling
@@ -150,7 +154,38 @@ Moving those controls preserves the zoom; changing the function, coefficient,
 power, or comparison mode resets it. Zoom is local view state, not part of the
 shared URL. The two lower plots retain their own scales and do not zoom.
 
+In Derivative composition, all three plots share zoom and pan. Their default
+input windows span 10 units, centered at their respective evaluation inputs.
+The shared toolbar, wheel/pinch gestures on any plot, dragging, and keyboard
+`+`/`-`, arrows, and `0` update all views together. Zoom ranges from 0.25x to 32x.
+Pan offsets are normalized to each plot's dimensions, so synchronization survives
+desktop/mobile layout changes. Each plot retains its own fitted base y-scale;
+chain mode's outer plot uses u rather than x as its input.
+
+Changing the evaluation point preserves zoom/pan. Changing a rule, function, or
+function parameter resets the view. The view-reset button preserves function
+choices and the evaluation point. Curves are freshly sampled from the equations
+over the visible domain on every redraw, with at least 500 sample intervals.
+The polylines approximate the equations; extreme oscillations can require further
+zooming to resolve. Displayed derivative values use analytic derivative rules,
+not slopes estimated from the drawn line segments.
+
 ## Mathematical conventions
+
+The calculus chapter has two tabs: Function lab and Derivative composition.
+The composition lab independently selects f and g, with coefficients for
+constant/linear/power families and integer powers from 1 to 4. It includes ten
+smooth, everywhere-defined function families; logarithms, reciprocals, and ReLU
+are intentionally excluded here so poles and kinks do not invalidate rule factors.
+Those functions remain available in the original Function lab.
+
+Addition and product show two signed contributions and their sum on a common
+bar scale. Chain mode displays x -> g(x) -> f(g(x)) and multiplies f'(g(x)) by
+g'(x). Swapping f and g also swaps their parameters. At the default view, each plot
+is centered on its evaluation input with independently fitted axes, so tangent angles are not
+directly comparable between plots; use the displayed numerical slopes.
+Composition settings and the selected tab persist while switching tabs, but are
+local to the current page session. Existing Function lab URL sharing is unchanged.
 
 - `log(x)` means the natural logarithm, with real domain `x > 0`.
 - Powers use integer exponents from 1 to 6; coefficients range from -3 to 3.

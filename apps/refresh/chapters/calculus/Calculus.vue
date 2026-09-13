@@ -6,6 +6,15 @@ import { activationKeys, createModel, families } from './math.js';
 import { defaultState, readState } from './state.js';
 import { format, activationDashes } from './presentation.js';
 import { renderPlot } from './plot.js';
+import DerivativeComposition from './DerivativeComposition.vue';
+
+const activeLab = ref('functions');
+function switchLab(event) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  activeLab.value = event.key === 'Home' ? 'functions' : event.key === 'End' ? 'composition' : activeLab.value === 'functions' ? 'composition' : 'functions';
+  event.currentTarget.querySelector(`#tab-${activeLab.value}`).focus();
+}
 
 const state = reactive(readState(location.hash));
 const exponentInput = ref(state.exponent);
@@ -97,7 +106,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="explorer">
+  <div class="calculus-tabs" role="tablist" aria-label="Calculus labs" @keydown="switchLab">
+    <button id="tab-functions" role="tab" aria-controls="panel-functions" :aria-selected="activeLab === 'functions'" :tabindex="activeLab === 'functions' ? 0 : -1" @click="activeLab = 'functions'">Function lab</button>
+    <button id="tab-composition" role="tab" aria-controls="panel-composition" :aria-selected="activeLab === 'composition'" :tabindex="activeLab === 'composition' ? 0 : -1" @click="activeLab = 'composition'">Derivative composition</button>
+  </div>
+  <div v-show="activeLab === 'functions'" id="panel-functions" role="tabpanel" aria-labelledby="tab-functions" class="explorer">
     <aside class="controls" aria-label="Function and interval controls">
       <div class="controls-heading">
         <h2>Function lab</h2>
@@ -162,4 +175,5 @@ onBeforeUnmount(() => {
       <p id="math-status" class="math-status" :class="{ invalid }" role="status" aria-live="polite">{{ status }}</p>
     </div>
   </div>
+  <div v-show="activeLab === 'composition'" id="panel-composition" role="tabpanel" aria-labelledby="tab-composition"><DerivativeComposition /></div>
 </template>

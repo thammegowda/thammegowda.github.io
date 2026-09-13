@@ -1,4 +1,76 @@
 .eyebrow { font-size: 9px; font-weight: bold; text-transform: uppercase; margin: 0 0 5px; color: var(--muted); }
+.calculus-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); background: white; padding: 0 12px; }
+.calculus-tabs button { border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); min-height: 40px; padding: 8px 12px; font-size: 12px; }
+.calculus-tabs button[aria-selected='true'] { color: var(--green); border-bottom-color: var(--green); }
+.composition-lab { min-width: 0; }
+.composition-header { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--line); }
+.composition-header h2 { margin: 0 auto 0 0; font-size: 15px; }
+.rule-switch { display: flex; margin: 0; border: 1px solid #b7c7bf; padding: 0; border-radius: 4px; overflow: hidden; }
+.rule-switch label { position: relative; cursor: pointer; }
+.rule-switch label + label { border-left: 1px solid #b7c7bf; }
+.rule-switch input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; }
+.rule-switch span { display: block; padding: 8px 14px; font-size: 12px; }
+.rule-switch input:checked + span { background: var(--green); color: white; }
+.rule-switch input:focus-visible + span { outline: 2px solid #e2b24f; outline-offset: -3px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.composition-inputs { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 24px; padding: 16px 20px; background: #f0f4f1; }
+.function-definition { border: 0; margin: 0; padding: 0; min-width: 0; }
+.function-definition legend { font: bold 18px Georgia, serif; padding: 0 0 10px; }
+.composition-inputs label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.composition-inputs output { margin-left: auto; font-variant-numeric: tabular-nums; }
+.composition-parameter { margin-top: 12px; }
+.composition-point { padding-top: 28px; min-width: 0; }
+.swap-functions { display: inline-flex; align-items: center; gap: 8px; border: 1px solid #b7c7bf; border-radius: 4px; background: white; padding: 7px 10px; margin-top: 20px; font-size: 12px; color: var(--ink); }
+.composition-equation { padding: 16px 20px; border-block: 1px solid var(--line); }
+.composition-equation h3 { font: normal 22px Georgia, serif; margin: 0 0 8px; overflow-wrap: anywhere; }
+.composition-equation p { margin: 0; font: 18px/1.5 Georgia, serif; color: var(--pink); overflow-wrap: anywhere; }
+.composition-plots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.composition-plots section { min-width: 0; }
+.composition-plots section + section { border-left: 1px solid var(--line); }
+.composition-plot-heading, .composition-plot-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 10px 16px; }
+.composition-plot-heading h3 { font: normal 20px Georgia, serif; margin: 0; }
+.composition-plot-heading output { font: 18px Georgia, serif; }
+.composition-plot-caption { color: var(--muted); font-size: 11px; }
+.composition-chart { height: 270px; width: 100%; }
+.composition-chart svg { width: 100%; height: 100%; display: block; }
+.composition-chart svg { cursor: grab; touch-action: none; }
+.composition-chart svg:active { cursor: grabbing; }
+.composition-chart svg:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
+.composition-view-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 8px 20px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.composition-view-controls output { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.derivative-breakdown { padding: 16px 20px; border-top: 1px solid var(--line); }
+.derivative-breakdown h3 { font-size: 13px; margin: 0 0 16px; }
+.contribution-bars { display: grid; gap: 12px; max-width: 850px; }
+.contribution-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 100px; align-items: center; gap: 12px; font: 16px Georgia, serif; }
+.contribution-row output { text-align: right; font-variant-numeric: tabular-nums; }
+.contribution-track { position: relative; height: 18px; background: #edf1ee; }
+.contribution-track::before { content: ''; position: absolute; left: 50%; top: -3px; bottom: -3px; border-left: 1px solid #83958c; }
+.contribution-track > div { position: absolute; height: 100%; }
+.composition-calculation { font: 17px/1.5 Georgia, serif; margin: 20px 0 0; overflow-wrap: anywhere; }
+.chain-flow, .chain-factors { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 16px; align-items: center; padding: 16px 20px; background: #f0f4f1; }
+.chain-flow > div, .chain-factors > div { display: grid; gap: 8px; min-width: 0; }
+.chain-flow span, .chain-factors span { font-size: 12px; color: var(--muted); }
+.chain-flow output, .chain-factors output { font: 20px Georgia, serif; overflow-wrap: anywhere; }
+.chain-factors { padding: 0; background: none; max-width: 850px; }
+@media (max-width: 900px) {
+  .composition-plots { grid-template-columns: 1fr; }
+  .composition-plots section + section { border-left: 0; border-top: 1px solid var(--line); }
+  .composition-chart { max-width: 650px; margin-inline: auto; }
+}
+@media (max-width: 640px) {
+  .composition-header { padding: 12px; gap: 10px; }
+  .composition-header h2 { width: 100%; }
+  .composition-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 12px; }
+  .composition-point { grid-column: 1 / -1; padding-top: 0; }
+  .composition-equation, .derivative-breakdown { padding: 14px 12px; }
+  .composition-equation h3 { font-size: 20px; }
+  .composition-equation p { font-size: 16px; }
+  .contribution-row { grid-template-columns: 90px minmax(0, 1fr) 72px; font-size: 13px; gap: 8px; }
+  .chain-flow, .chain-factors { gap: 8px; }
+  .chain-flow { padding: 14px 12px; }
+  .chain-flow output, .chain-factors output { font-size: 16px; }
+  .chain-flow span, .chain-factors span { font-size: 11px; }
+}
 .explorer { display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: 0; align-items: stretch; }
 .controls { padding: 12px; border-right: 1px solid var(--line); background: #f0f4f1; }
 .controls-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
