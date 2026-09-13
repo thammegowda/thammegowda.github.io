@@ -22,8 +22,11 @@ test('publishing another chapter adds its link and navigation without subject br
   assert.match(html, /href="\.\/example.html"/);
   assert.match(html, /A &amp; B/);
   assert.match(html, /&lt;example&gt;/);
-  assert.match(renderChapterNavigation(extended, 'calculus'), /rel="next" href="\.\/example.html"/);
-  assert.match(renderChapterNavigation(extended, 'example'), /rel="prev" href="\.\/calculus.html"/);
+  const lastPublished = chapters.filter((chapter) => chapter.status === 'published').at(-1);
+  assert.match(renderChapterNavigation(extended, lastPublished.id), /rel="next" href="\.\/example.html"/);
+  assert.ok(renderChapterNavigation(extended, 'example').includes(`rel="prev" href="./${lastPublished.id}.html"`));
+  assert.match(renderChapterNavigation(chapters, 'calculus'), /rel="next" href="\.\/linear-algebra.html"/);
+  assert.match(renderChapterNavigation(chapters, 'linear-algebra'), /rel="prev" href="\.\/calculus.html"/);
   assert.equal(renderChapterNavigation(extended, 'probability'), '');
 });
 

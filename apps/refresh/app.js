@@ -13,8 +13,11 @@ export const chapters = [
 	{
 		id: 'linear-algebra',
 		title: 'Linear Algebra',
-		description: 'Vectors, matrices, linear transformations, and eigenspaces.',
-		status: 'planned',
+		lessonTitle: 'Matrix operations & backprop',
+		description: 'Dot products, matrix multiplication, affine layers, and their backward passes.',
+		status: 'published',
+		interactive: true,
+		reference: '_keep_in_mind',
 	},
 	{
 		id: 'probability',

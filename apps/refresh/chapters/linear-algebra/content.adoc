@@ -1,12 +1,12 @@
 = Linear Algebra
 
+++++
+<div data-linear-algebra></div>
+<noscript>Enable JavaScript for the matrix lab. The reference notes below remain available.</noscript>
+++++
+
 == Keep in mind
 
-=== Columns describe the map
-For a two-by-two matrix A, the first column is where the unit vector (1, 0) lands; the second column is where (0, 1) lands. Together they determine the transformation of every vector.
-
-=== Determinant measures signed area
-For A = [[a, b], [c, d]], det(A) = ad - bc. Its absolute value is the area scale factor. A negative determinant reverses orientation; a zero determinant collapses the plane to a line or point.
-
-=== Linearity preserves combinations
-A(u + v) = Au + Av, and A(kv) = kAv. Rotations, shears, scalings, and reflections about lines through the origin are linear transformations. Translation is not.
+* *Shapes:* `X @ W + b` produces predictions with the same shape as targets `Y`.
+* *Learning:* Each SGD step samples one example and updates `W` and `b` by subtracting `learning_rate * gradient`. The data stays fixed.
+* *Progress:* `loss_history` records full-data MSE before training and after each of ten updates. Lower is better, but individual SGD steps can increase it.

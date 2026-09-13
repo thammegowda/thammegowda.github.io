@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { build } from 'esbuild';
 import { parse, compileScript } from '@vue/compiler-sfc';
+import { loadPyodide } from 'pyodide';
+import { createHash } from 'node:crypto';
 import { chapters, escapeHtml, renderContents, renderChapterNavigation, validateChapters } from './app.js';
+import { functionCode } from './chapters/calculus/expressions.js';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const destination = path.join(root, 'dist');
@@ -21,6 +24,7 @@ const bundles = await build({
   ]),
   outdir: destination,
   bundle: true,
+  loader: { '.py': 'text', '.py.in': 'text' },
   plugins: [{
     name: 'vue',
     setup(builder) {
@@ -60,12 +64,39 @@ for (const chapter of published) {
   const assets = (chapter.interactive ? `<script type="module" src="./${script}"></script>` : '')
     + (stylesheet ? `<link rel="stylesheet" href="./${stylesheet}">` : '');
   const navigation = `<a class="contents-link" href="./">Contents</a>${chapter.reference ? `<a class="reference-link" href="#${escapeHtml(chapter.reference)}">Reference</a>` : ''}`;
-  const html = renderPage({ title: escapeHtml(chapter.title), description: escapeHtml(chapter.description), content, assets, navigation, pagination: renderChapterNavigation(chapters, chapter.id) });
+  const html = renderPage({ title: escapeHtml(chapter.title), lessonTitle: escapeHtml(chapter.lessonTitle ?? ''), description: escapeHtml(chapter.description), content, assets, navigation, pagination: renderChapterNavigation(chapters, chapter.id) });
   await writeFile(path.join(destination, `${chapter.id}.html`), html);
   await cp(source, path.join(destination, `${chapter.id}.adoc`));
 }
 await writeFile(path.join(destination, 'index.html'), renderPage({ title: 'Contents', description: 'refresh: mathematics and statistics, chapter by chapter.', content: renderContents(chapters) }));
 await cp(path.join(root, 'style.css'), path.join(destination, 'style.css'));
+const pythonDirectory = path.join(destination, 'python');
+await mkdir(pythonDirectory, { recursive: true });
+await cp(path.join(root, 'python/worker.js'), path.join(pythonDirectory, 'worker.js'));
+const runtimeDirectory = path.dirname(fileURLToPath(import.meta.resolve('pyodide')));
+const deployedRuntime = path.join(destination, 'pyodide');
+await mkdir(deployedRuntime, { recursive: true });
+const runtime = await loadPyodide();
+await runtime.loadPackage('numpy');
+const lock = JSON.parse(await readFile(path.join(runtimeDirectory, 'pyodide-lock.json'), 'utf8'));
+const packageNames = new Set();
+function includePackage(name) {
+  if (packageNames.has(name)) return;
+  packageNames.add(name);
+  for (const dependency of lock.packages[name].depends) includePackage(dependency);
+}
+includePackage('numpy');
+for (const filename of ['pyodide.mjs', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json']) {
+  await cp(path.join(runtimeDirectory, filename), path.join(deployedRuntime, filename));
+}
+for (const name of packageNames) {
+  const entry = lock.packages[name];
+  const wheel = await readFile(path.join(runtimeDirectory, entry.file_name));
+  if (createHash('sha256').update(wheel).digest('hex') !== entry.sha256) throw new Error(`Invalid package checksum: ${name}`);
+  await writeFile(path.join(deployedRuntime, entry.file_name), wheel);
+}
+await cp(path.join(root, 'chapters/linear-algebra/lesson.py'), path.join(destination, 'linear-algebra.py'));
+await writeFile(path.join(destination, 'calculus.py'), functionCode(await readFile(path.join(root, 'chapters/calculus/lesson.py.in'), 'utf8'), 'power'));
 const notices = [];
 const modules = path.join(root, 'node_modules');
 for (const entry of await readdir(modules, { withFileTypes: true })) {

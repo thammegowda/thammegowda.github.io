@@ -28,6 +28,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .reference-link { margin-left: auto; font-size: 12px; }
 .page-navigation { margin-left: auto; display: flex; align-items: center; gap: 18px; font-size: 12px; }
 .site-header h1 { min-width: 0; overflow-wrap: anywhere; }
+.lesson-title { display: inline-block; margin-left: 16px; color: var(--muted); font-weight: normal; }
+.lesson-title:empty { display: none; }
 .wordmark, .page-navigation { flex-shrink: 0; }
 .book-contents { max-width: 940px; padding: 44px 28px 64px; margin: auto; }
 .book-heading { padding-bottom: 34px; }
@@ -68,6 +70,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   .page-navigation { gap: 12px; }
   .site-header { padding-inline: 10px; gap: 10px; }
   .site-header h1 { padding-left: 10px; }
+  .lesson-title { display: block; margin-left: 0; margin-top: 3px; }
   .wordmark { font-size: 17px; }
   .sect1 > .sectionbody { grid-template-columns: 1fr; gap: 16px; }
   .site-footer { font-size: 10px; }
