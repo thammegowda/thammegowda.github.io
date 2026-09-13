@@ -1,10 +1,14 @@
+import defaultDriver from './runner.py';
+
 export function createPythonRunner() {
   let worker;
+  let loadedDriver;
   let pending;
   let sequence = 0;
   function stop(message = 'Execution stopped. Run again to restart Python.') {
     worker?.terminate();
     worker = undefined;
+    loadedDriver = undefined;
     if (pending) {
       clearTimeout(pending.timer);
       pending.reject(new Error(message));
@@ -42,7 +46,8 @@ export function createPythonRunner() {
           if (message.type === 'error') current.reject(new Error(message.error));
           else current.resolve(message.output);
         };
-        worker.postMessage({ id, driver, payload });
+        worker.postMessage({ id, driver: loadedDriver === driver ? undefined : driver, persistent: driver === defaultDriver, payload });
+        loadedDriver = driver;
       } catch (error) {
         stop(error.message);
       }

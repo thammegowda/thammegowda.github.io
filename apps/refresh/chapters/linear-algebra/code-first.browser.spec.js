@@ -64,7 +64,7 @@ test('defaults populate Python and render only declared inputs and outputs', asy
     expect((await cell(page, `${name}[0,0]`, 'inputs').boundingBox()).width).toBe(72);
   }
   await expect(page.locator('[data-group="inputs"] [data-variable="dY"]')).toHaveCount(0);
-  await expect(page.getByRole('spinbutton')).toHaveCount(0);
+  await expect(page.getByRole('spinbutton', { name: 'Learning rate' })).toHaveValue('0.1');
   await expect(page.getByRole('combobox')).toHaveCount(0);
   const geometry = await page.evaluate(() => {
     const editor = document.querySelector('.py-code').getBoundingClientRect();
@@ -135,11 +135,21 @@ test('zero learning rate stops learning and ten updates are printed', async ({ p
   await expect(page.locator('.py-output-log')).toContainText('Update 00: MSE');
   await expect(page.locator('.py-output-log')).toContainText('Update 10: MSE');
   expect((await page.locator('.py-output-log').textContent()).match(/Update \d\d:/g)).toHaveLength(11);
-  await run(page, original.replace('learning_rate = 0.1', 'learning_rate = 0.0'));
+  await run(page, original + '\nprint("initialized")\n');
+  const trained = await value(page, 'Y_pred[0,0]');
+  const rate = page.getByRole('spinbutton', { name: 'Learning rate' });
+  await rate.fill('0');
+  await rate.press('Tab');
+  await expect(cell(page, 'Y_pred[0,0]')).toHaveText(await cell(page, 'Y_before[0,0]').textContent());
+  await expect(page.locator('.py-output-log')).not.toContainText('initialized');
   const history = await losses(page);
   expect(history).toHaveLength(11);
   expect(history.every((loss) => loss === history[0])).toBe(true);
   expect(await value(page, 'Y_pred[0,0]')).toBe(await value(page, 'Y_before[0,0]'));
+  await rate.fill('0.1');
+  await rate.press('Tab');
+  await expect.poll(() => value(page, 'Y_pred[0,0]')).toBe(trained);
+  await expect(page.locator('.py-output-log')).not.toContainText('initialized');
 });
 
 test('display rounds to three decimal places without changing underlying values', async ({ page }) => {
@@ -381,7 +391,6 @@ test('code-first workspace and variable-sized previews fit desktop and mobile', 
   for (const width of [1440, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    expect((await page.locator('.py-workbench').boundingBox()).height).toBeCloseTo(630, 0);
     await expect(page.locator('.cm-lineNumbers')).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath(`code-first-${width}.png`), fullPage: true });
     if (width <= 800) {

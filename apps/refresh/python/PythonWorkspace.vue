@@ -31,6 +31,9 @@ let resizing = null;
 let disposed = false;
 let scheduledSource = null;
 let runTimer = null;
+let revision = 0;
+let liveSource = null;
+let liveParameters = null;
 
 watchEffect(() => emit('state', { source: source.value, result: result.value, preserveView: preserveView.value, busy: busy.value, stale: stale.value, error: error.value, modified: source.value !== props.defaultCode }));
 
@@ -44,7 +47,12 @@ function scheduleRun() {
     if (submitted !== null && submitted === source.value) execute({ preserveView: true });
   }, 0);
 }
-function updateSource(nextSource) {
+function updateSource(nextSource, parameters = null) {
+  if (nextSource === source.value && !error.value) return;
+  if (parameters && liveSource === source.value && liveParameters && Object.keys(parameters).every(name => Object.hasOwn(liveParameters, name) && Number.isFinite(parameters[name]))) {
+    liveParameters = { ...liveParameters, ...parameters };
+  } else liveParameters = null;
+  liveSource = nextSource;
   source.value = nextSource;
   scheduledSource = nextSource;
   scheduleRun();
@@ -63,27 +71,45 @@ defineExpose({ updateSource });
 async function execute(options = {}) {
   if (busy.value || disposed) return;
   const submittedCode = source.value;
+  const updating = options.preserveView && liveParameters && liveSource === submittedCode;
+  const payload = updating ? { parameters: { ...liveParameters }, revision } : { code: submittedCode, revision: ++revision };
+  if (!updating) liveParameters = null;
   busy.value = true;
   error.value = '';
   output.value = [];
   try {
-    const response = await runner.run(props.driver, { code: submittedCode }, (state) => { runtimeState.value = state; }, (entry) => {
+    const response = await runner.run(props.driver, payload, (state) => { runtimeState.value = state; }, (entry) => {
       if (disposed) return;
       const previous = output.value.at(-1);
       if (previous?.stream === entry.stream) previous.text += entry.text;
       else output.value.push(entry);
     });
     if (disposed) return;
-    if (source.value !== submittedCode) {
+    if (source.value !== submittedCode && !(updating && liveParameters && liveSource === source.value)) {
       runtimeState.value = 'Code changed during run; run the current draft';
       return;
     }
-    result.value = response;
+    let plots = response.plots ?? result.value?.plots ?? [];
+    if (response.plotUpdates) {
+      plots = plots.map(plot => {
+        const update = response.plotUpdates.find(update => update.title === plot.title);
+        return update ? { ...plot, series: plot.series.map(series => {
+          const change = update.series.find(change => change.name === series.name);
+          return change ? { ...series, ...change } : series;
+        }) } : plot;
+      });
+    }
+    result.value = { ...response, plots };
+    if (!updating) {
+      liveSource = submittedCode;
+      liveParameters = Object.keys(response.parameters ?? {}).length ? response.parameters : null;
+    }
     preserveView.value = options.preserveView === true;
     appliedCode.value = submittedCode;
     runtimeState.value = 'Python + NumPy ready';
   } catch (failure) {
     if (!disposed) {
+      liveParameters = null;
       error.value = failure.message;
       appliedCode.value = null;
       editorTab.value = 'output';

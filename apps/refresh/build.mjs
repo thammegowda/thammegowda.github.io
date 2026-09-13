@@ -96,6 +96,7 @@ for (const name of packageNames) {
   await writeFile(path.join(deployedRuntime, entry.file_name), wheel);
 }
 await cp(path.join(root, 'chapters/linear-algebra/lesson.py'), path.join(destination, 'linear-algebra.py'));
+await cp(path.join(root, 'chapters/trigonometry/lesson.py'), path.join(destination, 'trigonometry.py'));
 await writeFile(path.join(destination, 'calculus.py'), functionCode(await readFile(path.join(root, 'chapters/calculus/lesson.py.in'), 'utf8'), 'power'));
 const notices = [];
 const modules = path.join(root, 'node_modules');

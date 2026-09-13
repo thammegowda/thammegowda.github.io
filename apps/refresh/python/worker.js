@@ -1,6 +1,9 @@
 import { loadPyodide } from '../pyodide/pyodide.mjs';
 
 let ready;
+let currentDriver;
+let driverGlobals;
+let dispatch;
 self.onmessage = async ({ data: request }) => {
   let initialized = false;
   try {
@@ -16,12 +19,24 @@ self.onmessage = async ({ data: request }) => {
     const runtime = await ready;
     initialized = true;
     self.postMessage({ id: request.id, type: 'running' });
-    const globals = runtime.toPy({ payload: JSON.stringify(request.payload) });
-    globals.set('emit_output', (stream, text) => {
+    currentDriver = request.driver ?? currentDriver;
+    const emit = (stream, text) => {
       self.postMessage({ id: request.id, type: 'output', stream, text });
-    });
+    };
+    if (request.persistent) {
+      if (!dispatch) {
+        driverGlobals = runtime.toPy({});
+        runtime.runPython(currentDriver, { globals: driverGlobals });
+        dispatch = driverGlobals.get('run_request');
+      }
+      const output = dispatch(JSON.stringify(request.payload), emit);
+      self.postMessage({ id: request.id, type: 'result', output: JSON.parse(output) });
+      return;
+    }
+    const globals = runtime.toPy({ payload: JSON.stringify(request.payload) });
+    globals.set('emit_output', emit);
     try {
-      const output = runtime.runPython(request.driver, { globals });
+      const output = runtime.runPython(currentDriver, { globals });
       self.postMessage({ id: request.id, type: 'result', output: JSON.parse(output) });
     } finally {
       globals.destroy();

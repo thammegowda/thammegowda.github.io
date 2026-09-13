@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { runPython } from './runtime-fixture.mjs';
+import { runPython, createPythonSession } from './runtime-fixture.mjs';
 
 const code = await readFile(new URL('../chapters/linear-algebra/lesson.py', import.meta.url), 'utf8');
 const run = (source = code, emit) => runPython(source, emit);
@@ -149,6 +149,74 @@ test('fresh namespaces and explicit exports hide intermediate values', () => {
   const response = run('print("secret" in globals())\nintermediate = 42\nINPUTS = {}\nOUTPUTS = {"Answer": intermediate}');
   assert.equal(response.stdout, 'False\n');
   assert.deepEqual(response.outputs.map((entry) => entry.name), ['Answer']);
+});
+
+test('live sessions retain initialization, omit static plots, and invalidate stale or failed updates', () => {
+  const session = createPythonSession();
+  const code = `
+print("initialize")
+PARAMETERS = {"value": 1}
+history = []
+def update(value):
+    history.append(value)
+    if value < 0:
+        raise ValueError("negative value")
+    return {"INPUTS": {}, "OUTPUTS": {"value": value, "calls": len(history)}}
+globals().update(update(**PARAMETERS))
+PLOTS = {"Static": {"line": [[0, 0], [1, 1]]}}
+`;
+  try {
+    const initial = session.run({ code, revision: 1 });
+    assert.equal(initial.stdout, 'initialize\n');
+    assert.equal(initial.plots.length, 1);
+    const updated = session.run({ parameters: { value: 2 }, revision: 1 });
+    assert.equal(updated.stdout, '');
+    assert.equal(updated.plots, undefined);
+    assert.deepEqual(updated.outputs.map(entry => entry.values), [[[2]], [[2]]]);
+    assert.throws(() => session.run({ parameters: { value: 3 }, revision: 0 }), /session expired/);
+    session.run({ code, revision: 2 });
+    assert.throws(() => session.run({ parameters: { value: -1 }, revision: 2 }), /negative value/);
+    assert.throws(() => session.run({ parameters: { value: 4 }, revision: 2 }), /session expired/);
+    const reset = session.run({ code, revision: 3 });
+    assert.deepEqual(variable(reset.outputs, 'calls').values, [[1]]);
+    assert.throws(() => session.run({ parameters: { unknown: 1 }, revision: 3 }), /declared PARAMETERS/);
+  } finally { session.destroy(); }
+});
+
+test('plot deltas preserve static samples, detect in-place edits, and replace changed structures', () => {
+  const session = createPythonSession();
+  const code = `
+import numpy as np
+PARAMETERS = {"value": 1}
+fixed = np.array([[0., 0.], [1., 1.]])
+moving = fixed.copy()
+def update(value):
+    moving[1, 1] = value
+    plots = {"Curve": {
+        "fixed": fixed,
+        "moving": moving,
+        "area": {"points": fixed, "area": {"lower": 0, "upper": value, "value": value}},
+    }}
+    if value == 3:
+        plots = {"Replacement": {"line": fixed}}
+    return {"INPUTS": {}, "OUTPUTS": {}, "PLOTS": plots}
+globals().update(update(**PARAMETERS))
+`;
+  try {
+    session.run({ code, revision: 1 });
+    const changed = session.run({ parameters: { value: 2 }, revision: 1 });
+    assert.equal(changed.plots, undefined);
+    assert.deepEqual(changed.plotUpdates, [{ title: 'Curve', series: [
+      { name: 'moving', area: null, points: [[0, 0], [1, 2]] },
+      { name: 'area', area: { lower: 0, upper: 2, value: 2 } },
+    ] }]);
+    const unchanged = session.run({ parameters: { value: 2 }, revision: 1 });
+    assert.equal(unchanged.plots, undefined);
+    assert.equal(unchanged.plotUpdates, undefined);
+    const replaced = session.run({ parameters: { value: 3 }, revision: 1 });
+    assert.equal(replaced.plots[0].title, 'Replacement');
+    assert.equal(replaced.plotUpdates, undefined);
+  } finally { session.destroy(); }
 });
 
 test('stdout and stderr stream in order, survive exceptions, and are bounded', () => {

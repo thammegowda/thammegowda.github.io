@@ -2,6 +2,14 @@ import { createElement, ArrowUpRight, ArrowLeft, ArrowRight } from 'lucide';
 
 export const chapters = [
 	{
+		id: 'trigonometry',
+		title: 'Trigonometry',
+		description: 'Radians, the unit circle, trigonometric functions, and vector similarity.',
+		status: 'published',
+		interactive: true,
+		reference: '_keep_in_mind',
+	},
+	{
 		id: 'calculus',
 		title: 'Calculus',
 		description: 'Functions, derivatives, signed integrals, and activation functions.',

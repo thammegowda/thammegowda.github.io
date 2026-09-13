@@ -1,5 +1,13 @@
 .py-plots { min-width: 0; }
-.py-plot-controls { display: flex; justify-content: flex-end; align-items: center; gap: 4px; padding-block: 4px; }
+.py-plot-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; padding-block: 4px; }
+.py-point-input { display: flex; align-items: center; gap: 6px; margin-right: auto; font-size: 12px; }
+.py-point-input input { width: 80px; padding: 4px; }
+.py-point-control { cursor: ew-resize; outline: none; }
+.py-point-control[aria-disabled="true"] { cursor: default; }
+.py-point-hit { fill: transparent; stroke: transparent; stroke-width: 32; vector-effect: non-scaling-stroke; }
+.py-point-dot { fill: #087f72; stroke: white; stroke-width: 2; }
+.py-point-control:hover .py-point-dot, .py-point-control:focus-visible .py-point-dot { stroke: #a76613; stroke-width: 3; }
+.py-point-undefined .py-point-dot { fill: white; stroke: #087f72; }
 .py-plot-controls output { min-width: 44px; font-size: 11px; color: var(--muted); text-align: right; margin-right: 4px; }
 .py-plot-controls button:disabled { opacity: .5; cursor: default; }
 .py-plot-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }

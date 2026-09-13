@@ -16,12 +16,10 @@ for (const key of ['coefficient', 'exponent', 'point', 'lower']) {
   if (raw !== null && raw.trim() && Number.isFinite(Number(raw))) parameters[key] = Number(raw);
 }
 const initial = ref(true);
-const modified = ref(false);
 const source = computed(() => example.value === 'comparison' ? comparisonCode(comparison) : example.value.startsWith('composition:')
   ? compositionCode(composition, example.value.split(':')[1])
   : functionCode(template, example.value, initial.value ? parameters : {}));
 function choose(event) {
-  if (modified.value && !confirm('Replace the edited Python code with this example?')) { event.target.value = example.value; return; }
   initial.value = false;
   example.value = event.target.value;
   const hash = example.value === 'comparison' ? 'family=sigmoid&compare=true' : example.value.startsWith('composition:') ? `rule=${example.value.split(':')[1]}` : `family=${example.value}`;
@@ -30,9 +28,10 @@ function choose(event) {
 </script>
 
 <template>
-  <PythonLab :key="example" :default-code="source" :framework-start="example === 'comparison' ? 'PLOTS = ' : example.startsWith('composition:') ? 'with np.errstate' : 'def connected(x):'" title="Calculus" download="./calculus.py" @state="modified = $event.modified">
-    <template #controls="{ source: draft, result, updateSource }">
-      <PointControl v-if="example !== 'comparison'" :source="draft" :result="result" @change="updateSource" />
+  <PythonLab :key="example" :default-code="source" :framework-start="example === 'comparison' ? 'PLOTS = ' : example.startsWith('composition:') ? 'with np.errstate' : 'def connected(x):'" title="Calculus" download="./calculus.py">
+    <template #controls></template>
+    <template #plots="{ source: draft, result, preserveView, updateSource }">
+      <PointControl :source="draft" :result="result" :preserve-view="preserveView" :plot-title="example === 'comparison' ? 'Activations' : example.startsWith('composition:') ? 'h(x)' : 'Function'" @change="updateSource" />
     </template>
     <template #toolbar>
       <label class="calculus-example">Example<select :value="example" aria-label="Calculus example" @change="choose">

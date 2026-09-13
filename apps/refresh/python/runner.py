@@ -56,12 +56,13 @@ def export_group(namespace, group):
     return variables
 
 
-def export_plots(namespace):
+def export_plots(namespace, cache):
     plots = namespace.get("PLOTS", {})
     if not isinstance(plots, dict) or len(plots) > 12:
         raise ValueError("PLOTS must be a dictionary with at most 12 plots")
     result = []
     total = 0
+    retained = set()
     for title, series in plots.items():
         validate_label(title, "PLOTS")
         if not isinstance(series, dict) or not 1 <= len(series) <= 8:
@@ -90,25 +91,121 @@ def export_plots(namespace):
             total += len(array)
             if total > 100000:
                 raise ValueError("PLOTS supports at most 100000 points in total")
-            points = [[float(position), float(value) if np.isfinite(value) else None] for position, value in array]
+            key = (title, name)
+            signature = (array.dtype.str, array.shape, array.tobytes())
+            cached = cache.get(key)
+            if cached is not None and cached[0] == signature:
+                points = cached[1]
+            else:
+                points = array.astype(np.float64).tolist()
+                for index in np.flatnonzero(~np.isfinite(array[:, 1])):
+                    points[index][1] = None
+            cache[key] = (signature, points)
+            retained.add(key)
             curve = {"name": name, "points": points}
             if shaded is not None:
                 curve["area"] = shaded
             curves.append(curve)
         result.append({"title": title, "series": curves})
+    for key in set(cache) - retained:
+        del cache[key]
     return result
 
 
-def run_lesson(request):
-    namespace = {"__name__": "__lesson__"}
-    exec(compile(request["code"], "lesson.py", "exec"), namespace)
-    return {"inputs": export_group(namespace, "INPUTS"), "outputs": export_group(namespace, "OUTPUTS"), "plots": export_plots(namespace)}
+def plot_updates(previous, current):
+    structure = lambda plots: [(plot["title"], [series["name"] for series in plot["series"]]) for plot in plots]
+    if previous is None or structure(previous) != structure(current):
+        return None
+    updates = []
+    for old_plot, plot in zip(previous, current):
+        changes = []
+        for old_series, series in zip(old_plot["series"], plot["series"]):
+            if old_series["points"] is series["points"] and old_series.get("area") == series.get("area"):
+                continue
+            change = {"name": series["name"], "area": series.get("area")}
+            if old_series["points"] is not series["points"]:
+                change["points"] = series["points"]
+            changes.append(change)
+        if changes:
+            updates.append({"title": plot["title"], "series": changes})
+    return updates
 
 
-captured_stdout = BoundedOutput("stdout", globals().get("emit_output"))
-captured_stderr = BoundedOutput("stderr", globals().get("emit_output"))
-with contextlib.redirect_stdout(captured_stdout), contextlib.redirect_stderr(captured_stderr):
-    response = run_lesson(json.loads(payload))
-response["stdout"] = captured_stdout.getvalue()
-response["stderr"] = captured_stderr.getvalue()
-json.dumps(response, allow_nan=False)
+class LessonSession:
+    def __init__(self):
+        self.namespace = None
+        self.revision = None
+        self.parameters = {}
+        self.code = None
+        self.compiled = None
+        self.plot_cache = {}
+        self.plots = None
+
+    def run(self, request):
+        try:
+            if "code" not in request:
+                if self.namespace is None or request.get("revision") != self.revision:
+                    raise ValueError("Lesson session expired; run the full code again")
+                parameters = request.get("parameters")
+                if not isinstance(parameters, dict) or not parameters or not parameters.keys() <= self.parameters.keys():
+                    raise ValueError("Updates must contain declared PARAMETERS")
+                parameters = {**self.parameters, **parameters}
+                self.validate_parameters(parameters)
+                exports = self.namespace["update"](**parameters)
+                if not isinstance(exports, dict) or not {"INPUTS", "OUTPUTS"} <= exports.keys() or not exports.keys() <= {"INPUTS", "OUTPUTS", "PLOTS"}:
+                    raise ValueError("update must return INPUTS and OUTPUTS, with optional PLOTS")
+                self.namespace.update(exports)
+            else:
+                self.plot_cache = {}
+                self.plots = None
+                namespace = {"__name__": "__lesson__"}
+                if request["code"] != self.code:
+                    self.compiled = compile(request["code"], "lesson.py", "exec")
+                    self.code = request["code"]
+                exec(self.compiled, namespace)
+                parameters = namespace.get("PARAMETERS", {})
+                self.validate_parameters(parameters)
+                if parameters and not callable(namespace.get("update")):
+                    raise ValueError("PARAMETERS requires an update function")
+                self.namespace = namespace
+                self.revision = request.get("revision")
+            self.parameters = dict(parameters)
+            response = {"inputs": export_group(self.namespace, "INPUTS"),
+                        "outputs": export_group(self.namespace, "OUTPUTS"),
+                        "parameters": self.parameters}
+            if "code" in request or "PLOTS" in exports:
+                plots = export_plots(self.namespace, self.plot_cache)
+                updates = plot_updates(self.plots, plots)
+                if updates is None:
+                    response["plots"] = plots
+                elif updates:
+                    response["plotUpdates"] = updates
+                self.plots = plots
+            return response
+        except Exception:
+            self.namespace = None
+            self.parameters = {}
+            self.plot_cache = {}
+            self.plots = None
+            raise
+
+    @staticmethod
+    def validate_parameters(parameters):
+        if not isinstance(parameters, dict) or len(parameters) > 32:
+            raise ValueError("PARAMETERS must be a dictionary with at most 32 values")
+        for name, value in parameters.items():
+            if not isinstance(name, str) or not name.isidentifier() or type(value) not in (int, float) or not np.isfinite(value):
+                raise ValueError("PARAMETERS must map Python names to finite numeric scalars")
+
+
+session = LessonSession()
+
+
+def run_request(payload, emit_output=None):
+    captured_stdout = BoundedOutput("stdout", emit_output)
+    captured_stderr = BoundedOutput("stderr", emit_output)
+    with contextlib.redirect_stdout(captured_stdout), contextlib.redirect_stderr(captured_stderr):
+        response = session.run(json.loads(payload))
+    response["stdout"] = captured_stdout.getvalue()
+    response["stderr"] = captured_stderr.getvalue()
+    return json.dumps(response, allow_nan=False)

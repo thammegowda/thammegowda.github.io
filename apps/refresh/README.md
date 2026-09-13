@@ -2,12 +2,14 @@
 
 A standalone, browser-side book of mathematics and statistics. The contents page
 lists ordered chapters, with unpublished chapters marked Planned rather than
-linked to empty pages. Calculus is the first published chapter: constants, linear
+linked to empty pages. Trigonometry comes first, linking the unit circle, radians,
+sine/cosine/tangent curves, vector projection, and cosine similarity.
+Calculus follows: constants, linear
 and power functions, natural logarithms, reciprocals,
 exponentials, sine, cosine, and five ML activations (sigmoid, tanh, ReLU, softplus,
 and SiLU). Activation comparison overlays all five outputs, derivatives, and
 integrals on shared axes. Linear Algebra is
-the second published chapter, with a matrix operations and backprop lab.
+the third published chapter, with a matrix operations and backprop lab.
 Probability Theory and Hypothesis Testing remain planned chapters.
 
 ## Build
@@ -29,7 +31,7 @@ All runtime dependencies are local. No Hugo or server-side runtime is required.
 The generated `THIRD-PARTY.txt` retains dependency license notices and should
 travel with the deployed directory.
 
-Both interactive chapters execute Python through Pyodide 314.0.6 and NumPy 2.4.6. The first
+All interactive chapters execute Python through Pyodide 314.0.6 and NumPy 2.4.6. The first
 test/build downloads the NumPy wheel into the installed Pyodide directory;
 subsequent runs reuse it. The build verifies wheel SHA-256 checksums against
 Pyodide's lockfile and copies the runtime and required wheels into `dist/pyodide/`.
@@ -61,8 +63,16 @@ python/
   style.css                Compact scalar, vector, and matrix rendering
   workspace.css            Viewport-height workspace and responsive panels
   runtime.js               Worker requests, execution timeout, cancellation
-  worker.js                Local Pyodide + NumPy, fresh execution globals
+  worker.js                Local Pyodide + NumPy, cached driver and lesson session
 chapters/
+  trigonometry/
+    content.adoc           Radians, trig identities, projection, and vector products
+    index.js               Chapter mount and stylesheet import
+    Trigonometry.vue       Linked unit circle, vector diagram, and wave plots
+    lesson.py              Float32 trig and vector equations, sampled plot data
+    style.css              Responsive chapter diagrams and controls
+    python.test.mjs        Geometric identities and singularity checks
+    trigonometry.browser.spec.js  Angle units, similarity, and navigation
   calculus/
     content.adoc           Reference notes and Vue mount container
     index.js               Vue mount and chapter stylesheet import
@@ -173,12 +183,17 @@ require the app to have been built first; `make build` and `make serve` do this.
 Calculus URL fragments select a function, composition rule, or activation comparison.
 Legacy finite numeric coefficient/exponent/point/lower parameters initialize the
 Python source on page load. Editor drafts are not put into URLs or auto-executed
-from them; changing an example confirms before discarding an edited draft.
+from them; changing an example immediately replaces the current draft without prompting.
 Calculus is now at `calculus.html`; old root URLs containing a `family` parameter
 are forwarded there with their hash intact. The catalog's optional
 `legacyStateKey` exists for this compatibility path, not for new chapter routing.
 
 ## Plot navigation
+
+Trigonometry links a draggable unit circle to Python-computed trig and vector
+diagrams. Arrow keys adjust by one degree (Shift: 15); numeric entry supports
+degrees/radians. The cross-product diagram shows the signed z component, not
+a scalar similarity measure.
 
 Charts use a 16:9 width-to-height ratio, capped at 800px wide.
 Major ticks and grid lines adapt to the available space, with finer unlabeled
@@ -204,16 +219,14 @@ Python sampling range or sample count and Run to change resolution or coverage.
 A manual run resets the view; resize and legend toggles preserve it. Undefined
 ordinates break curves rather than connecting across a pole or kink.
 
-Function and composition presets include an evaluation-point slider beside the
-plots. It updates the script's top-level numeric `point` assignment immediately,
-then schedules Python execution on the next event-loop turn without a debounce delay.
-Changes during a run are coalesced to the latest point. Slider runs retain
-axis limits, zoom, and legend choices, so a moving tangent cannot rescale the
-function. Manual Run or a new example refits the axes. Tangents are clipped to the
-plot area; zoom and pan remain available. Stop cancels queued runs as well as the current one.
-The slider range follows the sampled x coordinates. It is disabled when `point`
-is missing, duplicated, or defined by an expression instead of a numeric literal.
-Edited function and derivative expressions remain the source of tangent data.
+Calculus uses a draggable evaluation point on the Function plot, the composition
+result h(x), or the first visible activation curve. Drag it horizontally with a
+mouse or touch; arrow keys adjust by 0.01 (Shift: 0.1). Precise numeric entry
+remains beside the zoom controls. Background dragging still pans the plots.
+The handle follows sampled curves, becoming hollow at undefined values. Dragging
+is bounded by the samples. Updates retain axes, zoom, and legends; manual Run
+refits the axes. Cached curves stay fixed while tangent endpoints, integral
+metadata, and numerical readouts update through Python.
 
 ## Matrix operations and backprop
 
@@ -223,11 +236,11 @@ weight and bias arrays with shapes derived from X and Y, drawn uniformly within
 `np.random.seed(42)` makes initialization and sampled examples reproducible on
 Run and Reset. All lesson arrays, predictions, losses, and gradients use float32.
 
-The introduction is a straight-line script with ten SGD updates, no Module class
-or graph metadata. Each update samples one row uniformly with replacement,
-computes its MSE derivative and dW/db, then applies `W -= learning_rate * dW`
-and `b -= learning_rate * db`, with a default learning rate of 0.1. The sample
-loss averages over its output features. X and Y are never updated.
+`update(learning_rate)` runs ten explicit SGD steps, computing MSE gradients and
+applying `W -= learning_rate * dW` and `b -= learning_rate * db`. Each comparison
+starts from the same cached initial weights and ten sampled rows, not the previous
+trained result. The default rate is 0.1; X and Y stay fixed. Editing data,
+equations, or the seed performs fresh setup on the next run.
 
 Full-data predictions and MSE are evaluated after every update. The four outputs
 are Y_before, Y_pred (after update 10), and trained W/b. Only X and Y are displayed
@@ -235,8 +248,9 @@ as inputs, in compact, non-stretching matrix previews. Loss progress for steps
 0 through 10 appears in the terminal, not in the visualization. The default
 run reduces loss substantially; arbitrary data, seeds, or learning rates need
 not improve at every step or converge. This demonstrates fitting the training
-examples, not generalization. Python owns all computations; the small display-only
-INPUTS/OUTPUTS block stays at the bottom. No renderer changes are required.
+examples, not generalization. Python owns all computations; the callback returns
+the INPUTS/OUTPUTS dictionaries. The framework block at the bottom declares the
+live learning-rate parameter and performs the initial update.
 
 Edit arrays, shapes, expressions, and export labels directly in Python. The UI
 has no operation selector, editable matrix cells, or hard-coded dependency traces.
@@ -305,6 +319,36 @@ as text for chapter-specific execution, following the existing worker JSON contr
 The optional `toolbar` slot adds chapter controls without another header bar.
 `PythonLab` forwards that slot and event and renders both plot and value exports.
 
+### Low-latency updates
+
+The worker initializes Pyodide, NumPy, and the driver once, and caches the latest
+compiled source. Full Run uses a fresh namespace; live controls call a retained
+`update` function. Put expensive setup and static plots outside that function:
+
+```python
+angle = 45.0
+
+def update(angle):
+  theta = np.deg2rad(np.float32(angle))
+  return {"INPUTS": {}, "OUTPUTS": {"sin": np.sin(theta)}}
+
+PARAMETERS = {"angle": angle}
+globals().update(update(**PARAMETERS))
+```
+
+`PARAMETERS` declares up to 32 finite numeric controls passed as keyword arguments.
+Return `INPUTS` and `OUTPUTS`; optional `PLOTS` describes the complete collection.
+Omitting `PLOTS` retains it. The runner detects sample changes, including in-place
+edits, and transfers only changed series/area metadata. Structural changes replace
+all plots; caches are bounded by export limits.
+
+`workspace.updateSource(nextSource, { angle: nextAngle })` synchronizes the editor
+literal and sends parameters with a session revision. Only the latest pending
+update is retained. Other code edits/errors invalidate the session; Stop destroys
+it. Calling `updateSource(nextSource)` without parameters requests a full run.
+PythonLab supplies numeric controls by default; override its controls/plots slots
+for custom UI. Missing, duplicate, or nonliteral assignments disable controls.
+
 ### Plot exports
 
 `PLOTS` is optional. Each title maps to named real numeric `(N, 2)` arrays:
@@ -351,7 +395,7 @@ and Home/End; double-click restores the default size. Resizing preserves the dra
 Run Python executes a snapshot of the current draft. The default script populates
 the editor and runs once on page load. Further edits wait for Run; they mark the
 last successful visualization as stale. Failed runs keep that visualization.
-If code changes while a run is in progress, its result is discarded and the user
+If equation code changes while a run is in progress, its result is discarded and the user
 must run the current draft. Reset Python code restores and runs the full default
 script. Drafts are not saved across page reloads. The download link provides the
 default lesson as a `.py` file. All views are read-only reflections of Python.
@@ -369,14 +413,14 @@ escape-sequence emulation are unsupported: this is a code pad with an output log
 not a full terminal REPL. Startup failures discard the worker so the next Run can
 retry initialization; clearing output never marks a failed run's old results current.
 
-Each run has a fresh lesson namespace, but imports live in a reused interpreter:
+Each full run has a fresh lesson namespace, but imports live in a reused interpreter:
 this is not full process isolation or a security sandbox. Student code has browser
 capabilities through Pyodide's JavaScript bridge. Do not auto-execute code loaded
 from URLs, saved snippets, or other users. Untrusted shared-code execution would
 require a separate security design. Only the shipped lesson runs automatically
 on page load. The worker limits ordinary loops, not all possible memory abuse.
 
-Both Calculus and Linear Algebra use the shared Python runner and workspace.
+All interactive chapters use the shared Python runner and workspace.
 Future chapters supply their own Python source and reference notes, with optional
 plot and value exports. Math.js and the JavaScript integration engine are removed.
 

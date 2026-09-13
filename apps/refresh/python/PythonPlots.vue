@@ -4,7 +4,8 @@ import { ZoomIn, ZoomOut, Scan } from '@lucide/vue';
 import { curveColors, curveDashes, detachPlot, fitPlotDomains, renderPlot } from './plots.js';
 import './plots.css';
 
-const props = defineProps({ plots: { type: Array, required: true }, preserveView: Boolean });
+const props = defineProps({ plots: { type: Array, required: true }, preserveView: Boolean, point: Object });
+const emit = defineEmits(['point-change']);
 const id = useId();
 const root = ref(null);
 const containers = new Map();
@@ -21,6 +22,7 @@ function draw() {
     renderPlot(containers.get(plot.title), {
       plot, domains: domains.get(plot.title), id: `${id}-plot-${index}`, view: view.value, hidden: hidden.value.get(plot.title) ?? new Set(),
       onViewChange: next => { view.value = next; }, changeZoom,
+      point: props.point?.plot === plot.title ? props.point : null, onPointChange: value => emit('point-change', value),
     });
   });
 }
@@ -44,6 +46,7 @@ watch(() => props.plots, async () => {
   draw();
 });
 watch(view, draw, { flush: 'post' });
+watch(() => props.point, draw, { flush: 'post' });
 onMounted(() => { observer = new ResizeObserver(draw); observer.observe(root.value); draw(); });
 onBeforeUnmount(() => { observer?.disconnect(); for (const container of containers.values()) detachPlot(container); });
 </script>
@@ -51,6 +54,7 @@ onBeforeUnmount(() => { observer?.disconnect(); for (const container of containe
 <template>
   <div ref="root" class="py-plots">
     <div class="py-plot-controls" role="group" aria-label="Synchronized plot controls">
+      <slot name="controls" />
       <output aria-label="Plot zoom level">{{ Math.round(view.k * 100) }}%</output>
       <button class="py-icon" type="button" aria-label="Zoom in all plots" title="Zoom in all plots" :disabled="view.k >= 32" @click="changeZoom(1.5)"><ZoomIn :size="16" /></button>
       <button class="py-icon" type="button" aria-label="Zoom out all plots" title="Zoom out all plots" :disabled="view.k <= 0.25" @click="changeZoom(1 / 1.5)"><ZoomOut :size="16" /></button>

@@ -6,8 +6,17 @@ await runtime.loadPackage('numpy');
 const driver = await readFile(new URL('./runner.py', import.meta.url), 'utf8');
 
 export function runPython(code, emit = () => {}) {
-  const globals = runtime.toPy({ payload: JSON.stringify({ code }) });
-  globals.set('emit_output', emit);
-  try { return JSON.parse(runtime.runPython(driver, { globals })); }
-  finally { globals.destroy(); }
+  const session = createPythonSession();
+  try { return session.run({ code }, emit); }
+  finally { session.destroy(); }
+}
+
+export function createPythonSession() {
+  const globals = runtime.toPy({});
+  runtime.runPython(driver, { globals });
+  const request = globals.get('run_request');
+  return {
+    run(payload, emit = () => {}) { return JSON.parse(request(JSON.stringify(payload), emit)); },
+    destroy() { request.destroy(); globals.destroy(); },
+  };
 }
