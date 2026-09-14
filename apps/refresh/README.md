@@ -2,16 +2,37 @@
 
 A standalone, browser-side book of mathematics and statistics. The contents page
 lists ordered chapters, with unpublished chapters marked Planned rather than
-linked to empty pages. Trigonometry comes first, linking the unit circle, radians,
+linked to empty pages. Mathematical Foundations opens the book with expandable
+reminders from arithmetic through graduate-level connections. Trigonometry follows, linking the unit circle, radians,
 sine/cosine/tangent curves, vector projection, and cosine similarity.
 Calculus follows: constants, linear
 and power functions, natural logarithms, reciprocals,
 exponentials, sine, cosine, and five ML activations (sigmoid, tanh, ReLU, softplus,
 and SiLU). Activation comparison overlays all five outputs, derivatives, and
-integrals on shared axes. Linear Algebra is
-the third published chapter, with a matrix operations and backprop lab.
+integrals on shared axes. Linear Algebra follows
+with a matrix operations and backprop lab.
 Vector Calculus and Neural Networks follow as editable JupyterLite notebooks.
 Probability Theory and Hypothesis Testing remain planned chapters.
+
+## Mathematical Foundations
+
+The opening chapter contains 71 expandable reminders across arithmetic, number
+tables, axioms and proof, algebra, powers and logarithms, geometry, trigonometry,
+calculus, linear algebra and optimization, and probability and statistics.
+It is a selective refresher, not a complete graduate curriculum. Identities are
+distinguished from axioms and theorems, with domain conditions beside the details.
+
+Tables include a multiplication grid with 20 columns and 10 rows, bold headers,
+a thick divider after column 10, squares through 25, and all 168 primes
+below 1000. Search, topic navigation, and
+two canvas diagrams supplement native HTML disclosures. Equations and tables
+remain readable without JavaScript. Mobile navigation uses a topic selector.
+
+`chapters/foundations/reference.js` owns the reference content and renders KaTeX
+to static MathML at build time; no math library, fonts, Python runtime, or CDN
+requests are needed by this chapter. `numbers.js` generates the number tables.
+Colocated tests verify those values, rendering, disclosures, search, diagrams,
+and desktop/mobile layouts, including JavaScript-disabled reading.
 
 ## Build
 

@@ -2,6 +2,13 @@ import { createElement, ArrowUpRight, ArrowLeft, ArrowRight } from 'lucide';
 
 export const chapters = [
 	{
+		id: 'foundations',
+		title: 'Mathematical Foundations',
+		description: 'A return to arithmetic, algebra, geometry, trigonometry, and the ideas that connect them.',
+		status: 'published',
+		interactive: true,
+	},
+	{
 		id: 'trigonometry',
 		title: 'Trigonometry',
 		description: 'Radians, the unit circle, trigonometric functions, and vector similarity.',

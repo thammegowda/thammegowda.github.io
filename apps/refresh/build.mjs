@@ -9,6 +9,7 @@ import { createHash } from 'node:crypto';
 import { chapters, escapeHtml, renderContents, renderChapterNavigation, validateChapters } from './app.js';
 import { functionCode } from './chapters/calculus/expressions.js';
 import { buildNotebooks } from './jupyter/build.mjs';
+import { renderReference } from './chapters/foundations/reference.js';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const destination = path.join(root, 'dist');
@@ -58,7 +59,8 @@ const bundles = await build({
 });
 for (const chapter of published) {
   const source = path.join(root, 'chapters', chapter.id, 'content.adoc');
-  const content = execFileSync('asciidoctor', ['-s', '-o', '-', source], { encoding: 'utf8' });
+  let content = execFileSync('asciidoctor', ['-s', '-o', '-', source], { encoding: 'utf8' });
+  if (chapter.id === 'foundations') content = content.replace('<div data-foundations></div>', renderReference());
   const script = `chapters/${chapter.id}.js`;
   const output = Object.entries(bundles.metafile.outputs).find(([filename]) => path.resolve(filename) === path.join(destination, script))?.[1];
   const stylesheet = output?.cssBundle ? path.relative(destination, path.resolve(output.cssBundle)).split(path.sep).join('/') : null;
