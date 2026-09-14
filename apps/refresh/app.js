@@ -28,6 +28,22 @@ export const chapters = [
 		reference: '_keep_in_mind',
 	},
 	{
+		id: 'vector-calculus',
+		title: 'Vector Calculus',
+		description: 'Scalar fields, gradients, Jacobians, Hessians, and local approximations.',
+		status: 'published',
+		interactive: true,
+		notebook: true,
+	},
+	{
+		id: 'neural-network',
+		title: 'Neural Networks',
+		description: 'Build a two-layer classifier: forward propagation, backpropagation, Adam, and overfitting.',
+		status: 'published',
+		interactive: true,
+		notebook: true,
+	},
+	{
 		id: 'probability',
 		title: 'Probability Theory',
 		description: 'Random variables, distributions, expectation, and conditional probability.',

@@ -76,13 +76,13 @@ jobs:
           cache: npm
           cache-dependency-path: apps/refresh/package-lock.json
 
-      - name: Build and test browser apps
-        run: make apps
-
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
+      - name: Build and test browser apps
+        run: make apps
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt

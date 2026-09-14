@@ -18,7 +18,9 @@ data: ## Parse pubs.bib into Hugo data file
 	@PYTHON="$(PYTHON)" VENV="$(VENV)" ./setup.sh --python-deps
 	"$(VENV)/bin/python" scripts/parse_bib.py
 
-apps: ## Build self-contained browser apps (requires Node.js and Asciidoctor)
+apps: ## Build static browser apps and JupyterLite (Python is build-time only)
+	$(if $(PYTHON),$(PYTHON),python3) -m venv apps/refresh/.venv
+	apps/refresh/.venv/bin/python -m pip install -r apps/refresh/jupyter/requirements.txt
 	cd apps/refresh && npm ci && npm test && npm run build
 
 build: data apps ## Build the site for production

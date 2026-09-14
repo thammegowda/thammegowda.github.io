@@ -10,13 +10,17 @@ exponentials, sine, cosine, and five ML activations (sigmoid, tanh, ReLU, softpl
 and SiLU). Activation comparison overlays all five outputs, derivatives, and
 integrals on shared axes. Linear Algebra is
 the third published chapter, with a matrix operations and backprop lab.
+Vector Calculus and Neural Networks follow as editable JupyterLite notebooks.
 Probability Theory and Hypothesis Testing remain planned chapters.
 
 ## Build
 
-Requires Node.js 22+ and Asciidoctor (`gem install asciidoctor`). From this directory:
+Requires Node.js 22+, Python 3.9+ for static JupyterLite build/tests, and
+Asciidoctor (`gem install asciidoctor`). From this directory:
 
 ```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r jupyter/requirements.txt
 npm ci
 npm test
 npm run build
@@ -31,14 +35,28 @@ All runtime dependencies are local. No Hugo or server-side runtime is required.
 The generated `THIRD-PARTY.txt` retains dependency license notices and should
 travel with the deployed directory.
 
-All interactive chapters execute Python through Pyodide 314.0.6 and NumPy 2.4.6. The first
+Trigonometry, Calculus, and Linear Algebra execute Python through Pyodide 314.0.6
+and NumPy 2.4.6. The first
 test/build downloads the NumPy wheel into the installed Pyodide directory;
 subsequent runs reuse it. The build verifies wheel SHA-256 checksums against
 Pyodide's lockfile and copies the runtime and required wheels into `dist/pyodide/`.
 These assets occupy about 18 MB before HTTP compression. They load only when a
 Python chapter is opened, not on the contents page. Deploy the entire
 directory, including wheels and their embedded license notices; no runtime CDN
-is needed for the default lesson. No local Python installation is required.
+is needed for the default lessons. Readers need no local Python installation.
+
+Vector Calculus and Neural Networks use JupyterLite 0.6.4 with the Pyodide kernel 0.6.1 and its
+compatible Pyodide 0.27.6 runtime. `jupyter/build.mjs` builds the notebook frontend
+and bundles NumPy, Plotly 6.3.1, IPython, and kernel dependencies under
+`dist/jupyter/` (about 60 MB before HTTP compression). Runtime wheel checksums
+are verified against the Pyodide lockfile. The browser test blocks external
+requests while executing and editing the notebook. Additional Python packages
+are not fetched automatically from PyPI; bundle them explicitly when adding lessons.
+
+Python, `jupyter-server`, and `ipykernel` in the build environment are only tools
+for static contents indexing and local notebook tests. No Python service is
+started or deployed. Serve `dist/` over HTTPS (or localhost for development);
+JupyterLite uses browser workers and browser storage. Do not open it via `file://`.
 
 ## Structure
 
@@ -208,7 +226,7 @@ reversing the bounds reverses those signs. Undefined integrals have no shading.
 Shading is limited to the sampled range. Composition and activation comparison
 retain their separate synchronized plots.
 
-All plots share D3 wheel zoom, touch pinch, drag-to-pan, and toolbar navigation.
+The Vue chapters share D3 wheel zoom, touch pinch, drag-to-pan, and toolbar navigation.
 With any plot focused, `+`/`-` zoom, arrows pan, and `0` resets. Zoom ranges from
 0.25x to 32x. Normalized pan offsets survive desktop/mobile layout changes; each
 plot retains its own fitted y-scale. Legend checkboxes toggle individual series.
@@ -227,6 +245,55 @@ The handle follows sampled curves, becoming hollow at undefined values. Dragging
 is bounded by the samples. Updates retain axes, zoom, and legends; manual Run
 refits the axes. Cached curves stay fixed while tangent endpoints, integral
 metadata, and numerical readouts update through Python.
+
+## Vector calculus
+
+`chapters/vector-calculus/vector-calculus.ipynb` is the lesson source. Markdown
+equations alternate with editable NumPy cells and interactive Plotly figures:
+scalar surfaces and contours, directional Taylor approximations, Hessian
+eigenvalues, and paired Jacobian input/output diagrams. Bowl, coupled bowl,
+saddle, and quartic examples retain analytic derivatives and finite-difference checks.
+
+Drag the surface to rotate it; plots support zoom, pan, data hover, and legend
+toggles. These interactions run in JavaScript without rerunning Python. Changing
+the function, evaluation point, or direction still requires rerunning the cells.
+The notebook renderer handles resizing; Plotly's separate `responsive` mode is
+disabled to prevent percentage-height output collapse after zooming in JupyterLite.
+Plotly's MIME renderer and all required Python wheels are bundled locally.
+
+The chapter embeds the notebook frontend and links to a full-screen view and a
+portable `.ipynb` download. Use Jupyter's Run All to initialize the lesson; edit
+the parameter cell and rerun to compare examples. This replaces the custom Vue
+editor and drag controls for this chapter only. JupyterLite saves edits in browser
+storage, not the repository. Export a notebook to keep a portable copy; browser
+copies can take precedence over newer published content.
+
+## Neural networks
+
+`chapters/neural-network/neural-network.ipynb` is an eight-step, 19-cell tutorial for a
+5-input, 10-hidden, 4-output classifier with ReLU and softmax. It derives
+cross entropy, the softmax Jacobian, the combined `(P - Y) / N` gradient,
+affine-layer gradients, the ReLU mask, and bias-corrected Adam updates.
+NumPy implements forward and backward passes without autodiff. Training is
+float32. Exhaustive checks live in the accompanying test rather than the reading
+sequence: float64 finite differences cover all 104 parameters and input gradients,
+alongside softmax stability, Adam state, and minibatch averaging checks.
+
+Three Plotly figures cover the dataset projection, clean learning curves, and
+noisy-label memorization curves. Forward and backward show matrix operations
+directly, without single-operation layer wrappers. The clean experiment uses 320 training and
+160 validation examples with training-only standardization. A separate experiment
+memorizes 16 balanced but randomly reassigned labels while evaluating against the
+original validation labels. Both reset weights and optimizer state. Default runs
+reach about 92.5% clean validation accuracy, versus 100% tiny-set training accuracy
+and about 13.8% validation accuracy after memorization; numerical results may vary
+slightly between runtimes.
+
+Notebook chapters set `notebook: true` in the catalog, keep their canonical
+`<id>.ipynb` beside `content.adoc`, and import `jupyter/notebook.js` from their
+entry point. The build discovers published notebook chapters and copies them into
+the shared JupyterLite contents and downloadable output. The shared notebook shell
+fills the viewport below the book header, with full-screen and download icons.
 
 ## Matrix operations and backprop
 

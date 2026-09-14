@@ -2,3 +2,6 @@ node_modules/
 dist/
 test-results/
 playwright-report/
+.venv/
+jupyter/.cache/
+.jupyterlite.doit.db*

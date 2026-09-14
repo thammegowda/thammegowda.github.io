@@ -8,6 +8,7 @@ import { loadPyodide } from 'pyodide';
 import { createHash } from 'node:crypto';
 import { chapters, escapeHtml, renderContents, renderChapterNavigation, validateChapters } from './app.js';
 import { functionCode } from './chapters/calculus/expressions.js';
+import { buildNotebooks } from './jupyter/build.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const destination = path.join(root, 'dist');
@@ -97,6 +98,7 @@ for (const name of packageNames) {
 }
 await cp(path.join(root, 'chapters/linear-algebra/lesson.py'), path.join(destination, 'linear-algebra.py'));
 await cp(path.join(root, 'chapters/trigonometry/lesson.py'), path.join(destination, 'trigonometry.py'));
+await buildNotebooks(root, destination);
 await writeFile(path.join(destination, 'calculus.py'), functionCode(await readFile(path.join(root, 'chapters/calculus/lesson.py.in'), 'utf8'), 'power'));
 const notices = [];
 const modules = path.join(root, 'node_modules');
