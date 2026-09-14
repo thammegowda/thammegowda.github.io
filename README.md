@@ -25,6 +25,13 @@ specific version, run `HUGO_VERSION=0.147.9 ./setup.sh`.
 make serve    # Dev server with live reload at http://localhost:1313
 ```
 
+Browser apps also require Node.js 22+ and npm. `make serve` builds them before
+starting Hugo. The refresh book's contents are at `/app/refresh/`, with its first
+chapter at `/app/refresh/calculus.html`; see
+[the app README](apps/refresh/README.md) for standalone builds and authoring.
+After app source edits, run `npm --prefix apps/refresh run build` to refresh
+the generated files while Hugo is serving.
+
 ## Build & Deploy
 
 ```bash
