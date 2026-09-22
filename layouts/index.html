@@ -14,6 +14,7 @@
       <a class="home-button" href="https://drive.google.com/file/d/1FFVL2jsmhM9orA1pyotyVY4cU1v7E9fH/view?usp=sharing" target="_blank" rel="noopener">
         View CV <span aria-hidden="true">&nearr;</span>
       </a>
+      <a class="home-button" href="https://gowda.ai/kidi/">Kidi demo (experimental)</a>
     </div>
 
     <div class="home-contact-row">
@@ -42,6 +43,23 @@
     </header>
 
     <div class="home-work-grid">
+      <article class="home-work-card home-work-card-kidi" aria-labelledby="kidi-title">
+        <div class="home-work-visual home-work-visual-kidi">
+          <img src="/images/kidi-logo.png" alt="Kidi project logo" width="480" height="480" loading="lazy" />
+        </div>
+        <div class="home-work-body">
+          <p class="home-work-type">Local inference &middot; September 2026</p>
+          <h3 id="kidi-title">Kidi: lightweight native AI inference</h3>
+          <p>I built a C++23 inference toolkit for CPU and Apple Metal, with an experimental WebAssembly port. It runs Gemma text generation and RTG translation without PyTorch or Transformers at inference time.</p>
+          <div class="home-inline-links">
+            <a href="https://github.com/thammegowda/kidi" target="_blank" rel="noopener">Native quick start and code</a>
+            <a href="https://gowda.ai/kidi/">Experimental browser demo</a>
+            <a href="/software/#kidi-local-ai-in-c-and-webassembly">Architecture and requirements</a>
+          </div>
+          <p class="home-kidi-requirements">The experimental browser demo is my first attempt at WebAssembly; it's still slow at the moment. CPU-only, with no WebGPU acceleration. Prompts stay on your device. About 2.49 GB of model files, cached after download; current 64-bit Chromium and ample memory recommended.</p>
+        </div>
+      </article>
+
       <article class="home-work-card">
         <div class="home-work-visual home-work-visual-edge" aria-hidden="true">
           <img src="/images/logo-Microsoft.png" alt="" />

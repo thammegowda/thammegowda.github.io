@@ -724,6 +724,41 @@ a:hover {
     line-height: 1.6;
 }
 
+.home-work-card-kidi {
+    grid-column: 1 / -1;
+}
+
+.home-work-visual-kidi {
+    min-height: 0;
+    aspect-ratio: auto;
+    background: #171717;
+}
+
+.home-work-visual-kidi img {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+}
+
+.home-work-body > p.home-kidi-requirements {
+    flex: none;
+    margin: 16px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+@media (min-width: 761px) {
+    .home-work-card-kidi {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    }
+
+    .home-work-visual-kidi {
+        border-right: 1px solid var(--border);
+        border-bottom: 0;
+    }
+}
+
 .home-inline-links {
     display: flex;
     flex-wrap: wrap;

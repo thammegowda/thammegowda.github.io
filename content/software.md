@@ -16,6 +16,32 @@ reproduce and deploy.
 
 ## Current Systems
 
+### Kidi: Local AI in C++ and WebAssembly
+
+I built Kidi, a lightweight C++23 inference toolkit that runs the same model code on
+CPU, Apple Metal, and WebAssembly CPU. It supports Gemma 4 E2B text generation and
+RTG translation, including the 500-language many-to-English model, without PyTorch
+or Transformers at inference time.
+
+Models are ordinary C++ built from reusable tensors and neural layers, with eager
+execution and backend-specific operators rather than separate model implementations.
+Gemma's original Safetensors checkpoints load directly, including trained mixed
+2/4/8-bit mobile-QAT weights, without an offline checkpoint conversion. A measured
+macOS arm64 release executable is 8.16 MiB; model weights and runtime memory are separate.
+
+The [experimental browser demo](https://gowda.ai/kidi/) is my first attempt at WebAssembly;
+it's still slow at the moment. It runs Gemma locally using WebAssembly SIMD and optional
+CPU threads, with **no WebGPU acceleration**.
+It supports streaming replies, saved chats, and generation statistics, with prompts
+staying on the device. The first run downloads about 2.49 GB of model files,
+which are cached for reuse. Use a current 64-bit Chromium browser with ample memory;
+the Wasm heap can approach its 4 GiB limit. Chat is currently text-only.
+
+- [Code and native quick start](https://github.com/thammegowda/kidi)
+- [Try the experimental browser demo](https://gowda.ai/kidi/)
+- [Architecture](https://github.com/thammegowda/kidi/blob/main/ARCHITECTURE.md)
+- [Browser requirements and measurements](https://github.com/thammegowda/kidi/blob/main/web/README.md)
+
 ### WMT Model Compression: Benchmarking Deployable Systems
 
 I lead the WMT Model Compression shared task, now in its second edition, and build
