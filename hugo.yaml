@@ -6,13 +6,6 @@ pagination:
   pagerSize: 15
 defaultContentLanguage: en
 
-module:
-  mounts:
-    - source: static
-      target: static
-    - source: apps/refresh/dist
-      target: static/app/refresh
-
 # Security: allow asciidoctor
 security:
   exec:
@@ -122,6 +115,6 @@ menu:
       url: /notes/
       weight: 5
     - identifier: refresh
-      name: refresh
-      url: /app/refresh/
+      name: ML Refresher
+      url: https://gowda.ai/ml-refresh/
       weight: 6
