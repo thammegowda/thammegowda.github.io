@@ -8,3 +8,6 @@ __pycache__/
 .vscode/
 data/publications.yaml
 .DS_Store
+
+# A separate repository (thammegowda/ml-refresh), kept here only for convenience
+/ml-refresh/
