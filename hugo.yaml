@@ -114,7 +114,3 @@ menu:
       name: Notes
       url: /notes/
       weight: 5
-    - identifier: refresh
-      name: ML Refresher
-      url: https://gowda.ai/ml-refresh/
-      weight: 6

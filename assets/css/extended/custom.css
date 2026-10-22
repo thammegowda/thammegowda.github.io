@@ -68,8 +68,50 @@ a:hover {
 
 /* Navbar: subtle Cardinal accent */
 .nav {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
     font-family: var(--font-sans);
     font-weight: 600;
+}
+
+.nav .logo {
+    display: contents;
+}
+
+.nav .logo > a {
+    margin-inline: var(--gap);
+}
+
+.nav #menu {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    min-width: 0;
+    margin-inline: 0 var(--gap);
+}
+
+.nav .logo-switches {
+    grid-column: 3;
+    grid-row: 1;
+    margin-inline: 0 var(--gap);
+}
+
+@media (max-width: 800px) {
+    .nav {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .nav .logo-switches {
+        grid-column: 2;
+    }
+
+    .nav #menu {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: stretch;
+        margin-inline: var(--gap);
+    }
 }
 
 .nav a.active,
