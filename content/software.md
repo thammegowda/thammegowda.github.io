@@ -51,13 +51,13 @@ install and inference contracts, sanity checks, reproducibility recipes, organiz
 execution on controlled H100 hardware, and Pareto analysis across translation quality,
 model footprint, GPU memory, and decoding speed.
 
-The second edition received 41 participant-submitted variants from 13 teams. Its forthcoming findings
+The second edition received 41 participant-submitted variants from 13 teams. Its published findings
 report shows that precision alone does not determine efficiency: quantization becomes
 fast only when the serving runtime is designed to exploit it, and quality must remain
 part of the comparison.
 
 - [WMT26 shared task](https://www2.statmt.org/wmt26/model-compression.html)
-- [WMT26 findings report](/files/gowda-etal-2026-WMT26-modelzip-findings.pdf)
+- [WMT26 findings report](https://aclanthology.org/2026.wmt-main.52/)
 - [WMT26 evaluation harness](https://github.com/thammegowda/wmt26-model-compression)
 - [WMT25 evaluation harness](https://github.com/thammegowda/wmt25-model-compression)
 
@@ -71,7 +71,7 @@ The WMT26 evaluation tests TahomaMT's FP8 and INT4 paths against diverse partici
 systems, grounding kernel and runtime work in translation quality rather than throughput alone.
 
 - [Documentation](https://docs.gowda.ai/tahoma/)
-- [WMT26 system paper](/files/gowda-2026-wmt26modelzip-tahomamt.pdf)
+- [WMT26 system paper](https://aclanthology.org/2026.wmt-main.136/)
 - [Technical write-up](/posts/2026/08/llm-fast-inference/)
 
 ### pigzpp: Fast Compression Across the Stack
