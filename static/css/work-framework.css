@@ -1,0 +1,400 @@
+.work-framework {
+    --wf-effort: color-mix(in srgb, var(--wf-effort-rgb) 80%, #000);
+    --wf-impact: color-mix(in srgb, var(--wf-impact-rgb) 55%, #000);
+    --wf-profile: color-mix(in srgb, var(--wf-profile-rgb) 90%, #000);
+    --wf-effort-plane: color-mix(in srgb, var(--wf-effort-plane-rgb) 45%, #000);
+    --wf-impact-plane: color-mix(in srgb, var(--wf-impact-plane-rgb) 45%, #000);
+    --wf-profile-plane: color-mix(in srgb, var(--wf-profile-plane-rgb) 45%, #000);
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--entry);
+    color: var(--primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+:root[data-theme="dark"] .work-framework,
+.dark .work-framework {
+    --wf-effort: color-mix(in srgb, var(--wf-effort-rgb) 50%, #fff);
+    --wf-impact: color-mix(in srgb, var(--wf-impact-rgb) 50%, #fff);
+    --wf-profile: color-mix(in srgb, var(--wf-profile-rgb) 50%, #fff);
+    --wf-effort-plane: color-mix(in srgb, var(--wf-effort-plane-rgb) 50%, #fff);
+    --wf-impact-plane: color-mix(in srgb, var(--wf-impact-plane-rgb) 50%, #fff);
+    --wf-profile-plane: color-mix(in srgb, var(--wf-profile-plane-rgb) 50%, #fff);
+}
+
+.work-framework p {
+    margin: 0;
+}
+
+.work-framework button {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--theme);
+    color: var(--primary);
+    font: inherit;
+    cursor: pointer;
+}
+
+.work-framework button:hover:not(:disabled) {
+    background: var(--code-bg);
+}
+
+.work-framework button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.work-framework button:focus-visible,
+.work-framework__plot:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+.work-framework__toolbar,
+.work-framework__controls,
+.work-framework__selection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.work-framework__toolbar {
+    flex-wrap: wrap;
+}
+
+.work-framework__title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.work-framework__controls {
+    gap: 6px;
+}
+
+.work-framework__controls output {
+    min-width: 42px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.work-framework .work-framework__hint {
+    margin-top: 12px;
+    color: var(--secondary);
+}
+
+.work-framework .work-framework__plane-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.work-framework__plane-key span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.work-framework__plane-key span::before {
+    content: "";
+    width: 14px;
+    height: 10px;
+    border: 1px dashed currentColor;
+}
+
+.work-framework__plane-key [data-plane-key="effort"] {
+    color: var(--wf-effort-plane);
+}
+
+.work-framework__plane-key [data-plane-key="impact"] {
+    color: var(--wf-impact-plane);
+}
+
+.work-framework__plane-key [data-plane-key="profile"] {
+    color: var(--wf-profile-plane);
+}
+
+.work-framework__legend [data-axis-key="effort"] {
+    color: var(--wf-effort);
+}
+
+.work-framework__legend [data-axis-key="impact"] {
+    color: var(--wf-impact);
+}
+
+.work-framework__legend [data-axis-key="profile"] {
+    color: var(--wf-profile);
+}
+
+.work-framework__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.65fr);
+    align-items: start;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.work-framework .work-framework__figure {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--theme);
+}
+
+.work-framework__plot {
+    position: relative;
+    min-width: 0;
+    height: 610px;
+    overflow: hidden;
+    background: var(--theme);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.work-framework__plot.is-dragging {
+    cursor: grabbing;
+}
+
+.work-framework__plot svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.work-framework__face,
+.work-framework__marker {
+    cursor: pointer;
+}
+
+.work-framework__face,
+.work-framework__marker,
+.work-framework__row {
+    --octant-ink: color-mix(in srgb, var(--octant-color) 50%, var(--primary));
+}
+
+.work-framework__split-plane {
+    pointer-events: none;
+    stroke-linejoin: round;
+}
+
+.work-framework__plot.is-dragging .work-framework__face,
+.work-framework__plot.is-dragging .work-framework__marker {
+    cursor: grabbing;
+}
+
+.work-framework__axis-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.work-framework__axis-level {
+    fill: var(--primary);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.work-framework__origin {
+    fill: var(--primary);
+    font-size: 11px;
+}
+
+.work-framework__marker text {
+    fill: var(--octant-text);
+    font-size: 11px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* Override PaperMod's minimum cell widths for this compact table. */
+.post-content .work-framework table.work-framework__legend {
+    display: table;
+    width: 100%;
+    margin: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.work-framework__legend col:first-child {
+    width: 46%;
+}
+
+.work-framework__legend col:not(:first-child) {
+    width: 18%;
+}
+
+.post-content .work-framework table.work-framework__legend th,
+.post-content .work-framework table.work-framework__legend td {
+    min-width: 0;
+    padding: 8px 4px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.4;
+    text-align: center;
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+}
+
+.post-content .work-framework table.work-framework__legend th:first-child,
+.post-content .work-framework table.work-framework__legend td:first-child {
+    text-align: left;
+}
+
+.work-framework__row {
+    cursor: pointer;
+}
+
+.work-framework .work-framework__name-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    text-align: left;
+}
+
+.work-framework .work-framework__name-button:focus-visible {
+    outline-offset: 1px;
+}
+
+.work-framework__name {
+    min-width: 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.work-framework .work-framework__row.is-selected,
+.work-framework .work-framework__row[data-inspected="true"] {
+    background: var(--code-bg);
+}
+
+.work-framework .work-framework__row.is-selected {
+    font-weight: 600;
+}
+
+.work-framework__row.is-selected td:first-child {
+    box-shadow: inset 3px 0 var(--octant-ink);
+}
+
+.work-framework__number {
+    display: grid;
+    place-items: center;
+    width: 23px;
+    height: 23px;
+    flex-shrink: 0;
+    border: 2px solid var(--octant-ink);
+    border-radius: 50%;
+    background: var(--octant-color);
+    color: var(--octant-text);
+    font-size: 12px;
+}
+
+.work-framework .work-framework__selection {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    bottom: 12px;
+    width: min(330px, calc(100% - 24px));
+    min-height: 104px;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--octant-color);
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--entry) 94%, transparent);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 16%);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    text-align: left;
+    pointer-events: none;
+}
+
+.work-framework .work-framework__selection[data-side="left"] {
+    left: 12px;
+}
+
+.work-framework .work-framework__selection[data-side="right"] {
+    right: 12px;
+}
+
+.work-framework .work-framework__selection[hidden] {
+    display: none;
+}
+
+.work-framework .work-framework__selection button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 5px 8px;
+    font-size: 12px;
+    pointer-events: auto;
+}
+
+.work-framework__details {
+    min-width: 0;
+}
+
+.work-framework [data-details] {
+    padding-right: 84px;
+    font-weight: 600;
+}
+
+.work-framework .work-framework__coordinates {
+    margin-top: 4px;
+    color: var(--secondary);
+    font-size: 11px;
+}
+
+.work-framework .work-framework__meaning {
+    margin-top: 6px;
+    color: var(--content);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.work-framework .work-framework__status {
+    margin-top: 12px;
+    color: var(--secondary);
+}
+
+@media (max-width: 900px) {
+    .work-framework__body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .work-framework__plot {
+        height: 560px;
+    }
+}
+
+@media (max-width: 480px) {
+    .work-framework {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .work-framework__plot {
+        height: 500px;
+    }
+
+    .work-framework .work-framework__selection {
+        min-height: 112px;
+    }
+}
