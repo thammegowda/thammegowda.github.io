@@ -1,0 +1,100 @@
+---
+title: "Work on What Matters"
+date: 2026-10-31T18:00:00-00:00
+author: "Thamme Gowda"
+draft: true
+slug: "work-on-what-matters"
+url: "/posts/2026/10/work-on-what-matters/"
+categories: ["Note","Career"]
+---
+
+My employer just sent out https://blogs.microsoft.com/blog/2026/10/26/introducing-a-voluntary-exit-offer/[voluntary exit offer (VEO)] emails to tens of thousands of employees -- I am one of them. It means my work is changing sometime in the near future, either voluntarily or otherwise. So I need to decide where to focus my efforts next. I chose my current job after my Ph.D. because it was the best match for my research background. That's all I cared about back then -- is it aligned with my expertise and Ph.D. training? It is a significant moment for me to reflect on my career choices, priorities, and the kind of work I should choose going forward.
+
+I wish there were a framework to decide what work to focus on. An AI agent suggested I read _Staff Engineer_ by Will Larson.
+His chapter https://staffeng.com/guides/work-on-what-matters/[Work on what matters^] made quite an impression and triggered a chain reaction in my thinking. I wish I had read this book earlier in my career to avoid falling into the traps of snacking, preening, and chasing ghosts. I wanted to write these ideas down somewhere so I could internalize the lessons for good. This post is my attempt to do that.
+
+Larson describes three traps in choosing work:
+
+* *Snacking*: easy, low-impact work that offers a sense of accomplishment without creating much value.
+* *Preening*: a highly visible form of snacking -- low-impact work that attracts attention.
+* *Chasing ghosts*: high-effort, low-impact work shaped by assumptions from a different context, rather than the problems that actually matter here. 
+
+Larson's discussion starts with two main axes -- effort and impact -- and also examines visibility. He mentions that some organizations confuse visibility with impact, rewarding work that is highly visible rather than work that truly drives value. Here, I treat visibility independently as *Profile* and bring these dimensions together in an explicit three-axis model (Effort × Impact × Profile, leading to eight octants).
+The cube below is my extension of his discussion; the three traps above come from Larson's chapter.
+
+
+== The 3-Axis Framework: Effort x Impact x Profile
+
+* *Effort*: (or cost). How much time, energy, and attention the work demands. A five-minute fix is a _low_ effort task, and months of focused development is a _high_ effort. 
+
+* *Impact* or value: How much the work improves an outcome that matters. A _low_ impact task is a cosmetic tweak with no effect on usability, and a _high_ impact task is eliminating a recurring problem. 
+
+* *Profile* or attention: How visible the work -- and your contribution -- are to others. This axis indicates where the organization is spending effort/attention/resources and who is noticing the work. A _low_ profile task is an unnoticed infrastructure fix. A _high_ profile task is a widely recognized launch. 
+
+*Effort is what you spend. Impact is what you change. Profile is who notices.* 
+
+For a successful career, you need to focus on work that balances effort, impact, and profile effectively. Over time, this approach helps you build a body of work that is meaningful, recognized, and efficiently executed.
+
+=== The eight octants
+
+Each Low/High combination gets a name.
+The snacking, preening, and ghost-chasing terms build on Larson's discussion; the profile qualifiers and high-impact names are my additions.
+The ghost-chasing names describe the case where effort is aimed at the wrong problem, not every high-effort, low-impact project. These axes are independent: a tiny (low effort), invisible (low profile) fix can make an enormous difference (high impact). High effort and high profile do not necessarily mean high impact.
+The table lists each octant's name, effort, impact, and profile.
+The meaning appears at the bottom of the plot when an octant is selected, hovered over, or focused.
+
+
+++++
+<link rel="stylesheet" href="/css/work-framework.css">
+<section class="work-framework" id="work-framework" aria-label="Interactive effort, impact, and profile framework">
+  <div class="work-framework__toolbar">
+    <p class="work-framework__title">Effort &times; Impact &times; Profile</p>
+    <div class="work-framework__controls" role="group" aria-label="Plot controls">
+      <button type="button" data-action="zoom-out" aria-label="Zoom out">&minus;</button>
+      <output data-zoom aria-label="Zoom level">100%</output>
+      <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
+      <button type="button" data-action="reset">Reset view</button>
+    </div>
+  </div>
+  <p class="work-framework__hint" id="work-framework-help">
+    Eight octants, one for each Low/High combination. Transparent planes extend beyond the cube to mark the Low/High split at 0. Drag to rotate, or focus the plot and use the arrow keys. Hover over a cube, focus a name, or select an octant to inspect its name and meaning.
+  </p>
+  <p class="work-framework__plane-key" aria-label="Split planes">
+    <span data-plane-key="effort">Effort = 0: green + blue</span>
+    <span data-plane-key="impact">Impact = 0: red + blue</span>
+    <span data-plane-key="profile">Profile = 0: red + green</span>
+  </p>
+  <div class="work-framework__body">
+    <figure class="work-framework__figure">
+      <div class="work-framework__plot" tabindex="0" role="group" aria-label="Rotatable three-dimensional plot" aria-describedby="work-framework-help">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-plot></svg>
+        <div class="work-framework__selection" hidden>
+          <div class="work-framework__details" aria-live="polite" aria-atomic="true">
+            <p data-details>Hover, focus, or select an octant to inspect it.</p>
+            <p data-coordinates class="work-framework__coordinates"></p>
+            <p data-meaning class="work-framework__meaning"></p>
+          </div>
+          <button type="button" data-action="clear" hidden disabled>Show all</button>
+        </div>
+      </div>
+    </figure>
+    <table class="work-framework__legend" aria-label="Octants by effort, impact, and profile">
+      <colgroup><col><col><col><col></colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col" data-axis-key="effort">Effort</th>
+          <th scope="col" data-axis-key="impact">Impact</th>
+          <th scope="col" data-axis-key="profile">Profile</th>
+        </tr>
+      </thead>
+      <tbody data-octants></tbody>
+    </table>
+  </div>
+  <p class="work-framework__status" data-status role="status">The interactive plot has not loaded. Enable JavaScript or reload the page.</p>
+</section>
+<script src="/js/work-framework.js" defer></script>
+++++
+
+
+Once you understand this three-dimensional framework, it's somewhat obvious how to make decisions about where to focus your efforts. Go for the octants that have high impact and high profile, while keeping effort manageable. Avoid spending too much time on low-impact or low-profile areas, even if they seem easy to tackle. 
