@@ -7,6 +7,7 @@
     }
 
     const viewport = root.querySelector(".work-framework__plot");
+    const figure = root.querySelector(".work-framework__figure");
     const svg = root.querySelector("[data-plot]");
     const rows = root.querySelector("[data-octants]");
     const selection = root.querySelector(".work-framework__selection");
@@ -18,6 +19,12 @@
     const zoomOut = root.querySelector('[data-action="zoom-out"]');
     const zoomIn = root.querySelector('[data-action="zoom-in"]');
     const clear = root.querySelector('[data-action="clear"]');
+    const present = root.querySelector('[data-action="present"]');
+    const presentationControls = root.querySelector(".work-framework__presentation-controls");
+    const presentationProgress = root.querySelector("[data-presentation-progress]");
+    const presentationToggle = root.querySelector('[data-action="presentation-toggle"]');
+    const presentationExit = root.querySelector('[data-action="presentation-exit"]');
+    const status = root.querySelector("[data-status]");
     const channelStrength = { low: 64, high: 224 };
     const rgb = channels => `rgb(${channels.join(", ")})`;
     const axisNames = ["Effort", "Impact", "Profile"];
@@ -66,6 +73,16 @@
     const initialYaw = Math.PI / 4;
     const initialElevation = Math.PI / 9;
     const state = { yaw: initialYaw, elevation: initialElevation, zoom: 1, selected: null, hovered: null, focused: null };
+    const presentation = {
+        active: false,
+        complete: false,
+        index: 0,
+        paused: false,
+        saved: null,
+        timer: null,
+        controlsTimer: null,
+    };
+    const presentationDelay = 3000;
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     let drag = null;
     let renderQueued = false;
@@ -344,7 +361,7 @@
         meaning.textContent = octant ? octant.meaning : "";
         selection.hidden = octant === null;
         selection.style.setProperty("--octant-color", octant ? octant.color : "transparent");
-        clear.hidden = state.selected === null;
+        clear.hidden = presentation.active || state.selected === null;
         clear.disabled = state.selected === null;
         octants.forEach(item => {
             item.row.dataset.inspected = String(item === octant);
@@ -353,6 +370,9 @@
     }
 
     function hover(id) {
+        if (presentation.active) {
+            return;
+        }
         if (state.hovered === id) {
             return;
         }
@@ -361,6 +381,9 @@
     }
 
     function focusOctant(id) {
+        if (presentation.active) {
+            return;
+        }
         if (state.focused === id) {
             return;
         }
@@ -380,6 +403,156 @@
             item.button.setAttribute("aria-pressed", String(item.id === id));
         });
         updateInspection();
+    }
+
+    function updatePresentationControls() {
+        presentationProgress.textContent = `Octant ${presentation.index + 1} of ${octants.length}`;
+        presentationToggle.textContent = presentation.complete ? "Replay" : presentation.paused ? "Resume" : "Pause";
+    }
+
+    function clearPresentationTimer() {
+        if (presentation.timer !== null) {
+            clearTimeout(presentation.timer);
+            presentation.timer = null;
+        }
+    }
+
+    function schedulePresentationStep() {
+        clearPresentationTimer();
+        if (!presentation.active || presentation.paused) {
+            return;
+        }
+        presentation.timer = setTimeout(() => {
+            presentation.timer = null;
+            if (presentation.index === octants.length - 1) {
+                presentation.paused = true;
+                presentation.complete = true;
+                updatePresentationControls();
+                revealPresentationControls();
+                return;
+            }
+            showPresentationOctant(presentation.index + 1);
+            schedulePresentationStep();
+        }, presentationDelay);
+    }
+
+    function showPresentationOctant(index) {
+        presentation.index = clamp(index, 0, octants.length - 1);
+        state.hovered = null;
+        state.focused = null;
+        select(octants[presentation.index].id);
+        updatePresentationControls();
+    }
+
+    function replayPresentation() {
+        presentation.complete = false;
+        presentation.paused = false;
+        showPresentationOctant(0);
+        schedulePresentationStep();
+    }
+
+    function togglePresentation() {
+        if (presentation.complete) {
+            replayPresentation();
+            return;
+        }
+        presentation.paused = !presentation.paused;
+        updatePresentationControls();
+        if (presentation.paused) {
+            clearPresentationTimer();
+        } else {
+            schedulePresentationStep();
+        }
+    }
+
+    function revealPresentationControls() {
+        if (!presentation.active) {
+            return;
+        }
+        if (presentation.controlsTimer !== null) {
+            clearTimeout(presentation.controlsTimer);
+        }
+        presentationControls.classList.add("is-visible");
+        figure.classList.remove("is-controls-hidden");
+        presentation.controlsTimer = setTimeout(() => {
+            presentation.controlsTimer = null;
+            if (!presentationControls.contains(document.activeElement)) {
+                presentationControls.classList.remove("is-visible");
+                figure.classList.add("is-controls-hidden");
+            }
+        }, 1500);
+    }
+
+    function stopPresentation() {
+        if (!presentation.active) {
+            return;
+        }
+        clearPresentationTimer();
+        if (presentation.controlsTimer !== null) {
+            clearTimeout(presentation.controlsTimer);
+            presentation.controlsTimer = null;
+        }
+        presentation.active = false;
+        presentation.complete = false;
+        presentation.paused = false;
+        presentationControls.hidden = true;
+        presentationControls.classList.remove("is-visible");
+        figure.classList.remove("is-presenting", "is-controls-hidden");
+        const saved = presentation.saved;
+        presentation.saved = null;
+        if (saved) {
+            state.yaw = saved.yaw;
+            state.elevation = saved.elevation;
+            state.focused = null;
+            state.hovered = null;
+            zoom(saved.zoom);
+            select(saved.selected);
+        }
+    }
+
+    async function exitPresentation() {
+        const ownsFullscreen = document.fullscreenElement === figure;
+        stopPresentation();
+        if (ownsFullscreen) {
+            try {
+                await document.exitFullscreen();
+            } catch (error) {
+                status.textContent = `Could not exit fullscreen: ${error.message}`;
+                status.hidden = false;
+            }
+        }
+    }
+
+    async function startPresentation() {
+        if (!document.fullscreenEnabled || typeof figure.requestFullscreen !== "function") {
+            status.textContent = "Fullscreen presentation is not supported in this browser.";
+            status.hidden = false;
+            return;
+        }
+        presentation.saved = {
+            yaw: state.yaw,
+            elevation: state.elevation,
+            selected: state.selected,
+            zoom: state.zoom,
+        };
+        try {
+            await figure.requestFullscreen();
+        } catch (error) {
+            presentation.saved = null;
+            status.textContent = `Could not enter fullscreen: ${error.message}`;
+            status.hidden = false;
+            return;
+        }
+        status.hidden = true;
+        state.yaw = initialYaw;
+        state.elevation = initialElevation;
+        zoom(1);
+        presentation.active = true;
+        presentationControls.hidden = false;
+        figure.classList.add("is-presenting");
+        replayPresentation();
+        revealPresentationControls();
+        viewport.focus({ preventScroll: true });
     }
 
     octants.forEach(octant => {
@@ -440,8 +613,39 @@
     zoomOut.addEventListener("click", () => zoom(state.zoom - 0.1));
     zoomIn.addEventListener("click", () => zoom(state.zoom + 0.1));
     clear.addEventListener("click", () => select(null));
+    present.addEventListener("click", startPresentation);
+    presentationToggle.addEventListener("click", togglePresentation);
+    presentationExit.addEventListener("click", exitPresentation);
+    figure.addEventListener("pointermove", revealPresentationControls);
+    document.addEventListener("fullscreenchange", () => {
+        if (presentation.active && document.fullscreenElement !== figure) {
+            stopPresentation();
+        }
+    });
+    document.addEventListener("keydown", event => {
+        if (!presentation.active) {
+            return;
+        }
+        if (event.key === " " || event.key === "Spacebar") {
+            event.preventDefault();
+            togglePresentation();
+        } else if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            presentation.complete = false;
+            presentation.paused = true;
+            clearPresentationTimer();
+            showPresentationOctant(presentation.index + (event.key === "ArrowRight" ? 1 : -1));
+            revealPresentationControls();
+        } else if (event.key === "Home") {
+            event.preventDefault();
+            replayPresentation();
+        }
+    });
     root.querySelector('[data-action="reset"]').addEventListener("click", reset);
     viewport.addEventListener("keydown", event => {
+        if (presentation.active) {
+            return;
+        }
         const step = Math.PI / 18;
         switch (event.key) {
             case "ArrowLeft": state.yaw -= step; break;
@@ -464,7 +668,7 @@
     }
 
     viewport.addEventListener("pointerdown", event => {
-        if (event.button !== 0 || drag) {
+        if (presentation.active || event.button !== 0 || drag) {
             return;
         }
         viewport.focus({ preventScroll: true });
@@ -514,6 +718,10 @@
     });
 
     new ResizeObserver(requestRender).observe(viewport);
-    root.querySelector("[data-status]").hidden = true;
+    if (!document.fullscreenEnabled || typeof figure.requestFullscreen !== "function") {
+        present.disabled = true;
+        present.title = "Fullscreen presentation is not supported in this browser.";
+    }
+    status.hidden = true;
     requestRender();
 })();

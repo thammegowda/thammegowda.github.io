@@ -172,6 +172,63 @@
     overflow: visible;
 }
 
+.work-framework .work-framework__presentation-controls {
+    position: absolute;
+    z-index: 4;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--entry) 90%, transparent);
+    box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 160ms ease;
+}
+
+.work-framework .work-framework__presentation-controls[hidden] {
+    display: none;
+}
+
+.work-framework .work-framework__presentation-controls.is-visible,
+.work-framework .work-framework__presentation-controls:focus-within {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.work-framework__presentation-controls output {
+    min-width: 88px;
+    color: var(--secondary);
+    font-size: 12px;
+    text-align: center;
+}
+
+.work-framework__figure:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    border: 0;
+    border-radius: 0;
+    background: var(--theme);
+}
+
+.work-framework__figure:fullscreen .work-framework__plot {
+    width: 100%;
+    height: 100%;
+}
+
+.work-framework__figure:fullscreen::backdrop {
+    background: var(--theme);
+}
+
+.work-framework__figure.is-controls-hidden,
+.work-framework__figure.is-controls-hidden .work-framework__plot {
+    cursor: none;
+}
+
 .work-framework__face,
 .work-framework__marker {
     cursor: pointer;

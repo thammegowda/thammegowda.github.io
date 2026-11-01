@@ -6,6 +6,10 @@ draft: false
 slug: "work-on-what-matters"
 url: "/posts/2026/10/work-on-what-matters/"
 categories: ["Note","Career"]
+cover:
+  image: "/images/work-3axes.png"
+  alt: "Effort, impact, and profile framework with eight named octants"
+  hiddenInSingle: true
 ---
 
 My employer just sent out https://blogs.microsoft.com/blog/2026/10/26/introducing-a-voluntary-exit-offer/[voluntary exit offer (VEO)] emails to tens of thousands of employees -- I am one of them. It means my work is changing sometime in the near future, either voluntarily or otherwise. So I need to decide where to focus my efforts next. I chose my current job after my Ph.D. because it was the best match for my research background. That's all I cared about back then -- is it aligned with my expertise and Ph.D. training? It is a significant moment for me to reflect on my career choices, priorities, and the kind of work I should choose going forward.
@@ -54,6 +58,7 @@ The meaning appears at the bottom of the plot when an octant is selected, hovere
       <output data-zoom aria-label="Zoom level">100%</output>
       <button type="button" data-action="zoom-in" aria-label="Zoom in">+</button>
       <button type="button" data-action="reset">Reset view</button>
+      <button type="button" data-action="present">Present octants</button>
     </div>
   </div>
   <p class="work-framework__hint" id="work-framework-help">
@@ -68,6 +73,11 @@ The meaning appears at the bottom of the plot when an octant is selected, hovere
     <figure class="work-framework__figure">
       <div class="work-framework__plot" tabindex="0" role="group" aria-label="Rotatable three-dimensional plot" aria-describedby="work-framework-help">
         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" data-plot></svg>
+        <div class="work-framework__presentation-controls" role="group" aria-label="Presentation controls" hidden>
+          <output data-presentation-progress aria-live="polite"></output>
+          <button type="button" data-action="presentation-toggle">Pause</button>
+          <button type="button" data-action="presentation-exit">Exit</button>
+        </div>
         <div class="work-framework__selection" hidden>
           <div class="work-framework__details" aria-live="polite" aria-atomic="true">
             <p data-details>Hover, focus, or select an octant to inspect it.</p>
